@@ -1,0 +1,1796 @@
+{
+    "data": {
+        "reviews": [
+            {
+                "reviewId": "Qv2kIhORGAwWIKHyiX2kZnVqyvI7IQ",
+                "businessId": "203609738948",
+                "author": {
+                    "name": "Диана Микова",
+                    "avatarUrl": "https://avatars.mds.yandex.net/get-yapic/26311/gN5wdrE43y8fsz1R1kIJz4rhNM-1/{size}",
+                    "professionLevel": "Дегустатор 4 уровня",
+                    "publicId": "uk96zr0z78n42h7mtp7f7pq3yw",
+                    "achievements": [],
+                    "professions": [],
+                    "isSubscribed": false
+                },
+                "text": "Огромное количество людей, практически невозможно занять столик, прием пищи превращается в какое-то выживание среди кучи незнакомцев. Шумно, душно, тесно, неуютно.\nКухня прекрасна, оформление зала и территории рядом с рестораном - 10/10, однако общая атмосфера \"перенаселенности\" портит весь аппетит.",
+                "textLanguage": "ru",
+                "textTranslations": {},
+                "rating": 3,
+                "updatedTime": "2023-03-22T09:27:27.337Z",
+                "reactions": {
+                    "likes": 3,
+                    "dislikes": 0,
+                    "userReaction": "NONE"
+                },
+                "photos": [],
+                "videos": []
+            },
+            {
+                "reviewId": "DquwWv_mwnDNJTQGytG7wfaC_U8tyv",
+                "businessId": "203609738948",
+                "author": {
+                    "name": "Ольга Носань",
+                    "avatarUrl": "https://avatars.mds.yandex.net/get-yapic/43978/npbWw0Nfwi6WW8KCBZT0OjEmBI-1/{size}",
+                    "professionLevel": "Дегустатор 3 уровня",
+                    "publicId": "j3dq9mg8etb5r2b7ehgx9y8tz4",
+                    "achievements": [],
+                    "professions": [],
+                    "isSubscribed": false
+                },
+                "text": "Траванулась пад таем\nДо этого был случай, что заказала мидии на дом и заболела из-за этого на 2 недели\n\nИногда везёт, иногда нет\n\nЕсть вопросы к ингредиентам и свежести ",
+                "textLanguage": "ru",
+                "textTranslations": {
+                    "tr": "Eriyerek düştüm\nO zamana kadar evde midye sipariş ettiğim ve bu nedenle 2 haftalığına hastalandığım bir durum vardı\n\nBazen şanslı, bazen değil\n\nMalzemeler ve tazelik ile ilgili sorularınız var "
+                },
+                "rating": 2,
+                "updatedTime": "2025-03-04T13:49:59.566Z",
+                "reactions": {
+                    "likes": 0,
+                    "dislikes": 1,
+                    "userReaction": "NONE"
+                },
+                "photos": [],
+                "videos": []
+            },
+            {
+                "reviewId": "5VF4Ruc9uiAcRtsLtggZsseiZXFIxXymI",
+                "businessId": "203609738948",
+                "author": {
+                    "name": "Юрий Картунов",
+                    "avatarUrl": "https://avatars.mds.yandex.net/get-yapic/65952/0g-9/{size}",
+                    "professionLevel": "Знаток города 5 уровня",
+                    "publicId": "hk2cnr02ha7pj2mveeajeczpd8",
+                    "achievements": [],
+                    "professions": [],
+                    "isSubscribed": false
+                },
+                "text": "Уже не первый раз ужинаю в этом заведении. Мест всегда не хватает, что говорит о популярности заведения. За год чуть пересмотрели позиции в меню. И в целом стало отлично. \nК огурчикам- думал будут битые или хотя бы с чесноком- остринки им не зватает. А так- все супер. Том ям супер",
+                "textLanguage": "ru",
+                "textTranslations": {},
+                "rating": 5,
+                "updatedTime": "2023-08-07T16:24:53.847Z",
+                "reactions": {
+                    "likes": 4,
+                    "dislikes": 0,
+                    "userReaction": "NONE"
+                },
+                "photos": [],
+                "videos": []
+            },
+            {
+                "reviewId": "aJeDp5j6lACuWn2-y0jI0PASBa5rf_P",
+                "businessId": "203609738948",
+                "author": {
+                    "name": "Виктор Осетров",
+                    "avatarUrl": "https://avatars.mds.yandex.net/get-yapic/40841/0k-6/{size}",
+                    "professionLevel": "Знаток города 3 уровня",
+                    "publicId": "wnumnp4e8uhenqkdz5242njgzr",
+                    "achievements": [],
+                    "professions": [],
+                    "isSubscribed": false
+                },
+                "text": "наплевательское отношение к клиентам, нас посадили (жена беременная, сын 2 года и я) на 2 высоких стула. а за стол отказали пересадить, который освободился после 3х минут, после того, как мы якобы сели. ..\"ну вы же согласились на эти места, ребята, что вы хотите....\" в общим смысл таков: не хотите, уходите, у нас и без вас толпа стоит у входа. Похоже заведение умирает (судя по множеству отрицательных отзывов). Больше сюда не ногой. много кафе-альтернатив. Никому не рекомендую!",
+                "textLanguage": "ru",
+                "textTranslations": {},
+                "rating": 1,
+                "updatedTime": "2024-04-05T09:13:28.392Z",
+                "reactions": {
+                    "likes": 4,
+                    "dislikes": 2,
+                    "userReaction": "NONE"
+                },
+                "photos": [],
+                "videos": []
+            },
+            {
+                "reviewId": "81jTjYSM9TZ-bFoV5dqpCcu4-3l4v3O",
+                "businessId": "203609738948",
+                "author": {
+                    "name": "Антон",
+                    "avatarUrl": "https://avatars.mds.yandex.net/get-yapic/25817/qFJNkr8pcXT6WKUjXkGGMPB4-1/{size}",
+                    "professionLevel": "Знаток города 4 уровня",
+                    "publicId": "7wxb30qr02mn4zunqep67r1mxw",
+                    "achievements": [],
+                    "professions": [],
+                    "isSubscribed": false
+                },
+                "text": "Пришли впервые и было крайне разочарованы, нас встретили, дали на выбор два места, одно за общим столом другое за малым столом, выбрали малый стол, потом нам сказали что за этот стол садятся гости, прикола я не понял. Мы ушли, спасибо за «отличный»",
+                "textLanguage": "ru",
+                "textTranslations": {
+                    "tr": "İlk kez geldiler ve son derece hayal kırıklığına uğradılar, karşılandık, biri ortak masada diğeri küçük masada olmak üzere iki koltuk seçtiler, küçük masayı seçtiler, sonra misafirlerin bu masaya oturdukları söylendi, şakayı anlamadım. Ayrıldık, »harika\" olduğun için teşekkürler"
+                },
+                "rating": 2,
+                "updatedTime": "2025-04-10T15:10:03.119Z",
+                "reactions": {
+                    "likes": 2,
+                    "dislikes": 6,
+                    "userReaction": "NONE"
+                },
+                "photos": [],
+                "videos": []
+            },
+            {
+                "reviewId": "GlXLQ22fFpGlRfchJ9W3Q7tCYRspiZf9y",
+                "businessId": "203609738948",
+                "author": {
+                    "name": "Марья Бакаева",
+                    "avatarUrl": "https://avatars.mds.yandex.net/get-yapic/33202/M0Ao8gDxzlfav2gSKAoVkfiZZ0-1/{size}",
+                    "professionLevel": "Знаток города 7 уровня",
+                    "publicId": "5rk1e9y9yqmckc4ay2upxup1d0",
+                    "achievements": [],
+                    "professions": [],
+                    "isSubscribed": false
+                },
+                "text": "Прекрасное место.Еда соответствует названию.Для любителей острого самое то.Объемы блюд очень большие,в тарелке остаётся еда даже у взрослых больших мужчин,так что голодными не останетесь 100%.Отношение персонала тоже прекрасное.Это место точно могу посоветовать для посещения.",
+                "textLanguage": "ru",
+                "textTranslations": {},
+                "rating": 5,
+                "updatedTime": "2023-08-18T08:03:25.028Z",
+                "reactions": {
+                    "likes": 3,
+                    "dislikes": 0,
+                    "userReaction": "NONE"
+                },
+                "photos": [
+                    {
+                        "type": "photo",
+                        "id": "10869107_2a0000018a07ac2835302694bcf53c6e9687",
+                        "businessId": "203609738948",
+                        "urlTemplate": "https://avatars.mds.yandex.net/get-altay/10869107/2a0000018a07ac2835302694bcf53c6e9687/{size}",
+                        "createdTime": 1692345839739,
+                        "moderation": {
+                            "status": "ACCEPTED"
+                        },
+                        "showReactions": true,
+                        "reactions": {
+                            "likes": 0,
+                            "dislikes": 0,
+                            "userReaction": "NONE"
+                        },
+                        "copyright": {
+                            "name": "Марья Бакаева",
+                            "publicId": "5rk1e9y9yqmckc4ay2upxup1d0",
+                            "imageUrlTemplate": "https://avatars.mds.yandex.net/get-yapic/33202/M0Ao8gDxzlfav2gSKAoVkfiZZ0-1/{size}",
+                            "updateTime": 1692345839739,
+                            "hasPublicProfile": true,
+                            "isSubscribed": false
+                        }
+                    }
+                ],
+                "videos": []
+            },
+            {
+                "reviewId": "ZK49hvH21CoG4YfsiNwPl2g_gzrzEWg8",
+                "businessId": "203609738948",
+                "author": {
+                    "name": "Эдуард Курманаев",
+                    "avatarUrl": "https://avatars.mds.yandex.net/get-yapic/44850/enc-fe3a192de08fb1dad8a79599d8304b7f453ce5df13991001eda058a2fe65af6e/{size}",
+                    "professionLevel": "Знаток города 5 уровня",
+                    "publicId": "f8mnbvvwvr6e3tjfj19u70vx1c",
+                    "achievements": [],
+                    "professions": [],
+                    "isSubscribed": false
+                },
+                "text": "Оптимальное место для знакомства с паназиатской кухней. Есть летник, есть доставка, есть самовывоз, очень приветливые и позитивные ребята среди официантов, открытая кухня. Если вас тянет на Том Ям, но не можете улететь в Тайланд, приезжайте в ПокеРамен",
+                "textLanguage": "ru",
+                "textTranslations": {},
+                "rating": 4,
+                "updatedTime": "2023-06-10T14:59:13.409Z",
+                "reactions": {
+                    "likes": 1,
+                    "dislikes": 0,
+                    "userReaction": "NONE"
+                },
+                "photos": [],
+                "videos": []
+            },
+            {
+                "reviewId": "uelGYhLePLCWfZgN3nUQe0vF9mXfZI-",
+                "businessId": "203609738948",
+                "author": {
+                    "name": "Наталья Кандакова",
+                    "avatarUrl": "https://avatars.mds.yandex.net/get-yapic/58107/LCx2qP4iBNwEgvMXMXhNN7F5Xxg-1/{size}",
+                    "professionLevel": "Знаток города 4 уровня",
+                    "publicId": "yacq3dng0cx7w4773t9qq6hqdw",
+                    "achievements": [],
+                    "professions": [],
+                    "isSubscribed": false
+                },
+                "text": "Очень вкусно и сытно. Буквально одной порцией можно наесться, а так хочется много всего попробовать.\n\nПрикольный интерьер, летом есть столики на улице.\n\nЕдинственный минус - часто все места заняты, а заранее место забронировать нельзя ((",
+                "textLanguage": "ru",
+                "textTranslations": {},
+                "rating": 5,
+                "updatedTime": "2023-05-08T09:21:55.924Z",
+                "reactions": {
+                    "likes": 4,
+                    "dislikes": 0,
+                    "userReaction": "NONE"
+                },
+                "photos": [],
+                "videos": []
+            },
+            {
+                "reviewId": "E66UlKTDlTnAXRUZCWsDbJvaCCCEHNjd",
+                "businessId": "203609738948",
+                "author": {
+                    "name": "Дмитрий Бобров",
+                    "avatarUrl": "https://avatars.mds.yandex.net/get-yapic/40841/KwoekkMSKgvAbG9zcpfP4cbO7iA-1/{size}",
+                    "professionLevel": "Дегустатор 3 уровня",
+                    "publicId": "wtxdu76ztjq4qqafcrn7b9dtm0",
+                    "achievements": [],
+                    "professions": [],
+                    "isSubscribed": false
+                },
+                "text": "Блюда понравились вкусно, необычно, своеобразно. Не понравилось лишь то что небольшое помещение и мало посадочных мест для посетителей, так же присутствует живая очередь людям что бы покушать приходится ожидать иногда и на улице, думаю это не совсем удобно. Вот если бы произошло расширение заведения то была бы прям пятёрка. ",
+                "textLanguage": "ru",
+                "textTranslations": {},
+                "rating": 4,
+                "updatedTime": "2023-04-08T14:38:25.560Z",
+                "reactions": {
+                    "likes": 3,
+                    "dislikes": 0,
+                    "userReaction": "NONE"
+                },
+                "photos": [],
+                "videos": []
+            },
+            {
+                "reviewId": "H8NZ-aNB_8DccKtUJGFDhapTQYhvNIqLX",
+                "businessId": "203609738948",
+                "author": {
+                    "name": "Наталия Стретинских",
+                    "avatarUrl": "https://avatars.mds.yandex.net/get-yapic/53031/0s-5/{size}",
+                    "professionLevel": "Дегустатор 3 уровня",
+                    "publicId": "ktyy47tx7cy0yu8b3u05twyk7w",
+                    "achievements": [],
+                    "professions": [],
+                    "isSubscribed": false
+                },
+                "text": "Вкусная еда, быстрое обслуживание, креативное отношение к клиентам. Всегда улыбающиеся сотрудники и энергичная обстановка. Спасибо",
+                "textLanguage": "ru",
+                "textTranslations": {},
+                "rating": 5,
+                "updatedTime": "2024-02-25T03:48:07.215Z",
+                "reactions": {
+                    "likes": 3,
+                    "dislikes": 0,
+                    "userReaction": "NONE"
+                },
+                "photos": [],
+                "videos": []
+            },
+            {
+                "reviewId": "shqsOLkcBOisy3sekvmjv5ki5MRwijO",
+                "businessId": "203609738948",
+                "author": {
+                    "name": "Юлия Мантрова",
+                    "avatarUrl": "https://avatars.mds.yandex.net/get-yapic/28439/hXxNNdGynY74UmLKNSJ0tyt0Ps-1/{size}",
+                    "professionLevel": "Дегустатор 3 уровня",
+                    "publicId": "2zh8v4egn9qjtftc81afx6u6k8",
+                    "achievements": [],
+                    "professions": [],
+                    "isSubscribed": false
+                },
+                "text": "Очень вкусно!!! Поке был просто божественный 🔥 и порции огромные, я еле доела))\nЗа 450р можно взять один поке и быть сытым целый день)\nКоллега мой брал том ям и тоже был в восторге\nЕще лимонад естественного брожения прикольный, понравился)",
+                "textLanguage": "ru",
+                "textTranslations": {},
+                "rating": 5,
+                "updatedTime": "2023-05-01T16:32:39.522Z",
+                "reactions": {
+                    "likes": 3,
+                    "dislikes": 0,
+                    "userReaction": "NONE"
+                },
+                "photos": [],
+                "videos": []
+            },
+            {
+                "reviewId": "bLblJm5dmaWpU0XvSPulYr-gOkyJoj5Y",
+                "businessId": "203609738948",
+                "author": {
+                    "name": "Elena Sapozhnikova",
+                    "avatarUrl": "https://avatars.mds.yandex.net/get-yapic/57243/0g-5/{size}",
+                    "professionLevel": "Знаток города 5 уровня",
+                    "publicId": "8hze2fz218p5hx30hd1x13qd40",
+                    "achievements": [],
+                    "professions": [],
+                    "isSubscribed": false
+                },
+                "text": "Божечки кошечки ☺️ какое вкусное здесь поке!!! А том ям!?!? Проглотить язык и придёшь за добавкой! Если ни разу не пробовали поке с лососем - это однозначно самое лучшее место, где это стоит сделать!!!",
+                "textLanguage": "ru",
+                "textTranslations": {},
+                "rating": 5,
+                "updatedTime": "2024-03-25T14:46:31.447Z",
+                "reactions": {
+                    "likes": 3,
+                    "dislikes": 0,
+                    "userReaction": "NONE"
+                },
+                "photos": [],
+                "videos": []
+            },
+            {
+                "reviewId": "wyg5pyFyzKiD3GKMkhsIlyoigJid1QHL",
+                "businessId": "203609738948",
+                "author": {
+                    "name": "Анастасия Сивцова",
+                    "avatarUrl": "https://avatars.mds.yandex.net/get-yapic/58107/TE9tOWAwknu78yeuMHofGdpRYUo-1/{size}",
+                    "professionLevel": "Дегустатор 3 уровня",
+                    "publicId": "h2k5f93ahnzrk62t6c70jx5p4w",
+                    "achievements": [],
+                    "professions": [],
+                    "isSubscribed": false
+                },
+                "text": "Очень крутое кафе, заказали сливочный рамен с лососем и лапшу собу с телятиной, вкус бесподобный, порции щедрые, нам с молодым человеком очень понравилось, пришлось подождать, но это того стоило",
+                "textLanguage": "ru",
+                "textTranslations": {},
+                "rating": 5,
+                "updatedTime": "2023-05-15T14:59:09.592Z",
+                "reactions": {
+                    "likes": 3,
+                    "dislikes": 0,
+                    "userReaction": "NONE"
+                },
+                "photos": [],
+                "videos": []
+            },
+            {
+                "reviewId": "4eTwzKLTt90D0l1RrMMo4KsFH5ZEtpP2",
+                "businessId": "203609738948",
+                "author": {
+                    "name": "Евгений Томилин",
+                    "avatarUrl": "https://avatars.mds.yandex.net/get-yapic/37154/0k-8/{size}",
+                    "professionLevel": "Знаток города 5 уровня",
+                    "publicId": "vukqfqyqjctfhtha54ytbgxdwg",
+                    "achievements": [],
+                    "professions": [],
+                    "isSubscribed": false
+                },
+                "text": "Обслужили быстро, заказывал Том Ям, вкусно, но мне хватило остроты. Мне понравилось",
+                "textLanguage": "ru",
+                "textTranslations": {},
+                "rating": 5,
+                "updatedTime": "2024-08-31T04:27:07.677Z",
+                "reactions": {
+                    "likes": 0,
+                    "dislikes": 0,
+                    "userReaction": "NONE"
+                },
+                "photos": [],
+                "videos": []
+            },
+            {
+                "reviewId": "AKSTmVRkZ7toOsyptCDkS-5cte5PQvUg",
+                "businessId": "203609738948",
+                "author": {
+                    "name": "Софья",
+                    "avatarUrl": "https://avatars.mds.yandex.net/get-yapic/26057/0c-6/{size}",
+                    "professionLevel": "Знаток города 5 уровня",
+                    "publicId": "9ebn49fjz5m8hpe100tj7138wr",
+                    "achievements": [],
+                    "professions": [],
+                    "isSubscribed": false
+                },
+                "text": "Очередь есть всегда, но можно покачаться на качельке и посмотреть на мем котика. \nПоке: 10/10\nТом ям с лапшой: 6/10, не остро и лапша твердовата \nМоти: 6/10, с грейпфрутом горько и просто неприятно, с клубникой средне, с личи и кокосовым кремом - невероятно вкусно! и еще кстати много теста \nфотка в разрыве прилагаю\n\nИ освещение для фоток не подходит",
+                "textLanguage": "ru",
+                "textTranslations": {},
+                "rating": 4,
+                "updatedTime": "2023-10-04T16:53:44.278Z",
+                "reactions": {
+                    "likes": 4,
+                    "dislikes": 1,
+                    "userReaction": "NONE"
+                },
+                "photos": [
+                    {
+                        "type": "photo",
+                        "id": "10447847_2a0000018afb9ae703f3e019d9c20e89958e",
+                        "businessId": "203609738948",
+                        "urlTemplate": "https://avatars.mds.yandex.net/get-altay/10447847/2a0000018afb9ae703f3e019d9c20e89958e/{size}",
+                        "createdTime": 1696438350655,
+                        "moderation": {
+                            "status": "ACCEPTED"
+                        },
+                        "showReactions": true,
+                        "reactions": {
+                            "likes": 0,
+                            "dislikes": 0,
+                            "userReaction": "NONE"
+                        },
+                        "copyright": {
+                            "name": "Софья",
+                            "publicId": "9ebn49fjz5m8hpe100tj7138wr",
+                            "imageUrlTemplate": "https://avatars.mds.yandex.net/get-yapic/26057/0c-6/{size}",
+                            "updateTime": 1696438350655,
+                            "hasPublicProfile": true,
+                            "isSubscribed": false
+                        }
+                    }
+                ],
+                "videos": []
+            },
+            {
+                "reviewId": "I8BklI20FWbHJUV-TkREhUJccOBY3of",
+                "businessId": "203609738948",
+                "author": {
+                    "name": "Vladislav Pekar",
+                    "avatarUrl": "https://avatars.mds.yandex.net/get-yapic/69015/0a-7/{size}",
+                    "professionLevel": "Знаток города 7 уровня",
+                    "publicId": "pfeqkq1wvnf9f3geph5hvbnk1c",
+                    "achievements": [],
+                    "professions": [],
+                    "isSubscribed": false
+                },
+                "text": "Любимое заведение в нашем городе , перепробовал уже все меню) к сожалению в последние разы том ям стал  хуже, грибы и поке тоже не порадовали, так как яйцо было далеко не пашот, но я надеюсь это было из за большой загруженности, и ребята уже исправились , в целом ставлю ему 10/10)",
+                "textLanguage": "ru",
+                "textTranslations": {},
+                "rating": 5,
+                "updatedTime": "2024-01-28T17:04:13.889Z",
+                "reactions": {
+                    "likes": 0,
+                    "dislikes": 0,
+                    "userReaction": "NONE"
+                },
+                "photos": [],
+                "videos": []
+            },
+            {
+                "reviewId": "hEaZPmK83jnvAKz9CKVUEhgcq1ObEAtfm",
+                "businessId": "203609738948",
+                "author": {
+                    "name": "Антон Панкратовpank",
+                    "avatarUrl": "https://avatars.mds.yandex.net/get-yapic/44850/0gXqiv6U7QNi9Lm8V3FKcMcmwU-1/{size}",
+                    "professionLevel": "Знаток города 4 уровня",
+                    "publicId": "px4huzub2jrh58d96v53y41krc",
+                    "achievements": [],
+                    "professions": [],
+                    "isSubscribed": false
+                },
+                "text": "Вкуснее чем сдесь том-ям не кто в Перми не готовит, вкусней только в Тайланде пробовал. Отличное, отмасферное кафе. Всем кто любит азиатскую кухню советую.",
+                "textLanguage": "ru",
+                "textTranslations": {},
+                "rating": 5,
+                "updatedTime": "2024-06-04T01:21:04.233Z",
+                "reactions": {
+                    "likes": 1,
+                    "dislikes": 0,
+                    "userReaction": "NONE"
+                },
+                "photos": [],
+                "videos": []
+            },
+            {
+                "reviewId": "ytRjfRkq52O9Uuxb4pBkMje7SYGO1MvI",
+                "businessId": "203609738948",
+                "author": {
+                    "name": "Наталья Привалова",
+                    "avatarUrl": "https://avatars.mds.yandex.net/get-yapic/27232/FssmmroUTohgFVB5duUlzHP2Tg-1/{size}",
+                    "professionLevel": "Дегустатор 3 уровня",
+                    "publicId": "98d6ubcmx1rzekzcbm8gd5h3mg",
+                    "achievements": [],
+                    "professions": [],
+                    "isSubscribed": false
+                },
+                "text": "Очень атмосферное местечко. Меню не большое, но достаточно разнообразное. Поке с крабом было на высоте. Обязательно вернусь попробовать что-нибудь ещё. Единственный минус - это ожидание посадочного места и ожидание приготовления блюда.",
+                "textLanguage": "ru",
+                "textTranslations": {},
+                "rating": 5,
+                "updatedTime": "2023-06-03T19:36:48.062Z",
+                "reactions": {
+                    "likes": 2,
+                    "dislikes": 2,
+                    "userReaction": "NONE"
+                },
+                "photos": [],
+                "videos": []
+            },
+            {
+                "reviewId": "oTEziWaEx5Eblv-XSFbxixucc5wkPNZA",
+                "businessId": "203609738948",
+                "author": {
+                    "name": "Alsou Val",
+                    "avatarUrl": "",
+                    "professionLevel": "Знаток города 6 уровня",
+                    "publicId": "ewf4h7q50b7yrm4av3cfthtpy4",
+                    "achievements": [],
+                    "professions": [],
+                    "isSubscribed": false
+                },
+                "text": "Отличное уютное место, все очень вкусно, персонал приветливый, цены адекватные. Выгодный ланч. \nРазве что мало места, приходится ждать своей очереди, чтобы сесть. ",
+                "textLanguage": "ru",
+                "textTranslations": {},
+                "rating": 5,
+                "updatedTime": "2023-10-08T12:00:34.730Z",
+                "reactions": {
+                    "likes": 3,
+                    "dislikes": 0,
+                    "userReaction": "NONE"
+                },
+                "photos": [
+                    {
+                        "type": "photo",
+                        "id": "10092863_2a0000018b0f2931a88e4ef3c09b1b35a9b1",
+                        "businessId": "203609738948",
+                        "urlTemplate": "https://avatars.mds.yandex.net/get-altay/10092863/2a0000018b0f2931a88e4ef3c09b1b35a9b1/{size}",
+                        "createdTime": 1696766440278,
+                        "moderation": {
+                            "status": "ACCEPTED"
+                        },
+                        "showReactions": true,
+                        "reactions": {
+                            "likes": 0,
+                            "dislikes": 0,
+                            "userReaction": "NONE"
+                        },
+                        "copyright": {
+                            "name": "Alsou Val",
+                            "publicId": "ewf4h7q50b7yrm4av3cfthtpy4",
+                            "imageUrlTemplate": "",
+                            "updateTime": 1696766440278,
+                            "hasPublicProfile": true,
+                            "isSubscribed": false
+                        }
+                    },
+                    {
+                        "type": "photo",
+                        "id": "10142335_2a0000018b0f2954d853a5316e46ddbca405",
+                        "businessId": "203609738948",
+                        "urlTemplate": "https://avatars.mds.yandex.net/get-altay/10142335/2a0000018b0f2954d853a5316e46ddbca405/{size}",
+                        "createdTime": 1696766449314,
+                        "moderation": {
+                            "status": "ACCEPTED"
+                        },
+                        "showReactions": true,
+                        "reactions": {
+                            "likes": 0,
+                            "dislikes": 0,
+                            "userReaction": "NONE"
+                        },
+                        "copyright": {
+                            "name": "Alsou Val",
+                            "publicId": "ewf4h7q50b7yrm4av3cfthtpy4",
+                            "imageUrlTemplate": "",
+                            "updateTime": 1696766449314,
+                            "hasPublicProfile": true,
+                            "isSubscribed": false
+                        }
+                    }
+                ],
+                "videos": []
+            },
+            {
+                "reviewId": "-Fox66f59kgjrK-53jEFyqEATw3Jcc3",
+                "businessId": "203609738948",
+                "author": {
+                    "name": "Ольга Макарова",
+                    "avatarUrl": "https://avatars.mds.yandex.net/get-yapic/69015/0o-9/{size}",
+                    "professionLevel": "Дегустатор 4 уровня",
+                    "publicId": "37u6rynufentxqcdymv32kubec",
+                    "achievements": [],
+                    "professions": [],
+                    "isSubscribed": false
+                },
+                "text": "Очень понравилось обслуживание. Официант была внимательна, вежлива и вообще оставила приятное впечатление. Брали Том Ям, вкусно, учли индивидуальные пожелания, приготовили быстро. Порции не маленькие. Атмосфера азиатского фастфуда)",
+                "textLanguage": "unknown",
+                "textTranslations": {},
+                "rating": 5,
+                "updatedTime": "2022-11-07T11:24:35.665Z",
+                "reactions": {
+                    "likes": 3,
+                    "dislikes": 0,
+                    "userReaction": "NONE"
+                },
+                "photos": [],
+                "videos": []
+            },
+            {
+                "reviewId": "eraBS8Fppe1jVhYtcJCFsX1GUbBpyRCZ",
+                "businessId": "203609738948",
+                "author": {
+                    "name": "Юлия Старикова",
+                    "avatarUrl": "https://avatars.mds.yandex.net/get-yapic/32838/I9hdYlnJTf9KLJtWVgxQVmUt7I-1/{size}",
+                    "professionLevel": "Знаток города 4 уровня",
+                    "publicId": "2k7grgfv823p2edz5b6jxfar50",
+                    "achievements": [],
+                    "professions": [],
+                    "isSubscribed": false
+                },
+                "text": "Не заходил сюда  больше года, но как всегда вкусно и атмосферно",
+                "textLanguage": "ru",
+                "textTranslations": {
+                    "tr": "Buraya bir yıldan fazla bir süredir gelmedim, ama her zamanki gibi lezzetli ve atmosferik"
+                },
+                "rating": 5,
+                "updatedTime": "2025-06-10T07:36:49.278Z",
+                "reactions": {
+                    "likes": 0,
+                    "dislikes": 0,
+                    "userReaction": "NONE"
+                },
+                "photos": [
+                    {
+                        "type": "photo",
+                        "id": "15709664_2a0000019758ddd62e585d2502f9da892815",
+                        "businessId": "203609738948",
+                        "urlTemplate": "https://avatars.mds.yandex.net/get-altay/15709664/2a0000019758ddd62e585d2502f9da892815/{size}",
+                        "createdTime": 1749542625157,
+                        "moderation": {
+                            "status": "ACCEPTED"
+                        },
+                        "showReactions": true,
+                        "reactions": {
+                            "likes": 0,
+                            "dislikes": 0,
+                            "userReaction": "NONE"
+                        },
+                        "copyright": {
+                            "name": "Юлия Старикова",
+                            "publicId": "2k7grgfv823p2edz5b6jxfar50",
+                            "imageUrlTemplate": "https://avatars.mds.yandex.net/get-yapic/32838/I9hdYlnJTf9KLJtWVgxQVmUt7I-1/{size}",
+                            "updateTime": 1749542625157,
+                            "hasPublicProfile": true,
+                            "isSubscribed": false
+                        }
+                    }
+                ],
+                "videos": []
+            },
+            {
+                "reviewId": "ylRXLZGH03aaFqHnGc2Paavw-AeUReTEo",
+                "businessId": "203609738948",
+                "author": {
+                    "name": "Дмитрий Токарев",
+                    "avatarUrl": "https://avatars.mds.yandex.net/get-yapic/51169/PBZvYNXcMEJJP4AhQJykqIL7I-1/{size}",
+                    "professionLevel": "Знаток города 7 уровня",
+                    "publicId": "kcuhuzu7xbv82gcbmnwajc0dz8",
+                    "achievements": [],
+                    "professions": [],
+                    "isSubscribed": false
+                },
+                "text": "Все отлично,большие порций и очень вкусно\nГлавное туда попасть,а то народу там постоянно много ",
+                "textLanguage": "ru",
+                "textTranslations": {
+                    "tr": "Her şey yolunda, büyük porsiyonlar ve çok lezzetli\nAsıl mesele oraya gitmek, yoksa orada sürekli çok insan var "
+                },
+                "rating": 5,
+                "updatedTime": "2025-03-21T15:33:20.823Z",
+                "reactions": {
+                    "likes": 0,
+                    "dislikes": 0,
+                    "userReaction": "NONE"
+                },
+                "photos": [],
+                "videos": []
+            },
+            {
+                "reviewId": "JsrhEdPdSxedYVSKdKN54syQWd9DL4bt",
+                "businessId": "203609738948",
+                "author": {
+                    "name": "Александр Занин",
+                    "avatarUrl": "https://avatars.mds.yandex.net/get-yapic/37154/0k-3/{size}",
+                    "professionLevel": "Знаток города 4 уровня",
+                    "publicId": "vup0e4w0b8jhfqjwm2qzcqhpbw",
+                    "achievements": [],
+                    "professions": [],
+                    "isSubscribed": false
+                },
+                "text": "одно из лучших мест паназиатской кухни! том ям с морепродуктами, и поке с лососем, вкуснатищя!! и лапша с говядиной ваще зачет!!!",
+                "textLanguage": "ru",
+                "textTranslations": {},
+                "rating": 5,
+                "updatedTime": "2023-12-10T19:51:32.410Z",
+                "reactions": {
+                    "likes": 1,
+                    "dislikes": 0,
+                    "userReaction": "NONE"
+                },
+                "photos": [],
+                "videos": []
+            },
+            {
+                "reviewId": "CAldCqOX9sdZpLmmhDaH-NbP2X8bVKe",
+                "businessId": "203609738948",
+                "author": {
+                    "name": "Анастасия Ардашева",
+                    "avatarUrl": "https://avatars.mds.yandex.net/get-yapic/28439/FIOxa0MmL89kcgdDoXVUzfE3AE-1/{size}",
+                    "professionLevel": "Знаток города 6 уровня",
+                    "publicId": "uf6496bbpjt8kfe8v8n6dv3j70",
+                    "achievements": [],
+                    "professions": [],
+                    "isSubscribed": false
+                },
+                "text": "Одно из лучших заведений Перми с паназиатской кухней! Вкусная еда, большое порции, дружелюбные официанты и повара, быстрое приготовление и все это за соответствующую цену! А ещё, здесь лучший моти😍",
+                "textLanguage": "unknown",
+                "textTranslations": {},
+                "rating": 5,
+                "updatedTime": "2022-11-05T03:59:04.818Z",
+                "reactions": {
+                    "likes": 1,
+                    "dislikes": 0,
+                    "userReaction": "NONE"
+                },
+                "photos": [
+                    {
+                        "type": "photo",
+                        "id": "HTkmr0ozn1WSMkeqRynmH3CIxI7hEkCU",
+                        "businessId": "203609738948",
+                        "urlTemplate": "https://avatars.mds.yandex.net/get-altay/6272620/2a0000018445f2bed943aebf2676a7c42c26/{size}",
+                        "createdTime": 1667620847987,
+                        "moderation": {
+                            "status": "ACCEPTED"
+                        },
+                        "showReactions": true,
+                        "reactions": {
+                            "likes": 0,
+                            "dislikes": 0,
+                            "userReaction": "NONE"
+                        },
+                        "copyright": {
+                            "name": "Анастасия Ардашева",
+                            "publicId": "uf6496bbpjt8kfe8v8n6dv3j70",
+                            "imageUrlTemplate": "https://avatars.mds.yandex.net/get-yapic/28439/FIOxa0MmL89kcgdDoXVUzfE3AE-1/{size}",
+                            "updateTime": 1667620847987,
+                            "hasPublicProfile": true,
+                            "isSubscribed": false
+                        }
+                    },
+                    {
+                        "type": "photo",
+                        "id": "e6GEtA-TYbM2iLykSZuJeXZIKgXwczpa",
+                        "businessId": "203609738948",
+                        "urlTemplate": "https://avatars.mds.yandex.net/get-altay/7186075/2a0000018445f2b7ff849d0e533c4504c5ac/{size}",
+                        "createdTime": 1667620846207,
+                        "moderation": {
+                            "status": "ACCEPTED"
+                        },
+                        "showReactions": true,
+                        "reactions": {
+                            "likes": 0,
+                            "dislikes": 0,
+                            "userReaction": "NONE"
+                        },
+                        "copyright": {
+                            "name": "Анастасия Ардашева",
+                            "publicId": "uf6496bbpjt8kfe8v8n6dv3j70",
+                            "imageUrlTemplate": "https://avatars.mds.yandex.net/get-yapic/28439/FIOxa0MmL89kcgdDoXVUzfE3AE-1/{size}",
+                            "updateTime": 1667620846207,
+                            "hasPublicProfile": true,
+                            "isSubscribed": false
+                        }
+                    }
+                ],
+                "videos": []
+            },
+            {
+                "reviewId": "N4LtMChMS8lH4KJr_LRyZuPY8FHkxK",
+                "businessId": "203609738948",
+                "author": {
+                    "name": "Julia Turbina",
+                    "avatarUrl": "https://avatars.mds.yandex.net/get-yapic/61207/8OOcKsCsVI6yb2gw8GH7iQeIZ4U-1/{size}",
+                    "professionLevel": "Знаток города 3 уровня",
+                    "publicId": "r2a4xbvzrm60n16jv6p1jpf260",
+                    "achievements": [],
+                    "professions": [],
+                    "isSubscribed": false
+                },
+                "text": "Не знаю чем популярно это место, для меня оно слишком переоценено.  Первый раз ела Том-Ям по совету знакомых, в других местах на много вкуснее и подача лучше. Дала второй шанс и пришла на ланч. Заказала  Фо Бо, кто был во Вьетнаме, тот знает как его подают и какой у него вкус. Чесночный рис с беконом - невозможно соленый. Маринованную капусту выдают как Кимчи, ощущение, что они даже никогда не пробовали традиционную капусту Кимчи. Возможно я отношусь очень предвзято из-за того,что прожила в Азии более 5 лет, и знаю их кухню от местной до той,что подают туристам. В этом же заведении кроме атмосферы и хорошего отношения персонала, я не увидела. Попсовое место для подростков,которые тащатся от аниме, дорам и BTS, и никогда не пробовали настоящую азиатскую еду.",
+                "textLanguage": "ru",
+                "textTranslations": {},
+                "rating": 1,
+                "updatedTime": "2023-11-01T11:14:13.693Z",
+                "reactions": {
+                    "likes": 6,
+                    "dislikes": 4,
+                    "userReaction": "NONE"
+                },
+                "photos": [],
+                "videos": []
+            },
+            {
+                "reviewId": "Tog0Akv0GiGVf-pVKNai5RQKswvRtTEf",
+                "businessId": "203609738948",
+                "author": {
+                    "name": "Мария Дронова",
+                    "avatarUrl": "https://avatars.mds.yandex.net/get-yapic/30061/NUcvRbo9gfr0LEeCysqZ8ILzR4U-1/{size}",
+                    "professionLevel": "Дегустатор 6 уровня",
+                    "publicId": "8y0yrm0ypqa28vwrypjta1c174",
+                    "achievements": [],
+                    "professions": [],
+                    "isSubscribed": false
+                },
+                "text": "Не поняла, в чем заключается весь хайп. Если кому-то прикольно ждать 20 минут, чтобы сесть или сидеть в помещении в тесноте - то отлично. Но в целом не могу сказать, что еда какая-то особенная. Пробовала Поке и Моти, средне. Не стоит это 20 минутного ожидания. Можно прийти, сфоткаться и пойти покушать в другое место. ",
+                "textLanguage": "ru",
+                "textTranslations": {},
+                "rating": 3,
+                "updatedTime": "2023-05-02T18:09:13.600Z",
+                "reactions": {
+                    "likes": 3,
+                    "dislikes": 1,
+                    "userReaction": "NONE"
+                },
+                "photos": [],
+                "videos": []
+            },
+            {
+                "reviewId": "jPhw7jSx9-tmd04c6s3MQkaLhIzXcs",
+                "businessId": "203609738948",
+                "author": {
+                    "name": "Serge Paschanin",
+                    "avatarUrl": "https://avatars.mds.yandex.net/get-yapic/43473/enc-602f0080422c797d079d7dfd181ea429b63ccc489e8a6ba55257f36f231a37b5/{size}",
+                    "professionLevel": "Дегустатор 4 уровня",
+                    "publicId": "3ku4f6pagck1tft0k2wm93rarc",
+                    "achievements": [],
+                    "professions": [],
+                    "isSubscribed": false
+                },
+                "text": "Офигенно вкусно всё!  С семьёй были уже два раза, и придем ещё не раз. От моти все просто в диком восторге. Спасибо!",
+                "textLanguage": "ru",
+                "textTranslations": {},
+                "rating": 5,
+                "updatedTime": "2024-05-25T18:31:03.458Z",
+                "reactions": {
+                    "likes": 1,
+                    "dislikes": 0,
+                    "userReaction": "NONE"
+                },
+                "photos": [],
+                "videos": []
+            },
+            {
+                "reviewId": "-2eUvphakX86DRLk2BH8G5l46jnwImLG",
+                "businessId": "203609738948",
+                "author": {
+                    "name": "Дарья К.",
+                    "avatarUrl": "https://avatars.mds.yandex.net/get-yapic/21377/enc-56b5e487fb0a351d88f79da2b8cabd4198eee9008467e0d4eb455d6405be2647/{size}",
+                    "professionLevel": "Знаток города 5 уровня",
+                    "publicId": "h7p974y9ckpkjaj19nr5d0b27c",
+                    "achievements": [],
+                    "professions": [],
+                    "isSubscribed": false
+                },
+                "text": "Очень вкусно, но в связи с большим ажиотажем долго пришлось ждать очереди присесть и сделать заказ. Но, возможно, это такая фишка заведения",
+                "textLanguage": "ru",
+                "textTranslations": {},
+                "rating": 5,
+                "updatedTime": "2024-05-07T16:34:59.691Z",
+                "reactions": {
+                    "likes": 1,
+                    "dislikes": 0,
+                    "userReaction": "NONE"
+                },
+                "photos": [],
+                "videos": []
+            },
+            {
+                "reviewId": "NSif-iHGZS0XbtZfyOFQdP8eGW-3z_0x8",
+                "businessId": "203609738948",
+                "author": {
+                    "name": "Ольга Рычкова",
+                    "avatarUrl": "https://avatars.mds.yandex.net/get-yapic/50595/ai2RcsidvvQzGk884sG0YOMwHY-1/{size}",
+                    "professionLevel": "Знаток города 7 уровня",
+                    "publicId": "6m7c004q1m3jnwq2vm91cbhtt4",
+                    "achievements": [],
+                    "professions": [],
+                    "isSubscribed": false
+                },
+                "text": "Вкусно, но не моя пища. Молодёжь пищит от вкусноты Поке и Том ям. Персонал очень доброжелательный. Время ожидания не долго. Очень понравился имбирный лимонад🍋💦, просто 💥",
+                "textLanguage": "ru",
+                "textTranslations": {},
+                "rating": 5,
+                "updatedTime": "2023-08-08T13:30:47.235Z",
+                "reactions": {
+                    "likes": 3,
+                    "dislikes": 0,
+                    "userReaction": "NONE"
+                },
+                "photos": [
+                    {
+                        "type": "photo",
+                        "id": "9709783_2a00000189d557a63c2cbb9d86e493884118",
+                        "businessId": "203609738948",
+                        "urlTemplate": "https://avatars.mds.yandex.net/get-altay/9709783/2a00000189d557a63c2cbb9d86e493884118/{size}",
+                        "createdTime": 1691501441289,
+                        "moderation": {
+                            "status": "ACCEPTED"
+                        },
+                        "showReactions": true,
+                        "reactions": {
+                            "likes": 0,
+                            "dislikes": 0,
+                            "userReaction": "NONE"
+                        },
+                        "copyright": {
+                            "name": "Ольга Рычкова",
+                            "publicId": "6m7c004q1m3jnwq2vm91cbhtt4",
+                            "imageUrlTemplate": "https://avatars.mds.yandex.net/get-yapic/50595/ai2RcsidvvQzGk884sG0YOMwHY-1/{size}",
+                            "updateTime": 1691501441289,
+                            "hasPublicProfile": true,
+                            "isSubscribed": false
+                        }
+                    },
+                    {
+                        "type": "photo",
+                        "id": "9719535_2a00000189d557ada8c11aafbaa9082cea05",
+                        "businessId": "203609738948",
+                        "urlTemplate": "https://avatars.mds.yandex.net/get-altay/9719535/2a00000189d557ada8c11aafbaa9082cea05/{size}",
+                        "createdTime": 1691501443789,
+                        "moderation": {
+                            "status": "ACCEPTED"
+                        },
+                        "showReactions": true,
+                        "reactions": {
+                            "likes": 0,
+                            "dislikes": 0,
+                            "userReaction": "NONE"
+                        },
+                        "copyright": {
+                            "name": "Ольга Рычкова",
+                            "publicId": "6m7c004q1m3jnwq2vm91cbhtt4",
+                            "imageUrlTemplate": "https://avatars.mds.yandex.net/get-yapic/50595/ai2RcsidvvQzGk884sG0YOMwHY-1/{size}",
+                            "updateTime": 1691501443789,
+                            "hasPublicProfile": true,
+                            "isSubscribed": false
+                        }
+                    }
+                ],
+                "videos": []
+            },
+            {
+                "reviewId": "yS7cOaJs-U3gbEMTMIsgYEAD5DbMa-UJv",
+                "businessId": "203609738948",
+                "author": {
+                    "name": "Дмитрий Дятленко",
+                    "avatarUrl": "https://avatars.mds.yandex.net/get-yapic/35885/mGkbGpVkgZiRod4L0fiPvCTtQ-1/{size}",
+                    "professionLevel": "Дегустатор 5 уровня",
+                    "publicId": "jbep2d3acfpcpbfj4nkrzmw18r",
+                    "achievements": [],
+                    "professions": [],
+                    "isSubscribed": false
+                },
+                "text": "Наивкуснейшая азиатская еда на мой взгляд. Понравилось больше, чем в рислапше, от которой у меня каждый раз аллергическая реакция. Цены адекватные. Разнообразные варианты том ям и фо бо на любой вкус.\n",
+                "textLanguage": "ru",
+                "textTranslations": {},
+                "rating": 5,
+                "updatedTime": "2023-01-04T17:44:14.147Z",
+                "reactions": {
+                    "likes": 3,
+                    "dislikes": 0,
+                    "userReaction": "NONE"
+                },
+                "photos": [],
+                "videos": []
+            },
+            {
+                "reviewId": "BR4ycHK8I8m5bKJS1BsEewR4AldPYX",
+                "businessId": "203609738948",
+                "author": {
+                    "name": "Анатолий",
+                    "avatarUrl": "https://avatars.mds.yandex.net/get-yapic/51169/Q0wMl5TIXc75Qed073lh4hTHji8-1/{size}",
+                    "professionLevel": "Дегустатор 4 уровня",
+                    "publicId": "vm0bghu9nn3xm25tx24ac9f9a8",
+                    "achievements": [],
+                    "professions": [],
+                    "isSubscribed": false
+                },
+                "text": "Однозначно, одно из лучших мест азиатской кухни! Прикольная атмосфера, вкусная еда, что ни заказывал - всё понравилось. Услужливый персонал, за оформление отдельная звезда. Ребята, вам надо расширяться, со свободными местами - беда! Ну, тоже, кстати, показатель, что идёте в правильном направлении!",
+                "textLanguage": "ru",
+                "textTranslations": {},
+                "rating": 5,
+                "updatedTime": "2023-09-11T12:00:45.504Z",
+                "reactions": {
+                    "likes": 3,
+                    "dislikes": 0,
+                    "userReaction": "NONE"
+                },
+                "photos": [],
+                "videos": []
+            },
+            {
+                "reviewId": "hFCWJ0FjOYnrwnwi0csIQ2ZeAOqkTj",
+                "businessId": "203609738948",
+                "author": {
+                    "name": "Ксюша Субботина-Килина",
+                    "avatarUrl": "https://avatars.mds.yandex.net/get-yapic/62162/enc-4d0385f0fc186552e7292a537f2210eb8d996de6632025c75ecf34c1e3a66cf9/{size}",
+                    "professionLevel": "Знаток города 8 уровня",
+                    "publicId": "134x6gqn90efg7tqw5ahkqc1uw",
+                    "achievements": [],
+                    "professions": [],
+                    "isSubscribed": false
+                },
+                "text": "Первый раз было супер вкусно, второй растроились, в том ям небыло морепродуктов, один Кольмар и рыбы пару кусков",
+                "textLanguage": "ru",
+                "textTranslations": {},
+                "rating": 4,
+                "updatedTime": "2024-05-03T18:15:46.635Z",
+                "reactions": {
+                    "likes": 0,
+                    "dislikes": 1,
+                    "userReaction": "NONE"
+                },
+                "photos": [],
+                "videos": []
+            },
+            {
+                "reviewId": "N7PqAKq3WgrghpF9188uWe475sZnzyS2",
+                "businessId": "203609738948",
+                "author": {
+                    "name": "Николай Сидорок",
+                    "avatarUrl": "https://avatars.mds.yandex.net/get-yapic/40841/AU1XBZFqLMRZwWtszzNdhnf0YWU-1/{size}",
+                    "professionLevel": "Дегустатор 6 уровня",
+                    "publicId": "hz1fj79xucgct7reh1r9q7mmh0",
+                    "achievements": [],
+                    "professions": [],
+                    "isSubscribed": false
+                },
+                "text": "Отличное место. За качество еды говорит постоянная очередь на посадку. Приезжая в командировку в Пермь, сразу еду сюда. Отличный том-ям, один из лучших что я пробовал по всей РФ. Порции огромные. Персонал вежливый.",
+                "textLanguage": "ru",
+                "textTranslations": {},
+                "rating": 5,
+                "updatedTime": "2023-09-12T13:11:56.049Z",
+                "reactions": {
+                    "likes": 1,
+                    "dislikes": 0,
+                    "userReaction": "NONE"
+                },
+                "photos": [],
+                "videos": []
+            },
+            {
+                "reviewId": "isFLx4lUiyD2zzje63FXlb0m62nHE9",
+                "businessId": "203609738948",
+                "author": {
+                    "name": "SubRosa",
+                    "avatarUrl": "https://avatars.mds.yandex.net/get-yapic/49368/ArgkB0V65ywJeHKBjr2Vb626s-1/{size}",
+                    "professionLevel": "Знаток города 7 уровня",
+                    "publicId": "5yqwjdfd4pw6ndp35ry4yjaaer",
+                    "achievements": [],
+                    "professions": [],
+                    "isSubscribed": false
+                },
+                "text": "Все очень понравилось! Классная атмосфера азиатского стрит фуда! Очень колоритно в нашем городе) Есть только пожелание к создателям - добавьте, пожалуйста, больше еды для вегетарианцев) 🎏🏮",
+                "textLanguage": "ru",
+                "textTranslations": {},
+                "rating": 5,
+                "updatedTime": "2023-07-10T15:02:04.154Z",
+                "reactions": {
+                    "likes": 1,
+                    "dislikes": 1,
+                    "userReaction": "NONE"
+                },
+                "photos": [
+                    {
+                        "type": "photo",
+                        "id": "QBFPI61tFKLzV35f_H7aXqhxTd9Wyb5D3",
+                        "businessId": "203609738948",
+                        "urlTemplate": "https://avatars.mds.yandex.net/get-altay/6314780/2a000001894050d4ce44b2c796be5f7696c4/{size}",
+                        "createdTime": 1689001189687,
+                        "moderation": {
+                            "status": "ACCEPTED"
+                        },
+                        "showReactions": true,
+                        "reactions": {
+                            "likes": 0,
+                            "dislikes": 0,
+                            "userReaction": "NONE"
+                        },
+                        "copyright": {
+                            "name": "SubRosa",
+                            "publicId": "5yqwjdfd4pw6ndp35ry4yjaaer",
+                            "imageUrlTemplate": "https://avatars.mds.yandex.net/get-yapic/49368/ArgkB0V65ywJeHKBjr2Vb626s-1/{size}",
+                            "updateTime": 1689001189687,
+                            "hasPublicProfile": true,
+                            "isSubscribed": false
+                        }
+                    },
+                    {
+                        "type": "photo",
+                        "id": "VoAid6LrlNRXVyJEHIh44uy3sAqdh9v3",
+                        "businessId": "203609738948",
+                        "urlTemplate": "https://avatars.mds.yandex.net/get-altay/6213366/2a00000189405120ca61aa229342ba4ad098/{size}",
+                        "createdTime": 1689001208929,
+                        "moderation": {
+                            "status": "ACCEPTED"
+                        },
+                        "showReactions": true,
+                        "reactions": {
+                            "likes": 0,
+                            "dislikes": 0,
+                            "userReaction": "NONE"
+                        },
+                        "copyright": {
+                            "name": "SubRosa",
+                            "publicId": "5yqwjdfd4pw6ndp35ry4yjaaer",
+                            "imageUrlTemplate": "https://avatars.mds.yandex.net/get-yapic/49368/ArgkB0V65ywJeHKBjr2Vb626s-1/{size}",
+                            "updateTime": 1689001208929,
+                            "hasPublicProfile": true,
+                            "isSubscribed": false
+                        }
+                    },
+                    {
+                        "type": "photo",
+                        "id": "WXDt5bBU5meQyF0saGODWaXv373dABs",
+                        "businessId": "203609738948",
+                        "urlTemplate": "https://avatars.mds.yandex.net/get-altay/777564/2a000001894050d294f99921788da2015cf0/{size}",
+                        "createdTime": 1689001188858,
+                        "moderation": {
+                            "status": "ACCEPTED"
+                        },
+                        "showReactions": true,
+                        "reactions": {
+                            "likes": 0,
+                            "dislikes": 0,
+                            "userReaction": "NONE"
+                        },
+                        "copyright": {
+                            "name": "SubRosa",
+                            "publicId": "5yqwjdfd4pw6ndp35ry4yjaaer",
+                            "imageUrlTemplate": "https://avatars.mds.yandex.net/get-yapic/49368/ArgkB0V65ywJeHKBjr2Vb626s-1/{size}",
+                            "updateTime": 1689001188858,
+                            "hasPublicProfile": true,
+                            "isSubscribed": false
+                        }
+                    },
+                    {
+                        "type": "photo",
+                        "id": "Wtz8sLCF1MFUtF6ZcxB-YkeaZVZ51C0An",
+                        "businessId": "203609738948",
+                        "urlTemplate": "https://avatars.mds.yandex.net/get-altay/9828935/2a0000018940512f6c33468c5d88df7206f0/{size}",
+                        "createdTime": 1689001212511,
+                        "moderation": {
+                            "status": "ACCEPTED"
+                        },
+                        "showReactions": true,
+                        "reactions": {
+                            "likes": 1,
+                            "dislikes": 0,
+                            "userReaction": "NONE"
+                        },
+                        "copyright": {
+                            "name": "SubRosa",
+                            "publicId": "5yqwjdfd4pw6ndp35ry4yjaaer",
+                            "imageUrlTemplate": "https://avatars.mds.yandex.net/get-yapic/49368/ArgkB0V65ywJeHKBjr2Vb626s-1/{size}",
+                            "updateTime": 1689001212511,
+                            "hasPublicProfile": true,
+                            "isSubscribed": false
+                        }
+                    },
+                    {
+                        "type": "photo",
+                        "id": "jWeCwf1FcnNYR_g_qp1DecpqnQw4Lkw1",
+                        "businessId": "203609738948",
+                        "urlTemplate": "https://avatars.mds.yandex.net/get-altay/9753788/2a000001894050ea02f4f32a9e1cac9763b4/{size}",
+                        "createdTime": 1689001194715,
+                        "moderation": {
+                            "status": "ACCEPTED"
+                        },
+                        "showReactions": true,
+                        "reactions": {
+                            "likes": 0,
+                            "dislikes": 0,
+                            "userReaction": "NONE"
+                        },
+                        "copyright": {
+                            "name": "SubRosa",
+                            "publicId": "5yqwjdfd4pw6ndp35ry4yjaaer",
+                            "imageUrlTemplate": "https://avatars.mds.yandex.net/get-yapic/49368/ArgkB0V65ywJeHKBjr2Vb626s-1/{size}",
+                            "updateTime": 1689001194715,
+                            "hasPublicProfile": true,
+                            "isSubscribed": false
+                        }
+                    },
+                    {
+                        "type": "photo",
+                        "id": "jqebx1DGqaac1m8m4NSHwk3KOo9tybkfB",
+                        "businessId": "203609738948",
+                        "urlTemplate": "https://avatars.mds.yandex.net/get-altay/9749133/2a000001894050d9d7606b718448196820e2/{size}",
+                        "createdTime": 1689001190729,
+                        "moderation": {
+                            "status": "ACCEPTED"
+                        },
+                        "showReactions": true,
+                        "reactions": {
+                            "likes": 0,
+                            "dislikes": 0,
+                            "userReaction": "NONE"
+                        },
+                        "copyright": {
+                            "name": "SubRosa",
+                            "publicId": "5yqwjdfd4pw6ndp35ry4yjaaer",
+                            "imageUrlTemplate": "https://avatars.mds.yandex.net/get-yapic/49368/ArgkB0V65ywJeHKBjr2Vb626s-1/{size}",
+                            "updateTime": 1689001190729,
+                            "hasPublicProfile": true,
+                            "isSubscribed": false
+                        }
+                    },
+                    {
+                        "type": "photo",
+                        "id": "mi1PrMxtzNe2PHg1ZHXSDOHfmVPlnH",
+                        "businessId": "203609738948",
+                        "urlTemplate": "https://avatars.mds.yandex.net/get-altay/9709178/2a00000189405125b2b3de21baafafffb1d5/{size}",
+                        "createdTime": 1689001210053,
+                        "moderation": {
+                            "status": "ACCEPTED"
+                        },
+                        "showReactions": true,
+                        "reactions": {
+                            "likes": 0,
+                            "dislikes": 0,
+                            "userReaction": "NONE"
+                        },
+                        "copyright": {
+                            "name": "SubRosa",
+                            "publicId": "5yqwjdfd4pw6ndp35ry4yjaaer",
+                            "imageUrlTemplate": "https://avatars.mds.yandex.net/get-yapic/49368/ArgkB0V65ywJeHKBjr2Vb626s-1/{size}",
+                            "updateTime": 1689001210053,
+                            "hasPublicProfile": true,
+                            "isSubscribed": false
+                        }
+                    },
+                    {
+                        "type": "photo",
+                        "id": "tjoKOz0lAK-haM4rnmQM6B_rWTRUSg4y_",
+                        "businessId": "203609738948",
+                        "urlTemplate": "https://avatars.mds.yandex.net/get-altay/9368060/2a0000018940512a5cc29ce76b6f495a91f9/{size}",
+                        "createdTime": 1689001211267,
+                        "moderation": {
+                            "status": "ACCEPTED"
+                        },
+                        "showReactions": true,
+                        "reactions": {
+                            "likes": 0,
+                            "dislikes": 0,
+                            "userReaction": "NONE"
+                        },
+                        "copyright": {
+                            "name": "SubRosa",
+                            "publicId": "5yqwjdfd4pw6ndp35ry4yjaaer",
+                            "imageUrlTemplate": "https://avatars.mds.yandex.net/get-yapic/49368/ArgkB0V65ywJeHKBjr2Vb626s-1/{size}",
+                            "updateTime": 1689001211267,
+                            "hasPublicProfile": true,
+                            "isSubscribed": false
+                        }
+                    }
+                ],
+                "videos": []
+            },
+            {
+                "reviewId": "4UV4htsrPX7vBox9UCFjg8wG4wg7GGkjn",
+                "businessId": "203609738948",
+                "author": {
+                    "name": "Наталья Пономарева",
+                    "avatarUrl": "",
+                    "professionLevel": "Знаток города 4 уровня",
+                    "publicId": "zv1g5rhbx4mfunaquzn2p6czk8",
+                    "achievements": [],
+                    "professions": [],
+                    "isSubscribed": false
+                },
+                "text": "Вкусно, большие порции, вежливый персонал. В летней части кафе предусмотрены пледы для гостей, если на улице прохладно. Место популярное, приходится ждать в очереди. Если время есть, то стоит того чтобы подождать.)",
+                "textLanguage": "ru",
+                "textTranslations": {},
+                "rating": 5,
+                "updatedTime": "2023-08-19T11:54:46.803Z",
+                "reactions": {
+                    "likes": 1,
+                    "dislikes": 0,
+                    "userReaction": "NONE"
+                },
+                "photos": [],
+                "videos": []
+            },
+            {
+                "reviewId": "VOxlsVUhz-wlb9kP_ZfuMyW1wEV7Bez8H",
+                "businessId": "203609738948",
+                "author": {
+                    "name": "ekaterina poluyanova",
+                    "avatarUrl": "",
+                    "professionLevel": "Знаток города 3 уровня",
+                    "publicId": "mghmk2u3p4zu5dr7mydaqxnnng",
+                    "achievements": [],
+                    "professions": [],
+                    "isSubscribed": false
+                },
+                "text": "Вкусное место, порции большие, морепродуктов мнооого, рецепты все с душой придуманы, идеально от и до , давайте расширяетесь))))",
+                "textLanguage": "ru",
+                "textTranslations": {},
+                "rating": 5,
+                "updatedTime": "2023-11-11T16:34:59.640Z",
+                "reactions": {
+                    "likes": 1,
+                    "dislikes": 0,
+                    "userReaction": "NONE"
+                },
+                "photos": [
+                    {
+                        "type": "photo",
+                        "id": "10647561_2a0000018bbf3ce5481a68560085049a8e8b",
+                        "businessId": "203609738948",
+                        "urlTemplate": "https://avatars.mds.yandex.net/get-altay/10647561/2a0000018bbf3ce5481a68560085049a8e8b/{size}",
+                        "createdTime": 1699720523657,
+                        "moderation": {
+                            "status": "ACCEPTED"
+                        },
+                        "showReactions": true,
+                        "reactions": {
+                            "likes": 0,
+                            "dislikes": 0,
+                            "userReaction": "NONE"
+                        },
+                        "copyright": {
+                            "name": "ekaterina poluyanova",
+                            "publicId": "mghmk2u3p4zu5dr7mydaqxnnng",
+                            "imageUrlTemplate": "",
+                            "updateTime": 1699720523657,
+                            "hasPublicProfile": true,
+                            "isSubscribed": false
+                        }
+                    }
+                ],
+                "videos": []
+            },
+            {
+                "reviewId": "WUCFWymlJephAF-GG3k4289Hq67CsU",
+                "businessId": "203609738948",
+                "author": {
+                    "name": "Альбина К",
+                    "avatarUrl": "https://avatars.mds.yandex.net/get-yapic/24700/enc-55e3eb292e47c2781c366b3223fad6aa/{size}",
+                    "professionLevel": "Дегустатор 6 уровня",
+                    "publicId": "qm7yzwtrh48cwudxh0fk2fqmt4",
+                    "achievements": [],
+                    "professions": [],
+                    "isSubscribed": false
+                },
+                "text": "Это бомба кафе, много не заказывайте))) все иначе не съесть)), порции большие . На посиделки долгие кафе не расчитано- поел и вышел. Вкусно и не дорого",
+                "textLanguage": "ru",
+                "textTranslations": {},
+                "rating": 5,
+                "updatedTime": "2023-11-08T04:15:02.346Z",
+                "reactions": {
+                    "likes": 1,
+                    "dislikes": 0,
+                    "userReaction": "NONE"
+                },
+                "photos": [],
+                "videos": []
+            },
+            {
+                "reviewId": "C-qaE-D7btVW7Rmi7T8XnD-zzjGSPlX",
+                "businessId": "203609738948",
+                "author": {
+                    "name": "Galina Smirnova",
+                    "avatarUrl": "https://avatars.mds.yandex.net/get-yapic/59871/0a-6/{size}",
+                    "professionLevel": "Знаток города 5 уровня",
+                    "publicId": "zyxak3w7pktdy05b1q65zpd1tm",
+                    "achievements": [],
+                    "professions": [],
+                    "isSubscribed": false
+                },
+                "text": "Что можно сказать про жто заведение? Что ребята просто молодцы. Креатив+вкусная кухня + уютный дворик=никогда не попасть на обед. Но я прорываюсь иногда. Мне пока всё нравится, хотя пробовала процентов 30% меню, ещё бывают сезонные специалитеты. Тут уж надо успевать. Очень хочется надеяться, что ребят надолго хватит. А не как обычно у нас бывает. Кстати мне тут москвич один скидывал обзор другого москвича, в обзор ПокеРамен попал и гость остался доволен. Вобщем хватит хвалебных слов, а то совсем на обед не попасть будет..",
+                "textLanguage": "ru",
+                "textTranslations": {},
+                "rating": 5,
+                "updatedTime": "2023-10-17T09:44:32.905Z",
+                "reactions": {
+                    "likes": 2,
+                    "dislikes": 1,
+                    "userReaction": "NONE"
+                },
+                "photos": [
+                    {
+                        "type": "photo",
+                        "id": "9827107_2a0000018b3d0541bcad94eae68e46ecd433",
+                        "businessId": "203609738948",
+                        "urlTemplate": "https://avatars.mds.yandex.net/get-altay/9827107/2a0000018b3d0541bcad94eae68e46ecd433/{size}",
+                        "createdTime": 1697535838320,
+                        "moderation": {
+                            "status": "ACCEPTED"
+                        },
+                        "showReactions": true,
+                        "reactions": {
+                            "likes": 0,
+                            "dislikes": 0,
+                            "userReaction": "NONE"
+                        },
+                        "copyright": {
+                            "name": "Galina Smirnova",
+                            "publicId": "zyxak3w7pktdy05b1q65zpd1tm",
+                            "imageUrlTemplate": "https://avatars.mds.yandex.net/get-yapic/59871/0a-6/{size}",
+                            "updateTime": 1697535838320,
+                            "hasPublicProfile": true,
+                            "isSubscribed": false
+                        }
+                    }
+                ],
+                "videos": []
+            },
+            {
+                "reviewId": "opZ74wXt-l6Oiru9bbjgF7x9e5yMzGCXm",
+                "businessId": "203609738948",
+                "author": {
+                    "name": "Елизавета Н.",
+                    "avatarUrl": "https://avatars.mds.yandex.net/get-yapic/47747/0h-2/{size}",
+                    "professionLevel": "Знаток города 6 уровня",
+                    "publicId": "",
+                    "achievements": [],
+                    "professions": [],
+                    "isSubscribed": false
+                },
+                "text": "Очень любили это заведение, всегда было вкусно. Но сегодня видимо что-то пошло не так. Заказали том ям рамен и том ям с морепродуктами. Супы принесли холодные и бульон горчил. К нам долгое время никто не подходил, мы решили подойти сами и сказали об этом девушке, которая стоит за стойкой на летнике, она развела руками, (имея ввиду что я могу сделать) не предложила заменить блюдо и даже банально подогреть, приняла оплату и продолжила заниматься своими делами. Официантке явно не было дела до нас, воды попросили - не принесла, быстро отдала блюда и испарилась. Видимо кафе получило премию 59.ru  и расслабилось. ",
+                "textLanguage": "ru",
+                "textTranslations": {},
+                "rating": 1,
+                "updatedTime": "2024-06-28T11:36:51.817Z",
+                "reactions": {
+                    "likes": 4,
+                    "dislikes": 1,
+                    "userReaction": "NONE"
+                },
+                "photos": [
+                    {
+                        "type": "photo",
+                        "id": "5098734_2a000001905ea2ddbc7535b2934eaf2296ad",
+                        "businessId": "203609738948",
+                        "urlTemplate": "https://avatars.mds.yandex.net/get-altay/5098734/2a000001905ea2ddbc7535b2934eaf2296ad/{size}",
+                        "createdTime": 1719574653250,
+                        "moderation": {
+                            "status": "ACCEPTED"
+                        },
+                        "showReactions": true,
+                        "reactions": {
+                            "likes": 0,
+                            "dislikes": 0,
+                            "userReaction": "NONE"
+                        },
+                        "copyright": {
+                            "name": "Елизавета Н.",
+                            "publicId": "",
+                            "imageUrlTemplate": "https://avatars.mds.yandex.net/get-yapic/47747/0h-2/{size}",
+                            "updateTime": 1719574653250,
+                            "hasPublicProfile": false,
+                            "isSubscribed": false
+                        }
+                    }
+                ],
+                "videos": []
+            },
+            {
+                "reviewId": "yCD_jHYGcBwyw16okknUxL_gIK-ElKOXL",
+                "businessId": "203609738948",
+                "author": {
+                    "name": "Вита Белка",
+                    "avatarUrl": "https://avatars.mds.yandex.net/get-yapic/27232/9w11rgwS6J2v6sEVkQh2hiscxZs-1/{size}",
+                    "professionLevel": "Дегустатор 6 уровня",
+                    "publicId": "vitabelka18",
+                    "achievements": [],
+                    "professions": [],
+                    "isSubscribed": false
+                },
+                "text": "Клевая атмосферная кафешка для быстро/вкусно! Но есть одно но - если нет какого-либо ингредиента, то блюдо подают без него, хотя можно бы и предупредить заранее (фо бо был без ростков бобовых). На доставке пирожное Моти было со вкусом том ям 🤔 вероятно повар до моти собирал суп и не вымыл руки... Ребят, вы клевые, но поработайте над небольшими недочётами.",
+                "textLanguage": "ru",
+                "textTranslations": {},
+                "rating": 4,
+                "updatedTime": "2023-04-08T05:59:39.297Z",
+                "reactions": {
+                    "likes": 3,
+                    "dislikes": 0,
+                    "userReaction": "NONE"
+                },
+                "photos": [],
+                "videos": []
+            },
+            {
+                "reviewId": "RqSpVIhzsVLUf94I5O4Zrhqthohs0TR",
+                "businessId": "203609738948",
+                "author": {
+                    "name": "Ирина",
+                    "avatarUrl": "https://avatars.mds.yandex.net/get-yapic/69015/0a-9/{size}",
+                    "professionLevel": "Знаток города 3 уровня",
+                    "publicId": "q6wqqe1gcgaba7whx8h6x4dhdg",
+                    "achievements": [],
+                    "professions": [],
+                    "isSubscribed": false
+                },
+                "text": "Отличное заведение. Быстрое обслуживание. Вкусные ланчи. В первый раз было сложно найти 😊 Мало места в зале, приходится заказывать доставку, т. к. все очень вкусно и не хочется заказывать в другом кафе. Рекомендую!",
+                "textLanguage": "ru",
+                "textTranslations": {},
+                "rating": 5,
+                "updatedTime": "2023-10-10T10:59:56.194Z",
+                "reactions": {
+                    "likes": 3,
+                    "dislikes": 0,
+                    "userReaction": "NONE"
+                },
+                "photos": [],
+                "videos": []
+            },
+            {
+                "reviewId": "jViWFXe78ilcf_833jPuylwV9mCEdsPkB",
+                "businessId": "203609738948",
+                "author": {
+                    "name": "Анна Новик",
+                    "avatarUrl": "https://avatars.mds.yandex.net/get-yapic/64336/QqsoulCitZDhDRxTTVYaT3kQ20o-1/{size}",
+                    "professionLevel": "Знаток города 4 уровня",
+                    "publicId": "t7k8bx6buxrv0tnt3x8u5hgbhr",
+                    "achievements": [],
+                    "professions": [],
+                    "isSubscribed": false
+                },
+                "text": "Самый вкусный суп том Ян, из всех, что я пробовала, в меру острый, быстрое обслуживание, интересный интерьер, обязательно приду еще",
+                "textLanguage": "ru",
+                "textTranslations": {},
+                "rating": 5,
+                "updatedTime": "2023-08-31T16:19:01.242Z",
+                "reactions": {
+                    "likes": 1,
+                    "dislikes": 0,
+                    "userReaction": "NONE"
+                },
+                "photos": [
+                    {
+                        "type": "photo",
+                        "id": "10636707_2a0000018a4c63e7b96205693bf8a90eb0de",
+                        "businessId": "203609738948",
+                        "urlTemplate": "https://avatars.mds.yandex.net/get-altay/10636707/2a0000018a4c63e7b96205693bf8a90eb0de/{size}",
+                        "createdTime": 1693498732737,
+                        "moderation": {
+                            "status": "ACCEPTED"
+                        },
+                        "showReactions": true,
+                        "reactions": {
+                            "likes": 0,
+                            "dislikes": 0,
+                            "userReaction": "NONE"
+                        },
+                        "copyright": {
+                            "name": "Анна Новик",
+                            "publicId": "t7k8bx6buxrv0tnt3x8u5hgbhr",
+                            "imageUrlTemplate": "https://avatars.mds.yandex.net/get-yapic/64336/QqsoulCitZDhDRxTTVYaT3kQ20o-1/{size}",
+                            "updateTime": 1693498732737,
+                            "hasPublicProfile": true,
+                            "isSubscribed": false
+                        }
+                    }
+                ],
+                "videos": []
+            },
+            {
+                "reviewId": "hboHAYPCpsQ3E446l7KA8XC2HWJlzrxl",
+                "businessId": "203609738948",
+                "author": {
+                    "name": "Алена",
+                    "avatarUrl": "https://avatars.mds.yandex.net/get-yapic/27274/okDuMABJpB3yj1RnpcQoj9UKg2Q-1/{size}",
+                    "professionLevel": "Знаток города 4 уровня",
+                    "publicId": "26pycucddp55mjbxeteyfbb0uw",
+                    "achievements": [],
+                    "professions": [],
+                    "isSubscribed": false
+                },
+                "text": "Классное место) Были первый раз, очень вкусно и обслуживание хорошее🤩",
+                "textLanguage": "ru",
+                "textTranslations": {
+                    "tr": "Harika bir yer) ilk defa, çok lezzetli ve servis iyiydi"
+                },
+                "rating": 5,
+                "updatedTime": "2025-05-15T21:15:15.011Z",
+                "reactions": {
+                    "likes": 0,
+                    "dislikes": 0,
+                    "userReaction": "NONE"
+                },
+                "photos": [],
+                "videos": []
+            },
+            {
+                "reviewId": "hydmE2OKfXV95zgTUsqUbbVjd2T75N",
+                "businessId": "203609738948",
+                "author": {
+                    "name": "Анастасия П.",
+                    "avatarUrl": "https://avatars.mds.yandex.net/get-yapic/53031/gDhmgEd4X4OQH34QcfPiDMh8U-1/{size}",
+                    "professionLevel": "Дегустатор 3 уровня",
+                    "publicId": "7egb1jx7z5gf9q2v6qep7xjau0",
+                    "achievements": [],
+                    "professions": [],
+                    "isSubscribed": false
+                },
+                "text": "Вкусная еда, но достаточно мало места. Иногда приходится ждать. Советую данное место к посещению",
+                "textLanguage": "ru",
+                "textTranslations": {},
+                "rating": 4,
+                "updatedTime": "2024-05-10T16:08:05.253Z",
+                "reactions": {
+                    "likes": 4,
+                    "dislikes": 0,
+                    "userReaction": "NONE"
+                },
+                "photos": [],
+                "videos": []
+            },
+            {
+                "reviewId": "5FAFun1aS_ag4OZ9N-ptqwFohpSD4L3nQ",
+                "businessId": "203609738948",
+                "author": {
+                    "name": "Валерия А.",
+                    "avatarUrl": "https://avatars.mds.yandex.net/get-yapic/63032/xTOnKsZJBUMmI8mOk600D0Ok4Y-1/{size}",
+                    "professionLevel": "Знаток города 5 уровня",
+                    "publicId": "ydpvy5fru684xcjb5htxecnmqm",
+                    "achievements": [],
+                    "professions": [],
+                    "isSubscribed": false
+                },
+                "text": "Раньше был вкусный том ям с морепродуктами. Сейчас ценник подняли, а из морепродуктов 2 кусочка кальмара, 3 кусочка рыбы и одна половина креветки. Обидно ",
+                "textLanguage": "ru",
+                "textTranslations": {},
+                "rating": 4,
+                "updatedTime": "2024-03-31T17:11:05.673Z",
+                "reactions": {
+                    "likes": 0,
+                    "dislikes": 0,
+                    "userReaction": "NONE"
+                },
+                "photos": [],
+                "videos": []
+            },
+            {
+                "reviewId": "9rkjZIMKj-NENN2pHAcMJW0xgMdUSf",
+                "businessId": "203609738948",
+                "author": {
+                    "name": "Арина Филянина",
+                    "avatarUrl": "https://avatars.mds.yandex.net/get-yapic/59871/0a-4/{size}",
+                    "professionLevel": "Знаток города 6 уровня",
+                    "publicId": "3hvrfhyae8uqmf025g0jxp6uyw",
+                    "achievements": [],
+                    "professions": [],
+                    "isSubscribed": false
+                },
+                "text": "Безумно вкусная еда и классные сотрудники, всегда помогут и подскажут.\nЕдинственный минус(для меня незначительный) долгое ожидание в очереди\nЦены разумные, соответствуют качеству и размеру порций",
+                "textLanguage": "ru",
+                "textTranslations": {},
+                "rating": 5,
+                "updatedTime": "2023-05-06T12:31:50.755Z",
+                "reactions": {
+                    "likes": 3,
+                    "dislikes": 0,
+                    "userReaction": "NONE"
+                },
+                "photos": [],
+                "videos": []
+            },
+            {
+                "reviewId": "l6SwLEBp0PRB1RKvrxRvBf8gtwbt8IHy",
+                "businessId": "203609738948",
+                "author": {
+                    "name": "Алёна О.",
+                    "avatarUrl": "https://avatars.mds.yandex.net/get-yapic/40841/KnUQW7IwijUXy5FpUNfLYFX18QE-1/{size}",
+                    "professionLevel": "Знаток города 5 уровня",
+                    "publicId": "gd31acmn2k0m4394zu1n03dz2w",
+                    "achievements": [],
+                    "professions": [],
+                    "isSubscribed": false
+                },
+                "text": "Определенно 5 из 5! Милое местечко, приятный персонал и очень вкусная еда. Карри рамен с морепродуктами просто огонь 🔥 как и мидии в соусе том ям) однако, в доставке еда кажется немного хуже, что огорчает(",
+                "textLanguage": "ru",
+                "textTranslations": {},
+                "rating": 5,
+                "updatedTime": "2023-10-03T15:11:03.646Z",
+                "reactions": {
+                    "likes": 3,
+                    "dislikes": 0,
+                    "userReaction": "NONE"
+                },
+                "photos": [],
+                "videos": []
+            },
+            {
+                "reviewId": "7-c9fXNE-fmxwnwVm91yVgbblngh0W",
+                "businessId": "203609738948",
+                "author": {
+                    "name": "Юлия Уланова",
+                    "avatarUrl": "https://avatars.mds.yandex.net/get-yapic/64336/bs12wVwBR5Ycfczl3Lm844t6A54-1/{size}",
+                    "professionLevel": "Дегустатор 5 уровня",
+                    "publicId": "pkqwnzpzea6ze5zaaggzkmrtrr",
+                    "achievements": [],
+                    "professions": [],
+                    "isSubscribed": false
+                },
+                "text": "Очень уютно и колоритно. Вкусно как в Азии . Очень любим это место. ",
+                "textLanguage": "ru",
+                "textTranslations": {
+                    "tr": "Çok rahat ve renkli. Asya'daki gibi lezzetli. Burayı çok seviyoruz. "
+                },
+                "rating": 5,
+                "updatedTime": "2025-01-26T14:12:15.842Z",
+                "reactions": {
+                    "likes": 0,
+                    "dislikes": 0,
+                    "userReaction": "NONE"
+                },
+                "photos": [],
+                "videos": []
+            },
+            {
+                "reviewId": "NUdBOFOYo9Icf6oFjMdmhewbp36p-csrh",
+                "businessId": "203609738948",
+                "author": {
+                    "name": "Анастасия Александровна",
+                    "avatarUrl": "https://avatars.mds.yandex.net/get-yapic/6218514/YmqEC0qeKlO9v37cH1iRJISZzUs-1/{size}",
+                    "professionLevel": "Знаток города 4 уровня",
+                    "publicId": "42ebqk0t82pw0m8prn9uuwnwgg",
+                    "achievements": [],
+                    "professions": [],
+                    "isSubscribed": false
+                },
+                "text": "Очень вкусная еда, Поке просто бомба, и ролы изумительные. При заказе на доставку привозят все отлично упаковано, всем рекомендую. Даже вкусняшки для четвероногих кладут, мой кот оценил. Не снижайте планку 👍😉",
+                "textLanguage": "ru",
+                "textTranslations": {},
+                "rating": 5,
+                "updatedTime": "2023-07-23T09:06:32.809Z",
+                "reactions": {
+                    "likes": 1,
+                    "dislikes": 0,
+                    "userReaction": "NONE"
+                },
+                "photos": [],
+                "videos": []
+            },
+            {
+                "reviewId": "Zy7CbrOUWFyKQTN0mzTxrhHW5h_v7f-",
+                "businessId": "203609738948",
+                "author": {
+                    "name": "𝒦𝒶𝓇𝒾𝓃𝒶🤍",
+                    "avatarUrl": "https://avatars.mds.yandex.net/get-yapic/54535/wzCqZ43NjiH0bKN13gKhUAejk-1/{size}",
+                    "professionLevel": "Знаток города 5 уровня",
+                    "publicId": "ppyz7vbcte5axq2pbahwa1byr0",
+                    "achievements": [],
+                    "professions": [],
+                    "isSubscribed": false
+                },
+                "text": "Очень хорошее место\nневероятно вкусная еду, приятная атмосфера и восхитительное обслуживание",
+                "textLanguage": "ru",
+                "textTranslations": {
+                    "tr": "Çok güzel bir yer\ninanılmaz lezzetli yemekler, hoş bir atmosfer ve keyifli servis"
+                },
+                "rating": 5,
+                "updatedTime": "2024-12-08T10:02:09.815Z",
+                "reactions": {
+                    "likes": 1,
+                    "dislikes": 0,
+                    "userReaction": "NONE"
+                },
+                "photos": [],
+                "videos": []
+            }
+        ],
+        "params": {
+            "offset": 350,
+            "limit": 50,
+            "count": 1494,
+            "loadedReviewsCount": 400,
+            "page": 8,
+            "totalPages": 30,
+            "reviewsRemained": 1094
+        },
+        "tags": [],
+        "aspects": []
+    }
+}

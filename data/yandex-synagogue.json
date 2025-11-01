@@ -1,0 +1,466 @@
+{
+    "data": {
+        "reviews": [
+            {
+                "reviewId": "7JsZA7dmR_cyJPdVn5x-SmSZmE9FkLq",
+                "businessId": "1036547361",
+                "author": {
+                    "name": "Ольга К.",
+                    "avatarUrl": "https://avatars.mds.yandex.net/get-yapic/24700/enc-4042030c36e3a9d6f2d65bf05f9dfbc5b258976f2c3ad874aa76c9afbae08952/{size}",
+                    "professionLevel": "Знаток города 6 уровня",
+                    "publicId": "qu9pmbe0xvq4wy7ee7388tqufr",
+                    "achievements": [],
+                    "professions": [],
+                    "isSubscribed": false
+                },
+                "text": "Внутри синагоги уютно, хоть здание и требует ремонта, но помощи от властей лишний раз ждать не приходится. Работает дружный и отзывчивый коллектив, могут о многом рассказать, если нужно помочь добрым словом и делом.  Можно приобрести кошерные продукты если есть в наличии. Хочется пожелать удачи и  процветания.",
+                "textLanguage": "ru",
+                "textTranslations": {
+                    "tr": "Binanın onarılması gerekmesine rağmen sinagogun içi rahat, ancak yetkililerden bir kez daha yardım beklemenize gerek yok. Dost canlısı ve sempatik bir ekip çalışıyor, nazik söz ve eylemle yardım etmeniz gerekirse size çok şey anlatabilirler.  Varsa koşer ürünleri satın alabilirsiniz. Size iyi şanslar ve refah dilemek istiyorum."
+                },
+                "rating": 5,
+                "updatedTime": "2025-08-28T09:03:30.629Z",
+                "reactions": {
+                    "likes": 0,
+                    "dislikes": 0,
+                    "userReaction": "NONE"
+                },
+                "photos": [],
+                "videos": []
+            },
+            {
+                "reviewId": "cC-juCM379z4aPcuRqyxSrtOn9nQpDX",
+                "businessId": "1036547361",
+                "author": {
+                    "name": "Permyachok",
+                    "avatarUrl": "https://avatars.mds.yandex.net/get-yapic/53031/0c-3/{size}",
+                    "professionLevel": "Знаток города 12 уровня",
+                    "publicId": "chz56dk9ej745x2ep5mhgv97mr",
+                    "achievements": [],
+                    "professions": [],
+                    "isSubscribed": false
+                },
+                "text": "Есть и храм, есть и множество фирмочек арендующих помещения.  Такому назначению и содержанию внешний вид и чистота (её отсутствие) при входе не соответствуют: фасад обшарпанный, вход и крыльцо - разрушенные как из конца 90-х; в ближайшем проулке слева - помойка из множества не своевременно вывозимых площадок ТБО, гремящей вентиляции осыпающейся штукатурки стен (отсюда и сильный запах свалки и грызуны). Перед входом повреждённый тротуар в выбоинах, с битым бордюром и кучи пыли (в дождь превращающиеся в грязь).",
+                "textLanguage": "ru",
+                "textTranslations": {},
+                "rating": 3,
+                "updatedTime": "2024-08-17T07:06:14.585Z",
+                "reactions": {
+                    "likes": 0,
+                    "dislikes": 0,
+                    "userReaction": "NONE"
+                },
+                "photos": [],
+                "videos": []
+            },
+            {
+                "reviewId": "j3xweakWyj7X1buMcujwn--Tvipq34jdt",
+                "businessId": "1036547361",
+                "author": {
+                    "name": "Антон Ш",
+                    "avatarUrl": "https://avatars.mds.yandex.net/get-yapic/47747/0l-1/{size}",
+                    "professionLevel": "Знаток города 8 уровня",
+                    "publicId": "gfdk061f2g90wcbvddhwrhhre8",
+                    "achievements": [],
+                    "professions": [],
+                    "isSubscribed": false
+                },
+                "text": "Был в пермской синагоге. Внутри очень уютно и красиво. А снаружи не сразу поймёшь что это синагога. Только религиозные атрибуты выдают, что это религиозное заведение. Рекомендую к посещению!",
+                "textLanguage": "ru",
+                "textTranslations": {},
+                "rating": 5,
+                "updatedTime": "2024-07-20T21:02:32.753Z",
+                "reactions": {
+                    "likes": 0,
+                    "dislikes": 0,
+                    "userReaction": "NONE"
+                },
+                "photos": [
+                    {
+                        "type": "photo",
+                        "id": "10505037_2a00000190d1f440d2f4bb013a77694f40a5",
+                        "businessId": "1036547361",
+                        "urlTemplate": "https://avatars.mds.yandex.net/get-altay/10505037/2a00000190d1f440d2f4bb013a77694f40a5/{size}",
+                        "createdTime": 1721509365541,
+                        "moderation": {
+                            "status": "ACCEPTED"
+                        },
+                        "showReactions": true,
+                        "reactions": {
+                            "likes": 0,
+                            "dislikes": 0,
+                            "userReaction": "NONE"
+                        },
+                        "copyright": {
+                            "name": "Антон Ш",
+                            "publicId": "gfdk061f2g90wcbvddhwrhhre8",
+                            "imageUrlTemplate": "https://avatars.mds.yandex.net/get-yapic/47747/0l-1/{size}",
+                            "updateTime": 1721509365541,
+                            "hasPublicProfile": true,
+                            "isSubscribed": false
+                        }
+                    },
+                    {
+                        "type": "photo",
+                        "id": "11005869_2a00000190d1f44a664e89f9ab34a124384b",
+                        "businessId": "1036547361",
+                        "urlTemplate": "https://avatars.mds.yandex.net/get-altay/11005869/2a00000190d1f44a664e89f9ab34a124384b/{size}",
+                        "createdTime": 1721509367704,
+                        "moderation": {
+                            "status": "ACCEPTED"
+                        },
+                        "showReactions": true,
+                        "reactions": {
+                            "likes": 0,
+                            "dislikes": 0,
+                            "userReaction": "NONE"
+                        },
+                        "copyright": {
+                            "name": "Антон Ш",
+                            "publicId": "gfdk061f2g90wcbvddhwrhhre8",
+                            "imageUrlTemplate": "https://avatars.mds.yandex.net/get-yapic/47747/0l-1/{size}",
+                            "updateTime": 1721509367704,
+                            "hasPublicProfile": true,
+                            "isSubscribed": false
+                        }
+                    },
+                    {
+                        "type": "photo",
+                        "id": "12810232_2a00000190d1f41e44229f741c14170e542c",
+                        "businessId": "1036547361",
+                        "urlTemplate": "https://avatars.mds.yandex.net/get-altay/12810232/2a00000190d1f41e44229f741c14170e542c/{size}",
+                        "createdTime": 1721509357155,
+                        "moderation": {
+                            "status": "ACCEPTED"
+                        },
+                        "showReactions": true,
+                        "reactions": {
+                            "likes": 0,
+                            "dislikes": 0,
+                            "userReaction": "NONE"
+                        },
+                        "copyright": {
+                            "name": "Антон Ш",
+                            "publicId": "gfdk061f2g90wcbvddhwrhhre8",
+                            "imageUrlTemplate": "https://avatars.mds.yandex.net/get-yapic/47747/0l-1/{size}",
+                            "updateTime": 1721509357155,
+                            "hasPublicProfile": true,
+                            "isSubscribed": false
+                        }
+                    },
+                    {
+                        "type": "photo",
+                        "id": "13193546_2a00000190d1f43588df043b6ea5150e4612",
+                        "businessId": "1036547361",
+                        "urlTemplate": "https://avatars.mds.yandex.net/get-altay/13193546/2a00000190d1f43588df043b6ea5150e4612/{size}",
+                        "createdTime": 1721509363227,
+                        "moderation": {
+                            "status": "ACCEPTED"
+                        },
+                        "showReactions": true,
+                        "reactions": {
+                            "likes": 0,
+                            "dislikes": 0,
+                            "userReaction": "NONE"
+                        },
+                        "copyright": {
+                            "name": "Антон Ш",
+                            "publicId": "gfdk061f2g90wcbvddhwrhhre8",
+                            "imageUrlTemplate": "https://avatars.mds.yandex.net/get-yapic/47747/0l-1/{size}",
+                            "updateTime": 1721509363227,
+                            "hasPublicProfile": true,
+                            "isSubscribed": false
+                        }
+                    },
+                    {
+                        "type": "photo",
+                        "id": "13207207_2a00000190d1f4518cc603e1c63563430743",
+                        "businessId": "1036547361",
+                        "urlTemplate": "https://avatars.mds.yandex.net/get-altay/13207207/2a00000190d1f4518cc603e1c63563430743/{size}",
+                        "createdTime": 1721509369718,
+                        "moderation": {
+                            "status": "ACCEPTED"
+                        },
+                        "showReactions": true,
+                        "reactions": {
+                            "likes": 0,
+                            "dislikes": 0,
+                            "userReaction": "NONE"
+                        },
+                        "copyright": {
+                            "name": "Антон Ш",
+                            "publicId": "gfdk061f2g90wcbvddhwrhhre8",
+                            "imageUrlTemplate": "https://avatars.mds.yandex.net/get-yapic/47747/0l-1/{size}",
+                            "updateTime": 1721509369718,
+                            "hasPublicProfile": true,
+                            "isSubscribed": false
+                        }
+                    },
+                    {
+                        "type": "photo",
+                        "id": "13220786_2a00000190d1f42ad3b858deb5b41aa64882",
+                        "businessId": "1036547361",
+                        "urlTemplate": "https://avatars.mds.yandex.net/get-altay/13220786/2a00000190d1f42ad3b858deb5b41aa64882/{size}",
+                        "createdTime": 1721509360091,
+                        "moderation": {
+                            "status": "ACCEPTED"
+                        },
+                        "showReactions": true,
+                        "reactions": {
+                            "likes": 1,
+                            "dislikes": 0,
+                            "userReaction": "NONE"
+                        },
+                        "copyright": {
+                            "name": "Антон Ш",
+                            "publicId": "gfdk061f2g90wcbvddhwrhhre8",
+                            "imageUrlTemplate": "https://avatars.mds.yandex.net/get-yapic/47747/0l-1/{size}",
+                            "updateTime": 1721509360091,
+                            "hasPublicProfile": true,
+                            "isSubscribed": false
+                        }
+                    }
+                ],
+                "videos": []
+            },
+            {
+                "reviewId": "21lZMxDl2YzGI_sTozRbTVuF2csvW9fcD",
+                "businessId": "1036547361",
+                "author": {
+                    "name": "Алёнка",
+                    "avatarUrl": "https://avatars.mds.yandex.net/get-yapic/65952/0d-6/{size}",
+                    "professionLevel": "Знаток города 7 уровня",
+                    "publicId": "r6kww04f9yjgkfnxhzx6mgcyk0",
+                    "achievements": [],
+                    "professions": [],
+                    "isSubscribed": false
+                },
+                "text": "Хаг Песах самеах! Частенько бываю в Перми, заходила на праздничной неделе в Пермскую центральную синагогу,  была здесь впервые. Чувствуется, что место историческое. Встретил и помог сориентироваться очень приятный мужчина с добрыми глазами. Большое спасибо, процветания! ",
+                "textLanguage": "ru",
+                "textTranslations": {
+                    "tr": "Hag Fısıh sameah! Sık sık Perm'e gidiyorum, tatil haftasında Perm'in merkez sinagoguna gittim, ilk kez buradaydım. Yerin tarihi olduğu hissediliyor. Nazik gözleri olan çok hoş bir adamla tanıştım ve gezinmeye yardım ettim. Çok teşekkür ederim, refah! "
+                },
+                "rating": 5,
+                "updatedTime": "2025-04-15T07:53:07.586Z",
+                "reactions": {
+                    "likes": 0,
+                    "dislikes": 0,
+                    "userReaction": "NONE"
+                },
+                "photos": [],
+                "videos": []
+            },
+            {
+                "reviewId": "97KE3DwbwUMiOSqd6EyY8geFEPQq11NE",
+                "businessId": "1036547361",
+                "author": {
+                    "name": "Пигилева Елена Павловна",
+                    "avatarUrl": "https://avatars.mds.yandex.net/get-yapic/51381/8Yr2hYPQ56nCvW4JZgAAYaYLMU-1/{size}",
+                    "professionLevel": "Знаток города 4 уровня",
+                    "publicId": "25bgp9v9c8jerj0jzp87ntbbn0",
+                    "achievements": [],
+                    "professions": [],
+                    "isSubscribed": false
+                },
+                "text": "Очень скромно, была как то раз в синагоге, когда была служба, по работе, тихонько посидела на столах чёрный хлеб, пригласили на кухню рыбкой жареной накормили вообще впечатление воробушек стая, просили найти строителей вентиляцию сделать, но  со мной строители никогда не работали отказывались все так что сразу сказала что у меня нет таких кого бы порекомендовала, очень скромно, но приятные люди всегда честно сразу скажут условия и либо да и рады либо вот такие условия это не реально поймите мы так работаем без вщякого выноса мозга принятого сейчас в банках и обмана все бесплатно вернём даром, мне кажется что это достойно и самое важное чётко условия поговаривают и работают даже если стоимость твоя завышена но их устраивает, бизнес есть бизнес, в отличии от типа халвы даром все потом все в полной жжж.. ",
+                "textLanguage": "ru",
+                "textTranslations": {},
+                "rating": 4,
+                "updatedTime": "2024-10-19T01:34:45.982Z",
+                "reactions": {
+                    "likes": 0,
+                    "dislikes": 6,
+                    "userReaction": "NONE"
+                },
+                "photos": [],
+                "videos": []
+            },
+            {
+                "reviewId": "26gt_6h0ES_17lw6dhYU4fJY8pguF7S1",
+                "businessId": "1036547361",
+                "author": {
+                    "name": "Михаил Мясников",
+                    "avatarUrl": "https://avatars.mds.yandex.net/get-yapic/31078/sBNyzOgOqMKmDOWbBznHb1gpk8-1/{size}",
+                    "professionLevel": "Знаток города 30 уровня",
+                    "publicId": "g9z6fa1g78hdwqv8e0q9tq3hkm",
+                    "achievements": [],
+                    "professions": [],
+                    "isSubscribed": false
+                },
+                "text": "И храм, и бизнес\n\nВ 1870-е годы на улице Екатерининской, 116 уже находился деревянный молельный дом еврейской общины. В 1912 году Городской Управой был рассмотрен и одобрен проект на постройку, взамен деревянного, каменного здания синагоги. Один из вариантов проекта составлен чертежно-строительным бюро В.Е. Гладких, другой проект, соответствующий построенному зданию, не подписан. Здание синагоги двухэтажное, вытянуто вглубь участка. Главный фасад состоит из двух частей: основной, имеющей в свою очередь трехчастное деление – центр со щипцом и два фланкирующих ризалита, и пониженного объема с лестничной клеткой, расположенного в восточной части фасада. Купола, когда-то венчавшие ризалиты, утрачены. При внешней простоте, здание производит впечатление строгой торжественности. В ноябре 1929 года синагога была закрыта, а здание передано Пермскому Театру Рабочей Молодёжи. Позже здесь размещались различные организации, такие как Энергосбыт, Пермский научный центр УрО АН СССР и др. В 1993 г. здание возвращено верующим. Правда, часть помещений сдается в аренду коммерческим организациям.\nПередний фасад синагоги неплохо отремонтирован, всё прилично, но со двора здание выглядит удручающе. Если не знать, что это религиозное сооружение, можно подумать, что это какой-то полузаброшенный склад.\nНехорошо это, не по-божески...",
+                "textLanguage": "unknown",
+                "textTranslations": {},
+                "rating": 3,
+                "updatedTime": "2022-01-23T18:22:48.943Z",
+                "reactions": {
+                    "likes": 11,
+                    "dislikes": 7,
+                    "userReaction": "NONE"
+                },
+                "photos": [
+                    {
+                        "type": "photo",
+                        "id": "wKafTnBxeI4M1i8MKhev-fh3k6grGKvl",
+                        "businessId": "1036547361",
+                        "urlTemplate": "https://avatars.mds.yandex.net/get-altay/5503221/2a0000017e882d028305c12fc462e503f1be/{size}",
+                        "createdTime": 1642962159834,
+                        "moderation": {
+                            "status": "ACCEPTED"
+                        },
+                        "showReactions": true,
+                        "reactions": {
+                            "likes": 0,
+                            "dislikes": 0,
+                            "userReaction": "NONE"
+                        },
+                        "copyright": {
+                            "name": "Михаил Мясников",
+                            "publicId": "g9z6fa1g78hdwqv8e0q9tq3hkm",
+                            "imageUrlTemplate": "https://avatars.mds.yandex.net/get-yapic/31078/sBNyzOgOqMKmDOWbBznHb1gpk8-1/{size}",
+                            "updateTime": 1642962159834,
+                            "hasPublicProfile": true,
+                            "isSubscribed": false
+                        }
+                    }
+                ],
+                "videos": []
+            },
+            {
+                "reviewId": "pHFKROZzNqM1lAlPFZqc0FCpZyS_D67WN",
+                "businessId": "1036547361",
+                "author": {
+                    "name": "PyckuuHuk",
+                    "avatarUrl": "https://avatars.mds.yandex.net/get-yapic/68143/A9PVNbZSuI0CEJPWdpDOEmbfqo-1/{size}",
+                    "professionLevel": "Знаток города 30 уровня",
+                    "publicId": "pyckuuhuk1",
+                    "achievements": [],
+                    "professions": [],
+                    "isSubscribed": false
+                },
+                "text": "Красивое помещение",
+                "textLanguage": "ru",
+                "textTranslations": {},
+                "rating": 5,
+                "updatedTime": "2024-07-15T08:21:39.666Z",
+                "reactions": {
+                    "likes": 0,
+                    "dislikes": 0,
+                    "userReaction": "NONE"
+                },
+                "photos": [],
+                "videos": []
+            },
+            {
+                "reviewId": "ik5CcR7xr33VAPlZfNGDSRSaXz6dFHgR_",
+                "businessId": "1036547361",
+                "author": {
+                    "name": "Дарья Ф.",
+                    "avatarUrl": "https://avatars.mds.yandex.net/get-yapic/40841/0k-6/{size}",
+                    "professionLevel": "Знаток города 7 уровня",
+                    "publicId": "jw8nf5gybqa2nfty6bhdty2568",
+                    "achievements": [],
+                    "professions": [],
+                    "isSubscribed": false
+                },
+                "text": "доброе местоь",
+                "textLanguage": "ru",
+                "textTranslations": {},
+                "rating": 5,
+                "updatedTime": "2024-07-30T08:46:15.669Z",
+                "reactions": {
+                    "likes": 0,
+                    "dislikes": 0,
+                    "userReaction": "NONE"
+                },
+                "photos": [],
+                "videos": []
+            },
+            {
+                "reviewId": "SL2wZIhD63B8UDT0oUwghyOrC426cie",
+                "businessId": "1036547361",
+                "author": {
+                    "name": "Оксана Харченко",
+                    "avatarUrl": "https://avatars.mds.yandex.net/get-yapic/25817/0m-4/{size}",
+                    "professionLevel": "Знаток города 4 уровня",
+                    "publicId": "bwymcpqhr3urewnkkhrj4z1p10",
+                    "achievements": [],
+                    "professions": [],
+                    "isSubscribed": false
+                },
+                "text": "Красиво.",
+                "textLanguage": "ru",
+                "textTranslations": {},
+                "rating": 5,
+                "updatedTime": "2024-10-02T05:33:18.333Z",
+                "reactions": {
+                    "likes": 0,
+                    "dislikes": 0,
+                    "userReaction": "NONE"
+                },
+                "photos": [],
+                "videos": []
+            },
+            {
+                "reviewId": "xX7i7s5zZ7bQ-MTuzB6C1PfiR0cAZUq",
+                "businessId": "1036547361",
+                "author": {
+                    "name": "Андрей Яковченко",
+                    "avatarUrl": "https://avatars.mds.yandex.net/get-yapic/53031/0c-3/{size}",
+                    "professionLevel": "Знаток города 4 уровня",
+                    "publicId": "rkjnjxvyk8xdqmy3yqrfh2g4j4",
+                    "achievements": [],
+                    "professions": [],
+                    "isSubscribed": false
+                },
+                "text": "молиться классно ",
+                "textLanguage": "ru",
+                "textTranslations": {},
+                "rating": 5,
+                "updatedTime": "2023-11-18T07:42:57.957Z",
+                "reactions": {
+                    "likes": 2,
+                    "dislikes": 1,
+                    "userReaction": "NONE"
+                },
+                "photos": [],
+                "videos": []
+            },
+            {
+                "reviewId": "S0t4h49TYcaNseTXHt-G36ADitDNx8aTu",
+                "businessId": "1036547361",
+                "author": {
+                    "name": "no n.",
+                    "avatarUrl": "",
+                    "professionLevel": "Знаток города 3 уровня",
+                    "publicId": "kkdu0a9e4fhen88h1cenrhmr44",
+                    "achievements": [],
+                    "professions": [],
+                    "isSubscribed": false
+                },
+                "text": "Синагога  \nШикарная. И отличная",
+                "textLanguage": "unknown",
+                "textTranslations": {},
+                "rating": 5,
+                "updatedTime": "2020-07-17T11:31:37.092Z",
+                "reactions": {
+                    "likes": 6,
+                    "dislikes": 5,
+                    "userReaction": "NONE"
+                },
+                "photos": [],
+                "videos": []
+            }
+        ],
+        "params": {
+            "offset": 0,
+            "limit": 50,
+            "count": 11,
+            "loadedReviewsCount": 11,
+            "page": 1,
+            "totalPages": 1,
+            "reviewsRemained": 0
+        },
+        "tags": [],
+        "aspects": []
+    }
+}

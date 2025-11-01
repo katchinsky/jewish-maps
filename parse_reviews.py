@@ -163,6 +163,212 @@ class YandexMapsParser(ReviewParser):
         return review
 
 
+class YandexMapsJSONParser:
+    """Parser for Yandex Maps JSON files (.json format)."""
+    
+    def __init__(self, json_content, filename):
+        self.json_content = json_content
+        self.filename = filename
+        self.reviews = []
+    
+    def parse(self):
+        """Parse Yandex Maps reviews from JSON."""
+        try:
+            data = json.loads(self.json_content)
+            location = self.extract_location_from_filename()
+            
+            # Extract reviews from data.reviews array
+            reviews_data = data.get('data', {}).get('reviews', [])
+            
+            print(f"Found {len(reviews_data)} reviews in {self.filename}")
+            
+            for review_data in reviews_data:
+                # Extract basic review info
+                review = {
+                    'location': location,
+                    'username': review_data.get('author', {}).get('name', ''),
+                    'date': self.parse_yandex_date(review_data.get('updatedTime', '')),
+                    'rating': str(review_data.get('rating', '')),
+                    'text': review_data.get('text', ''),
+                    'text_en': self.extract_english_translation(review_data),
+                    'business_response': self.extract_business_response(review_data),
+                    'source': 'Yandex Maps (JSON)',
+                    'filename': self.filename
+                }
+                
+                # Only add if we have actual review text
+                if review['text'] and len(review['text']) > 5:
+                    self.reviews.append(review)
+            
+            return self.reviews
+            
+        except Exception as e:
+            print(f"  ✗ Error parsing Yandex JSON: {e}")
+            return []
+    
+    def parse_yandex_date(self, date_str):
+        """Parse Yandex date format (ISO 8601) to YYYY-MM-DD."""
+        if not date_str:
+            return ''
+        try:
+            # Parse ISO 8601 format like "2024-08-17T08:40:18.174Z"
+            dt = datetime.fromisoformat(date_str.replace('Z', '+00:00'))
+            return dt.strftime('%Y-%m-%d')
+        except:
+            return date_str
+    
+    def extract_english_translation(self, review_data):
+        """Extract English translation if available."""
+        translations = review_data.get('textTranslations', {})
+        # Check for English translation
+        if 'en' in translations:
+            return translations['en']
+        # If no English, return empty (we could also return other languages if needed)
+        return ''
+    
+    def extract_business_response(self, review_data):
+        """Extract business response/comment if available."""
+        business_comment = review_data.get('businessComment', {})
+        if business_comment:
+            return business_comment.get('text', '')
+        return ''
+    
+    def extract_location_from_filename(self):
+        """Extract location from filename."""
+        name = self.filename.replace('.json', '').replace('.txt', '').replace('.html', '')
+        name = re.sub(r'^(yandex|google|2gis)-', '', name, flags=re.IGNORECASE)
+        
+        location_map = {
+            'khabar': 'Ор Авнер Хабад',
+            'synagogue': 'Центральная Пермская синагога',
+            'sinagogue': 'Центральная Пермская синагога',
+            'cdek': 'CDEK',
+            'twins': 'Twins',
+            'poke': 'ПокеРамен',
+            'ryumochnaya': 'Рюмочная Парадная',
+        }
+        
+        for key, value in location_map.items():
+            if key in name.lower():
+                return value
+        
+        if name and name != 'Unknown Location':
+            return name.replace('-', ' ').replace('_', ' ').title()
+        
+        return 'Unknown Location'
+
+
+class GoogleMapsJSONParser:
+    """Parser for Google Maps JSON files (.txt format)."""
+    
+    def __init__(self, json_content, filename):
+        self.json_content = json_content
+        self.filename = filename
+        self.reviews = []
+    
+    def parse(self):
+        """Parse Google Maps reviews from JSON."""
+        try:
+            # Remove the )]}' prefix if present
+            content = self.json_content
+            if content.startswith(")]}'"):
+                content = content[4:]
+            
+            data = json.loads(content)
+            location = self.extract_location_from_filename()
+            
+            # Recursively find reviews in the JSON structure
+            reviews_found = []
+            self.find_reviews(data, reviews_found)
+            
+            print(f"Found {len(reviews_found)} reviews in {self.filename}")
+            
+            seen_reviews = set()
+            for review_pair in reviews_found:
+                russian_text = review_pair.get('russian', '')
+                english_text = review_pair.get('english', '')
+                
+                if russian_text and len(russian_text) > 5:
+                    review_key = russian_text
+                    if review_key not in seen_reviews:
+                        review_data = {
+                            'location': location,
+                            'username': '',  # Not available in JSON format
+                            'date': '',  # Not available in JSON format
+                            'rating': '',  # Not available in JSON format
+                            'text': russian_text,
+                            'text_en': english_text,  # English translation
+                            'source': 'Google Maps (JSON)',
+                            'filename': self.filename
+                        }
+                        self.reviews.append(review_data)
+                        seen_reviews.add(review_key)
+            
+            return self.reviews
+            
+        except Exception as e:
+            print(f"  ✗ Error parsing JSON: {e}")
+            return []
+    
+    def find_reviews(self, obj, reviews):
+        """Recursively find review texts in JSON structure."""
+        if isinstance(obj, dict):
+            for value in obj.values():
+                self.find_reviews(value, reviews)
+        elif isinstance(obj, list):
+            # Check if this looks like a review array with bilingual text
+            if (len(obj) == 2 and isinstance(obj[0], list) and isinstance(obj[1], list)):
+                # Pattern: [["Russian text", null, [0, 151]], ["English text", null, [0, 156]]]
+                if (len(obj[0]) >= 1 and isinstance(obj[0][0], str) and 
+                    len(obj[1]) >= 1 and isinstance(obj[1][0], str)):
+                    text_0 = obj[0][0]
+                    text_1 = obj[1][0]
+                    
+                    # Determine which is Russian and which is English
+                    if re.search(r'[а-яА-ЯёЁ]', text_0):
+                        # text_0 is Russian, text_1 is English
+                        reviews.append({
+                            'russian': text_0,
+                            'english': text_1
+                        })
+                        return  # Found a review, don't recurse further
+                    elif re.search(r'[а-яА-ЯёЁ]', text_1):
+                        # text_1 is Russian, text_0 is English
+                        reviews.append({
+                            'russian': text_1,
+                            'english': text_0
+                        })
+                        return  # Found a review, don't recurse further
+            
+            # Continue recursing
+            for item in obj:
+                self.find_reviews(item, reviews)
+    
+    def extract_location_from_filename(self):
+        """Extract location from filename."""
+        name = self.filename.replace('.txt', '').replace('.html', '')
+        name = re.sub(r'^(yandex|google|2gis)-', '', name, flags=re.IGNORECASE)
+        
+        location_map = {
+            'khabar': 'Khabar Lyubavich Or Avner',
+            'synagogue': 'Tsentral\'naya Permskaya Sinagoga',
+            'sinagogue': 'Tsentral\'naya Permskaya Sinagoga',
+            'cdek': 'CDEK',
+            'twins': 'Twins',
+            'poke': 'PokeRamen',
+            'ryumochnaya': 'Ryumochnaya "Paradnaya"',
+        }
+        
+        for key, value in location_map.items():
+            if key in name.lower():
+                return value
+        
+        if name and name != 'Unknown Location':
+            return name.replace('-', ' ').replace('_', ' ').title()
+        
+        return 'Unknown Location'
+
+
 class GoogleMapsParser(ReviewParser):
     """Parser for Google Maps HTML files."""
     
@@ -479,23 +685,33 @@ class TwoGISParser(ReviewParser):
         return date_str
 
 
-def get_parser(filename, html_content):
-    """Factory function to get appropriate parser based on filename."""
+def get_parser(filename, content):
+    """Factory function to get appropriate parser based on filename and content."""
     filename_lower = filename.lower()
     
+    # Check for JSON files first
+    if filename.endswith('.json'):
+        if 'yandex' in filename_lower or 'яндекс' in filename_lower:
+            return YandexMapsJSONParser(content, filename)
+    
+    # Check for TXT files (Google Maps JSON format)
+    if filename.endswith('.txt') and 'google' in filename_lower:
+        return GoogleMapsJSONParser(content, filename)
+    
+    # HTML parsers
     if 'yandex' in filename_lower or 'яндекс' in filename_lower:
-        return YandexMapsParser(html_content, filename)
+        return YandexMapsParser(content, filename)
     elif 'google' in filename_lower:
-        return GoogleMapsParser(html_content, filename)
+        return GoogleMapsParser(content, filename)
     elif '2gis' in filename_lower or '2гис' in filename_lower:
-        return TwoGISParser(html_content, filename)
+        return TwoGISParser(content, filename)
     else:
         # Default to Yandex parser
-        return YandexMapsParser(html_content, filename)
+        return YandexMapsParser(content, filename)
 
 
 def parse_all_html_files(data_dir='data'):
-    """Parse all HTML files in the data directory."""
+    """Parse all HTML, TXT, and JSON files in the data directory."""
     all_reviews = []
     data_path = Path(data_dir)
     
@@ -503,30 +719,34 @@ def parse_all_html_files(data_dir='data'):
         print(f"Error: Directory '{data_dir}' not found")
         return all_reviews
     
+    # Find HTML, TXT, and JSON files
     html_files = list(data_path.glob('*.html'))
+    txt_files = list(data_path.glob('*.txt'))
+    json_files = list(data_path.glob('*.json'))
+    all_files = html_files + txt_files + json_files
     
-    if not html_files:
-        print(f"No HTML files found in '{data_dir}'")
+    if not all_files:
+        print(f"No HTML, TXT, or JSON files found in '{data_dir}'")
         return all_reviews
     
-    print(f"\nProcessing {len(html_files)} HTML files...")
+    print(f"\nProcessing {len(all_files)} files ({len(html_files)} HTML, {len(txt_files)} TXT, {len(json_files)} JSON)...")
     print("=" * 60)
     
-    for html_file in html_files:
-        print(f"\nProcessing: {html_file.name}")
+    for file_path in all_files:
+        print(f"\nProcessing: {file_path.name}")
         
         try:
-            with open(html_file, 'r', encoding='utf-8') as f:
-                html_content = f.read()
+            with open(file_path, 'r', encoding='utf-8') as f:
+                content = f.read()
             
-            parser = get_parser(html_file.name, html_content)
+            parser = get_parser(file_path.name, content)
             reviews = parser.parse()
             
             print(f"  ✓ Extracted {len(reviews)} reviews")
             all_reviews.extend(reviews)
             
         except Exception as e:
-            print(f"  ✗ Error processing {html_file.name}: {e}")
+            print(f"  ✗ Error processing {file_path.name}: {e}")
     
     print("\n" + "=" * 60)
     print(f"Total reviews extracted: {len(all_reviews)}")
@@ -547,6 +767,8 @@ def save_to_csv(reviews, output_file='reviews.csv'):
         'date',
         'rating',
         'text',
+        'text_en',  # English translation (for JSON sources)
+        'business_response',  # Business reply to review (for Yandex JSON)
         'source',
         'filename'
     ]

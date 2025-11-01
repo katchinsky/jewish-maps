@@ -1,0 +1,1298 @@
+{
+    "data": {
+        "reviews": [
+            {
+                "reviewId": "YRem-goK0_VI9a98dkXdtc_EFou1oHm9",
+                "businessId": "132483750040",
+                "author": {
+                    "name": "Сергей Романов",
+                    "avatarUrl": "https://avatars.mds.yandex.net/get-yapic/61207/fDcklXkAeR8QbbIWdhoBBqGbDA-1/{size}",
+                    "professionLevel": "Знаток города 3 уровня",
+                    "publicId": "m1gt2vnqhp7q58vkge07nkh1bc",
+                    "achievements": [],
+                    "professions": [],
+                    "isSubscribed": false
+                },
+                "text": "Отправил посылку с оплатой при получении. Не спрашивают каким способом отправить обычной или экспресс ( всегда по умолчанию обычной) Отправили зачем-то экспресс, размеры посылки указали не верные, вес вместо 120гр написали 850 по итогу вместо 580₽ обошлось 1100+\nСлужба поддержки отвратительно работает. На заданные вопросы просто игнорируют. ",
+                "textLanguage": "ru",
+                "textTranslations": {},
+                "rating": 2,
+                "updatedTime": "2024-08-17T08:40:18.174Z",
+                "reactions": {
+                    "likes": 1,
+                    "dislikes": 5,
+                    "userReaction": "NONE"
+                },
+                "photos": [],
+                "videos": []
+            },
+            {
+                "reviewId": "vWNXin3xdGcMTpicYrpi0_mnM85lUuF",
+                "businessId": "132483750040",
+                "author": {
+                    "name": "Кристина Снигирёва",
+                    "avatarUrl": "https://avatars.mds.yandex.net/get-yapic/21493/enc-36828b28c43a8c2ba3263d9f897958b9c42f3e12a3c68f869868cd890639d18f/{size}",
+                    "professionLevel": "Знаток города 6 уровня",
+                    "publicId": "903uqgfp7pvg3vwre2zpyjzzb4",
+                    "achievements": [],
+                    "professions": [],
+                    "isSubscribed": false
+                },
+                "text": "Сама компания работает хорошо, но персонал сильно подводит...на просьбы помочь, или повторить что то, все воспринимается в штыки и на повышенных тонах...отправляла этой компанией первый раз, и в следующий раз воспользуюсь или другим пунктом или другой организацией....при оформлении курьерской из другого города, в этот пункт, зачем то отправили в закамск, хотя курьерскую заказывала в этот пункт...странное отношение какое то. Не рекомендую",
+                "textLanguage": "ru",
+                "textTranslations": {
+                    "tr": "Şirketin kendisi iyi çalışıyor, ancak personel çok hayal kırıklığına uğruyor...Yardım etme veya bir şeyi tekrarlama istekleri üzerine, her şey süngülerle ve yüksek tonlarda algılanır...Bu şirket tarafından ilk kez gönderildim ve bir dahaki sefere başka bir öğeyi veya başka bir kuruluşu kullanacağım....Başka bir şehirden, bu noktaya bir kurye siparişi verirken, bu noktaya bir kurye siparişi vermesine rağmen, nedense Zakamsk'a gönderildiler...garip bir tavır var. Tavsiye etmiyorum"
+                },
+                "rating": 1,
+                "updatedTime": "2025-01-20T12:57:03.846Z",
+                "reactions": {
+                    "likes": 1,
+                    "dislikes": 1,
+                    "userReaction": "NONE"
+                },
+                "photos": [],
+                "videos": []
+            },
+            {
+                "reviewId": "xlmaRU5BAEEbnHQkA5hIWJ9b4Rb8okp",
+                "businessId": "132483750040",
+                "author": {
+                    "name": "Территория чая и кофе Т.",
+                    "avatarUrl": "https://avatars.mds.yandex.net/get-yapic/15298/enc-fe2d562f1dd2ecd7ace9f94aca51017b6921565d1345654ca3a68566b1871d7a/{size}",
+                    "professionLevel": "Знаток города 9 уровня",
+                    "publicId": "09xk3909aq3ghzjj5ucthffuym",
+                    "achievements": [],
+                    "professions": [],
+                    "isSubscribed": false
+                },
+                "text": "Отличный пункт выдачи! Девочки операторы всегда готовы помочь с любым вопросом! В пункте всегда чисто и уютно!",
+                "textLanguage": "ru",
+                "textTranslations": {
+                    "tr": "Mükemmel teslim noktası! Kız operatörleri her soruda her zaman yardım etmeye hazırdır! Nokta her zaman temiz ve rahattır!"
+                },
+                "rating": 5,
+                "updatedTime": "2025-02-17T07:20:31.269Z",
+                "reactions": {
+                    "likes": 2,
+                    "dislikes": 0,
+                    "userReaction": "NONE"
+                },
+                "photos": [],
+                "videos": []
+            },
+            {
+                "reviewId": "sSL6X4W6gKTvvCTfZTxwCcac0WbMuXi3u",
+                "businessId": "132483750040",
+                "author": {
+                    "name": "Анна Л.",
+                    "avatarUrl": "https://avatars.mds.yandex.net/get-yapic/30061/N25vlwB6JhiY3fkAUccrZ0EnwgQ-1/{size}",
+                    "professionLevel": "Знаток города 3 уровня",
+                    "publicId": "2dydp50xg0u7kubchahxj4av88",
+                    "achievements": [],
+                    "professions": [],
+                    "isSubscribed": false
+                },
+                "text": "Самый лучший пункт выдачи СДЭК в Перми! Грамотный и доброжелательный персонал. В пункте чисто и красиво.\nЖивые цветы создают уютную атмосферу",
+                "textLanguage": "ru",
+                "textTranslations": {
+                    "tr": "Permiyen'deki en iyi SDEK düzenleme noktası! Yetkin ve güler yüzlü personel. Nokta temiz ve güzel.\nTaze çiçekler rahat bir atmosfer yaratır"
+                },
+                "rating": 5,
+                "updatedTime": "2025-10-15T10:07:33.398Z",
+                "reactions": {
+                    "likes": 0,
+                    "dislikes": 0,
+                    "userReaction": "NONE"
+                },
+                "photos": [],
+                "videos": []
+            },
+            {
+                "reviewId": "JjRtiDi-ZGe0D24p9AzYSdnvXSVyx1CQ",
+                "businessId": "132483750040",
+                "author": {
+                    "name": "Евгений Ж.",
+                    "avatarUrl": "https://avatars.mds.yandex.net/get-yapic/59871/0y-5/{size}",
+                    "professionLevel": "Знаток города 5 уровня",
+                    "publicId": "fb277ya26xu25619y5d0h7kqc8",
+                    "achievements": [],
+                    "professions": [],
+                    "isSubscribed": false
+                },
+                "text": "Нарушение всех возможных сроков! Принимают отправления к международной пересылки от компании СДЭК-шоппинг, при этом не требуют полный пакет документов, в итоге посылку тормозит таможня. Жду её два месяца, никто отвечать не хочет. Перевозчик(СДЭК) валит всё на отправителя, а отправитель(СДЭК-шоппинг) ссылается на то, что в «договоре» нет никаких точных сроков)))",
+                "textLanguage": "ru",
+                "textTranslations": {},
+                "rating": 1,
+                "updatedTime": "2023-12-10T04:58:28.223Z",
+                "reactions": {
+                    "likes": 0,
+                    "dislikes": 6,
+                    "userReaction": "NONE"
+                },
+                "photos": [],
+                "videos": []
+            },
+            {
+                "reviewId": "2qn1eAjyYw3TrY_V0vfBRxEvbmTd4t4NO",
+                "businessId": "132483750040",
+                "author": {
+                    "name": "Татьяна Кусякова",
+                    "avatarUrl": "https://avatars.mds.yandex.net/get-yapic/57243/0g-5/{size}",
+                    "professionLevel": "Знаток города 3 уровня",
+                    "publicId": "p4qn4wqhzdk1zmpbgp2cf9rvf8",
+                    "achievements": [],
+                    "professions": [],
+                    "isSubscribed": false
+                },
+                "text": " Отличная альтернатива Почте России. Доставка в обещанные сроки. Достаточный ассортимент упаковки.  Простая процедура получения рядом с домом за 2 минуты без очередей и заполнения всяких бумажек. . С Почтой России, где вечные очереди и заморочки, не сравнишь.  Персонала не хватает,  объединяют несколько услуг в одном окне... Тут и квартплата, и оплата наложенного платежа.  Вечные перепалки между клиентами. Работаю до 18-00. Почта до 20-00. На почте шансов что-то получить или отправить в рабочие дни- почти никаких.  В СДЭК  трачу минуты в удобное время.",
+                "textLanguage": "unknown",
+                "textTranslations": {},
+                "rating": 5,
+                "updatedTime": "2022-02-03T12:09:15.892Z",
+                "reactions": {
+                    "likes": 4,
+                    "dislikes": 5,
+                    "userReaction": "NONE"
+                },
+                "photos": [],
+                "videos": []
+            },
+            {
+                "businessComment": {
+                    "text": "Добрый день!\nБлагодарим вас за высокую оценку нашей работы!\nМы стараемся сделать вход в офис максимально узнаваемым, чтобы клиентам было удобно нас найти. Устанавливаем бело-зелёные вывески с нашим логотипом на помещении и внутри, при входе в офис. \nТак же на нашем сайте (https://www.cdek.ru/ru/offices/view/prm140/) есть возможность построить маршрут до офиса или связаться с менеджерами, чтобы они помогли вам сориентироваться.\nНадеемся на ваше понимание и ждём вас снова💚",
+                    "updatedTime": "2025-07-01T10:45:54.725Z"
+                },
+                "reviewId": "NPiO75tIWN092VzunNOyOZAc2nzv0ghTB",
+                "businessId": "132483750040",
+                "author": {
+                    "name": "Андрей Цветков",
+                    "avatarUrl": "https://avatars.mds.yandex.net/get-yapic/37154/UdAfAeSzim71L4CkKBQLVRfps-1/{size}",
+                    "professionLevel": "Знаток города 30 уровня",
+                    "publicId": "kncpcrqbe6uau7kpwqhqfpez1c",
+                    "achievements": [],
+                    "professions": [],
+                    "isSubscribed": false
+                },
+                "text": "Единственный недостаток этого ПВЗ - расположен внутри синагоги. Поэтому не сразу понимаешь, куда тебе. А так - работают вежливо и аккуратно. Перегрузки по числу посетителей я ни одного раза из трёх визитов не заметил.",
+                "textLanguage": "ru",
+                "textTranslations": {
+                    "tr": "Bu PVZ'NİN tek dezavantajı sinagogun içinde yer almasıdır. Bu yüzden nereye gittiğini hemen anlamıyorsun. Ve böylece - kibarca ve özenle çalışırlar. Üç ziyaretten hiçbirinde ziyaretçi sayısında aşırı yük olduğunu fark etmedim."
+                },
+                "rating": 5,
+                "updatedTime": "2025-06-30T09:37:01.760Z",
+                "reactions": {
+                    "likes": 1,
+                    "dislikes": 0,
+                    "userReaction": "NONE"
+                },
+                "photos": [],
+                "videos": []
+            },
+            {
+                "reviewId": "ftHvNf1Qhbx6HXX3r0UIBZV9tafzGU--M",
+                "businessId": "132483750040",
+                "author": {
+                    "name": "BeKinD",
+                    "avatarUrl": "https://avatars.mds.yandex.net/get-yapic/40841/0f-2/{size}",
+                    "professionLevel": "Знаток города 12 уровня",
+                    "publicId": "k4086p3kfzr8c25qn14fyj5tkg",
+                    "achievements": [],
+                    "professions": [],
+                    "isSubscribed": false
+                },
+                "text": "Перед оформлением доставки было все рассчитано по дням, сколько будет идти чтоб все пришло во время. Пришло уведомление ,что придет до 29го. Все устраивает, но настал день когда до 29го не пришло, до 29го это значит максимум 28го. Очень расстроило.",
+                "textLanguage": "ru",
+                "textTranslations": {
+                    "tr": "Teslimatı yapmadan önce, her şey günlere göre hesaplandı, her şeyin zamanında gelmesi için ne kadar gidecekti. 29'dan önce geleceğine dair bir bildirim geldi. Her şey yolunda, ama 29'una kadar gelmediği gün geldi, 29'una kadar bu maksimum 28'inci anlamına geliyor. Çok üzüldüm."
+                },
+                "rating": 4,
+                "updatedTime": "2025-03-31T14:35:06.995Z",
+                "reactions": {
+                    "likes": 1,
+                    "dislikes": 0,
+                    "userReaction": "NONE"
+                },
+                "photos": [],
+                "videos": []
+            },
+            {
+                "reviewId": "hCjagxluq39dVWBZy3yAQSpUk_5Ud3D",
+                "businessId": "132483750040",
+                "author": {
+                    "name": "Исломбек Д.",
+                    "avatarUrl": "https://avatars.mds.yandex.net/get-yapic/27503/0h-8/{size}",
+                    "professionLevel": "Знаток города 8 уровня",
+                    "publicId": "814445y1eppahfyyctn8pf7yd8",
+                    "achievements": [],
+                    "professions": [],
+                    "isSubscribed": false
+                },
+                "text": "Пришел в это место ! Остался крайне не доволен работой сотрудников , хотел отправить посылку в два города , при отправке возникли трудности, поясню : я никогда раньше не направлял этой организацией посылки , на мою просьбу помочь выбрать подходящую коробку и  сложить аккуратно , специалист была крайне недовольно моей просьбой а так же параллельно  со мной она общалась с людьми которые находятся на складе .показалось что она не на работе а  у себя дома и я ее отвлек от беседы с подружками на кухне . Мне было не приятно такое отношение. Не советую вообще приходить в это отделение , если не хотите испортить себе настроение и понервничать лишний раз.",
+                "textLanguage": "ru",
+                "textTranslations": {},
+                "rating": 1,
+                "updatedTime": "2023-02-24T15:23:38.791Z",
+                "reactions": {
+                    "likes": 6,
+                    "dislikes": 5,
+                    "userReaction": "NONE"
+                },
+                "photos": [],
+                "videos": []
+            },
+            {
+                "reviewId": "ZnTqWvcyJt0fOscAe7SLIzMzVqMDiNT",
+                "businessId": "132483750040",
+                "author": {
+                    "name": "Alexandra E.",
+                    "avatarUrl": "https://avatars.mds.yandex.net/get-yapic/59871/0u-8/{size}",
+                    "professionLevel": "Знаток города 2 уровня",
+                    "publicId": "p73j0dcpxz1q7q1bhfr0qefarg",
+                    "achievements": [],
+                    "professions": [],
+                    "isSubscribed": false
+                },
+                "text": "Отличный пункт выдачи. Удобно расположен. Очень приветливый и приятный персонал.",
+                "textLanguage": "ru",
+                "textTranslations": {
+                    "tr": "Mükemmel teslim noktası. Elverişli bir konuma sahiptir. Çok cana yakın ve hoş personel."
+                },
+                "rating": 5,
+                "updatedTime": "2025-02-18T08:28:42.436Z",
+                "reactions": {
+                    "likes": 1,
+                    "dislikes": 0,
+                    "userReaction": "NONE"
+                },
+                "photos": [],
+                "videos": []
+            },
+            {
+                "reviewId": "yoMdc2GfJ20ELx3JvaENIwlOs99jUGnr",
+                "businessId": "132483750040",
+                "author": {
+                    "name": "Ice Bear",
+                    "avatarUrl": "https://avatars.mds.yandex.net/get-yapic/51381/CxS0VJQ2Xy9FlBWGXrZRD8nevE0-1/{size}",
+                    "professionLevel": "Знаток города 10 уровня",
+                    "publicId": "nf46bv2ehkrvtzu138z5x3bxb8",
+                    "achievements": [],
+                    "professions": [],
+                    "isSubscribed": false
+                },
+                "text": "Вежливый персонал, всё объясняют, дают время на проверку груза, очередей практически нет. Местоположение очень удобное. Отличный пункт выдачи!",
+                "textLanguage": "unknown",
+                "textTranslations": {},
+                "rating": 5,
+                "updatedTime": "2022-11-07T10:02:53.405Z",
+                "reactions": {
+                    "likes": 4,
+                    "dislikes": 4,
+                    "userReaction": "NONE"
+                },
+                "photos": [],
+                "videos": []
+            },
+            {
+                "reviewId": "VpHvSuQcskN1g_TvomewdsrrT4zVE-",
+                "businessId": "132483750040",
+                "author": {
+                    "name": "Елизавета Челпанова",
+                    "avatarUrl": "https://avatars.mds.yandex.net/get-yapic/57243/0s-6/{size}",
+                    "professionLevel": "Знаток города 3 уровня",
+                    "publicId": "1c4k4m42hxyanytxfa72rp3cc4",
+                    "achievements": [],
+                    "professions": [],
+                    "isSubscribed": false
+                },
+                "text": "Прекрасные сотрудники, атмосфера чудесная, все четко и бысто делают. ",
+                "textLanguage": "ru",
+                "textTranslations": {
+                    "tr": "Harika çalışanlar, atmosfer harika, her şeyi net ve hızlı bir şekilde yapıyorlar. "
+                },
+                "rating": 5,
+                "updatedTime": "2025-02-22T11:20:38.659Z",
+                "reactions": {
+                    "likes": 1,
+                    "dislikes": 0,
+                    "userReaction": "NONE"
+                },
+                "photos": [],
+                "videos": []
+            },
+            {
+                "businessComment": {
+                    "text": "Добрый день!\n\nОбеспокоены тем, что вам отказали в оплате картой. Видим в системе, что терминал в офисе есть. \n\nЧтобы мы смогли все проверить и выяснить, почему вам предоставили неверную информацию, напишите, пожалуйста, нам на zakaz@cdek.ru или в личку VK (https://vk.me/cdek_express) дату и время визита. В теме письма укажите \"Яндекс\" и к письму/сообщению прикрепите скриншот отзыва.",
+                    "updatedTime": "2025-10-30T16:28:05.672Z"
+                },
+                "reviewId": "Zpwq5RvaGbuwApTgIiqmTbrJ3M4BsZ1dF",
+                "businessId": "132483750040",
+                "author": {
+                    "name": "Nikola Sha",
+                    "avatarUrl": "https://avatars.mds.yandex.net/get-yapic/50071/nyzGwbWN69pBwNu8hsZl544brro-1/{size}",
+                    "professionLevel": "Знаток города 9 уровня",
+                    "publicId": "ywqe8w50h2468vpv77xhd5jjf8",
+                    "achievements": [],
+                    "professions": [],
+                    "isSubscribed": false
+                },
+                "text": "Нет терминала! В наши дни это уже не нормально и доставляет дискомфорт. ",
+                "textLanguage": "ru",
+                "textTranslations": {
+                    "tr": "Terminal yok! Bu günlerde artık normal değil ve rahatsız edici. "
+                },
+                "rating": 3,
+                "updatedTime": "2025-10-23T16:18:59.260Z",
+                "reactions": {
+                    "likes": 0,
+                    "dislikes": 0,
+                    "userReaction": "NONE"
+                },
+                "photos": [],
+                "videos": []
+            },
+            {
+                "reviewId": "LdBBX1B48apGJuQ1mTGvTodUMGmeu5",
+                "businessId": "132483750040",
+                "author": {
+                    "name": "Natalia",
+                    "avatarUrl": "https://avatars.mds.yandex.net/get-yapic/47747/iQRSlQHNZWPGh1uOn2MBW7gkGd0-1/{size}",
+                    "professionLevel": "Знаток города 7 уровня",
+                    "publicId": "9r2beqgn4maqa33e0m9wgqhd0r",
+                    "achievements": [],
+                    "professions": [],
+                    "isSubscribed": false
+                },
+                "text": "Пользовалась доставкой часто и вроде бы все было нормально. Один случай полностью перечеркнул доверие к данной службе доставки. Вскрыта коробка и украдена часть товара. Несмотря на то что раскрыла на месте, что акт составили, СДЕК полностью проигнорировал это, деньги мне не вернули . Теперь  всегда перед оплатой открываю и проверяю наличие товара",
+                "textLanguage": "ru",
+                "textTranslations": {},
+                "rating": 2,
+                "updatedTime": "2023-01-06T14:50:58.611Z",
+                "reactions": {
+                    "likes": 3,
+                    "dislikes": 3,
+                    "userReaction": "NONE"
+                },
+                "photos": [],
+                "videos": []
+            },
+            {
+                "reviewId": "6YC_q0t1vEnl1AQvCFNJWAtBzv1-tP",
+                "businessId": "132483750040",
+                "author": {
+                    "name": "Иван Никитин",
+                    "avatarUrl": "https://avatars.mds.yandex.net/get-yapic/36689/sdI1WcuWsYbZLRj75SqFCAjoEE-1/{size}",
+                    "professionLevel": "Знаток города 13 уровня",
+                    "publicId": "gkaqqd6gkmvzkbgk0yhqvjmqa0",
+                    "achievements": [],
+                    "professions": [],
+                    "isSubscribed": false
+                },
+                "text": "Ужасно. Посылка 14 дней не дошла. Судя по треку ездит по разным городам. Не знаю когда доедет. Судя по отзывам ситуация массовая. Но  на их сайте нет данных. Никто не предупреждает при приеме посылок о том что могут быть задержки. ",
+                "textLanguage": "ru",
+                "textTranslations": {},
+                "rating": 1,
+                "updatedTime": "2023-09-16T03:28:12.896Z",
+                "reactions": {
+                    "likes": 6,
+                    "dislikes": 1,
+                    "userReaction": "NONE"
+                },
+                "photos": [],
+                "videos": []
+            },
+            {
+                "reviewId": "Nfa21yeEKgs9pbb6XlFfn6OBAB_eoohU",
+                "businessId": "132483750040",
+                "author": {
+                    "name": "Паша Пермяков",
+                    "avatarUrl": "https://avatars.mds.yandex.net/get-yapic/61207/0r-5/{size}",
+                    "professionLevel": "Знаток города 5 уровня",
+                    "publicId": "fq3jecbtymarm644e3vf28kq4c",
+                    "achievements": [],
+                    "professions": [],
+                    "isSubscribed": false
+                },
+                "text": "Убогая компания! Маленькая коробка шла из Казахстана до Перми с 21-24 декабря и в Перми пролежала с 24 до 27. В выходные никто не доставил. Звонит курьер и говорит что везет домой. А на секундочку рабочая неделя. Прошу доставить в другой район, говорит это не его район. Позорище. Если есть возможность отправляйте все почтой россии. И дешевле и надежней. СДЭК неоправданная цена доставки.",
+                "textLanguage": "unknown",
+                "textTranslations": {},
+                "rating": 1,
+                "updatedTime": "2021-12-27T05:39:48.357Z",
+                "reactions": {
+                    "likes": 5,
+                    "dislikes": 2,
+                    "userReaction": "NONE"
+                },
+                "photos": [],
+                "videos": []
+            },
+            {
+                "reviewId": "0gEQPhlDVK4a3ZG9A_TDt5OgwvnUkjl",
+                "businessId": "132483750040",
+                "author": {
+                    "name": "Анастасия",
+                    "avatarUrl": "https://avatars.mds.yandex.net/get-yapic/36689/FzRquJalxeUpmlLJAreK8YX4o-1/{size}",
+                    "professionLevel": "Знаток города 2 уровня",
+                    "publicId": "e0kez2u95npjwfhmd2ctckhc10",
+                    "achievements": [],
+                    "professions": [],
+                    "isSubscribed": false
+                },
+                "text": "Самый лучший пункт выдачи, чисто, сотрудники доброжелательные ",
+                "textLanguage": "ru",
+                "textTranslations": {
+                    "tr": "En iyi teslim noktası, temiz, yardımsever çalışanlar "
+                },
+                "rating": 5,
+                "updatedTime": "2025-03-24T10:18:04.762Z",
+                "reactions": {
+                    "likes": 1,
+                    "dislikes": 0,
+                    "userReaction": "NONE"
+                },
+                "photos": [],
+                "videos": []
+            },
+            {
+                "reviewId": "Hj5oI6DMKT8TaJd8tfQ_t4wze3quN2",
+                "businessId": "132483750040",
+                "author": {
+                    "name": "Алексей Гилёв",
+                    "avatarUrl": "https://avatars.mds.yandex.net/get-yapic/38436/ZNP8O9T0sTucR4kpOv3LAyQbg-1/{size}",
+                    "professionLevel": "Знаток города 7 уровня",
+                    "publicId": "ry87f0bmz4q4nkpvk464gxc068",
+                    "achievements": [],
+                    "professions": [],
+                    "isSubscribed": false
+                },
+                "text": "Сервис очень сильно улучшился!!! Радует!!! Доставили быстрее чем выставленная дата, оперативно. Всё в целости, сохранности! Спасибо! ",
+                "textLanguage": "ru",
+                "textTranslations": {},
+                "rating": 5,
+                "updatedTime": "2023-03-01T16:49:20.378Z",
+                "reactions": {
+                    "likes": 4,
+                    "dislikes": 4,
+                    "userReaction": "NONE"
+                },
+                "photos": [],
+                "videos": []
+            },
+            {
+                "reviewId": "-eidHAucgh5mS5MOQXPSqAcYUqxBz5ak",
+                "businessId": "132483750040",
+                "author": {
+                    "name": "Роман Ризнык",
+                    "avatarUrl": "https://avatars.mds.yandex.net/get-yapic/61207/0r-5/{size}",
+                    "professionLevel": "Знаток города 2 уровня",
+                    "publicId": "zvh376u3ext6hvtek7mda6k0d8",
+                    "achievements": [],
+                    "professions": [],
+                    "isSubscribed": false
+                },
+                "text": "Выдали быстро, оперативно. Хрупкая посылка прибыла в сохранности.",
+                "textLanguage": "ru",
+                "textTranslations": {},
+                "rating": 5,
+                "updatedTime": "2024-05-04T12:56:58.352Z",
+                "reactions": {
+                    "likes": 3,
+                    "dislikes": 0,
+                    "userReaction": "NONE"
+                },
+                "photos": [],
+                "videos": []
+            },
+            {
+                "reviewId": "fJlmPN8xB9dhC7yCTpyzPgJ4GyeSYEF",
+                "businessId": "132483750040",
+                "author": {
+                    "name": "OlaTsybina",
+                    "avatarUrl": "https://avatars.mds.yandex.net/get-yapic/68143/0k-4/{size}",
+                    "professionLevel": "Знаток города 4 уровня",
+                    "publicId": "q7ba0gx0bawb2f99d547dghux8",
+                    "achievements": [],
+                    "professions": [],
+                    "isSubscribed": false
+                },
+                "text": "Всё прекрасно, пользуюсь уже не первый год! \nСервис, девочки-Вы огонь🔥🔥\n",
+                "textLanguage": "ru",
+                "textTranslations": {},
+                "rating": 5,
+                "updatedTime": "2024-05-19T06:39:23.248Z",
+                "reactions": {
+                    "likes": 3,
+                    "dislikes": 0,
+                    "userReaction": "NONE"
+                },
+                "photos": [],
+                "videos": []
+            },
+            {
+                "reviewId": "RUorVoAGFYJvFbIAJQoqe9rPO_y6s8qXN",
+                "businessId": "132483750040",
+                "author": {
+                    "name": "hermes-perm541548",
+                    "avatarUrl": "",
+                    "professionLevel": "Знаток города 13 уровня",
+                    "publicId": "1p5p2e4pmh817pj55a5tdyzkhw",
+                    "achievements": [],
+                    "professions": [],
+                    "isSubscribed": false
+                },
+                "text": "Доставили быстро. Понравилось, что можно изменить место выдачи самосточтельно. Груз получила быстро. Очереди нет.",
+                "textLanguage": "unknown",
+                "textTranslations": {},
+                "rating": 5,
+                "updatedTime": "2021-05-23T17:42:21.628Z",
+                "reactions": {
+                    "likes": 2,
+                    "dislikes": 6,
+                    "userReaction": "NONE"
+                },
+                "photos": [],
+                "videos": []
+            },
+            {
+                "reviewId": "xAJnKD5DU6zCSwN5stQRntFu2WkcvkT",
+                "businessId": "132483750040",
+                "author": {
+                    "name": "Ludwig",
+                    "avatarUrl": "https://avatars.mds.yandex.net/get-yapic/27503/klJJ5iDyCqrtEzF53eP09qf7VY-1/{size}",
+                    "professionLevel": "Знаток города 3 уровня",
+                    "publicId": "h6b3buyvr6yp9qwkbhng7x4vc8",
+                    "achievements": [],
+                    "professions": [],
+                    "isSubscribed": false
+                },
+                "text": "СДЕКом пользуюсь с основания компании...много посылок отправлял много получал все в срок...трек номер всегда отслеживается...никогда ни чего не потеряли...отделения по всей стране и не только очень удобно...че за дурни отрицательные отзывы пишут мне не понятно...идите на Почту России...)",
+                "textLanguage": "unknown",
+                "textTranslations": {},
+                "rating": 5,
+                "updatedTime": "2021-04-22T10:01:17.241Z",
+                "reactions": {
+                    "likes": 3,
+                    "dislikes": 7,
+                    "userReaction": "NONE"
+                },
+                "photos": [],
+                "videos": []
+            },
+            {
+                "businessComment": {
+                    "text": "Здравствуйте! Мы стараемся. И вам спасибо за доверие ❤️",
+                    "updatedTime": "2025-09-27T15:00:16.527Z"
+                },
+                "reviewId": "x1cSRYMUT7-39trKTGvC-wJ2vTK2Mo0V",
+                "businessId": "132483750040",
+                "author": {
+                    "name": "kirill c.",
+                    "avatarUrl": "https://avatars.mds.yandex.net/get-yapic/25358/0d-8/{size}",
+                    "professionLevel": "Знаток города 3 уровня",
+                    "publicId": "wn16e0rfuw54rbej1rx0uxjbd4",
+                    "achievements": [],
+                    "professions": [],
+                    "isSubscribed": false
+                },
+                "text": "Быстро, удобно, прекрасный персонал. Спасибо",
+                "textLanguage": "ru",
+                "textTranslations": {
+                    "tr": "Hızlı, uygun, harika personel. Teşekkürler"
+                },
+                "rating": 5,
+                "updatedTime": "2025-09-26T07:21:55.541Z",
+                "reactions": {
+                    "likes": 0,
+                    "dislikes": 0,
+                    "userReaction": "NONE"
+                },
+                "photos": [],
+                "videos": []
+            },
+            {
+                "reviewId": "5tH569GAgxB88CQSxjFeWt65DTWyox7in",
+                "businessId": "132483750040",
+                "author": {
+                    "name": "Дмитрий",
+                    "avatarUrl": "https://avatars.mds.yandex.net/get-yapic/59871/0f-9/{size}",
+                    "professionLevel": "Знаток города 5 уровня",
+                    "publicId": "g8ku1gma6wwjp7vy00purd4kxc",
+                    "achievements": [],
+                    "professions": [],
+                    "isSubscribed": false
+                },
+                "text": "Приятно почитать, как отлично работает эта компания,.....а вот я уже 14 дней безуспешно разыскиваю свое отправление, получив два десятка ответов в чате типа\"....нам очень жаль, но мы решаем\" с сегодняшнего дня нам решили отвечать в стиле \"сидите и ждите\" и уже без всяких там пиитетов. И если попробуете на жтот отзыв хоть что-то вякнуть я выложу скрины вашего дебилизма и хамства вместо реальных мер по поиску отправления",
+                "textLanguage": "unknown",
+                "textTranslations": {},
+                "rating": 1,
+                "updatedTime": "2022-12-13T16:58:54.465Z",
+                "reactions": {
+                    "likes": 11,
+                    "dislikes": 3,
+                    "userReaction": "NONE"
+                },
+                "photos": [],
+                "videos": []
+            },
+            {
+                "reviewId": "M20_XdnAvx2tjIvkm0Jc1FhpFP2x2DUM7",
+                "businessId": "132483750040",
+                "author": {
+                    "name": "Алексей",
+                    "avatarUrl": "https://avatars.mds.yandex.net/get-yapic/69015/i2wuMeVOiDnHr6tpnZveBbtb3eA-1/{size}",
+                    "professionLevel": "Знаток города 7 уровня",
+                    "publicId": "7y4fhhy0bu364u6ermvcbrdqum",
+                    "achievements": [],
+                    "professions": [],
+                    "isSubscribed": false
+                },
+                "text": "Одна из лучших компаний по доставке!!! Много раз пользовались, странные комментарии здесь, как будто не про эту компанию написано!",
+                "textLanguage": "unknown",
+                "textTranslations": {},
+                "rating": 5,
+                "updatedTime": "2021-04-03T05:29:29.016Z",
+                "reactions": {
+                    "likes": 3,
+                    "dislikes": 4,
+                    "userReaction": "NONE"
+                },
+                "photos": [],
+                "videos": []
+            },
+            {
+                "reviewId": "YUw6Zd2idsg5mM3rGNsZKKM79_GCEPa",
+                "businessId": "132483750040",
+                "author": {
+                    "name": "Тебенева Регина",
+                    "avatarUrl": "https://avatars.mds.yandex.net/get-yapic/23186/enc-c864dcd5d956159081b3ed78265d1934c5620f1adb212e4d89a024bba05d0c71/{size}",
+                    "professionLevel": "Знаток города 4 уровня",
+                    "publicId": "d33rdtvqxmg2fuct5evcar45em",
+                    "achievements": [],
+                    "professions": [],
+                    "isSubscribed": false
+                },
+                "text": "\nПервый и последний раз пользуюсь услугами данной компании.Сервис просто ужасный !!!!!Ждала неделю посылку большую  из Москвы ,позвонила попросила переместить в близлежащий к моему дому СДЭК ,т.к ее привезли в Грин-плаза ,менеджер составил в сб заявку на перемещение,сказал в пн она будет на Карпинского.В пн я прихожу на Карпинского с мужем ,и мне объясняют ,что ее нет ,и она лежит в Грин -пла\n\n\n\n\nчанием-\"я не знаю почему она там \".И эта организация работает 7 дней в неделю ,до Карпинского за три дня не могут привезти мою посылку ,за доставку которой я плачу ! Сотрудники вообще не  ориентированы на клиента !!!\nКомпания полное г!!!!!!!!!!!!!!!!!!!!!!!! \n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",
+                "textLanguage": "unknown",
+                "textTranslations": {},
+                "rating": 1,
+                "updatedTime": "2021-04-05T12:38:36.154Z",
+                "reactions": {
+                    "likes": 8,
+                    "dislikes": 2,
+                    "userReaction": "NONE"
+                },
+                "photos": [],
+                "videos": []
+            },
+            {
+                "reviewId": "9lJvlQ3Zq9wq8drjxCb3BmJqnkq0ahiw",
+                "businessId": "132483750040",
+                "author": {
+                    "name": "Анна Сёмушкина",
+                    "avatarUrl": "https://avatars.mds.yandex.net/get-yapic/25358/0d-5/{size}",
+                    "professionLevel": "Знаток города 4 уровня",
+                    "publicId": "eb8c28buk90v300cm714yqy5rr",
+                    "achievements": [],
+                    "professions": [],
+                    "isSubscribed": false
+                },
+                "text": "Приветливые девушки. Чистый пункт выдачи. Подскажут, помогут, объяснят . ",
+                "textLanguage": "ru",
+                "textTranslations": {},
+                "rating": 5,
+                "updatedTime": "2024-04-12T08:36:24.254Z",
+                "reactions": {
+                    "likes": 3,
+                    "dislikes": 0,
+                    "userReaction": "NONE"
+                },
+                "photos": [],
+                "videos": []
+            },
+            {
+                "reviewId": "Z7uNxFQJCTifhveU_6oxmd4UCxG-wDJf",
+                "businessId": "132483750040",
+                "author": {
+                    "name": "Михаил З.",
+                    "avatarUrl": "https://avatars.mds.yandex.net/get-yapic/45131/0r-8/{size}",
+                    "professionLevel": "Знаток города 4 уровня",
+                    "publicId": "4amed4avc8rbkq6khwgu0epthm",
+                    "achievements": [],
+                    "professions": [],
+                    "isSubscribed": false
+                },
+                "text": "Работой компании остался недоволен, несмотря на наличие в стоимости заказа упаковки, умудрились помять стиральную машину. Уровень организации никакой.",
+                "textLanguage": "ru",
+                "textTranslations": {},
+                "rating": 1,
+                "updatedTime": "2023-10-22T05:54:53.299Z",
+                "reactions": {
+                    "likes": 1,
+                    "dislikes": 4,
+                    "userReaction": "NONE"
+                },
+                "photos": [],
+                "videos": []
+            },
+            {
+                "reviewId": "deYBp5qDKBuYotArqKiw7Cv_R9z445Tea",
+                "businessId": "132483750040",
+                "author": {
+                    "name": "Константин Марков",
+                    "avatarUrl": "https://avatars.mds.yandex.net/get-yapic/48449/N3iUTx2G6eEDBDHY2KrnDYcr9dg-1/{size}",
+                    "professionLevel": "Знаток города 28 уровня",
+                    "publicId": "95q6a4wamjxqna80d78n48hvmc",
+                    "achievements": [],
+                    "professions": [],
+                    "isSubscribed": false
+                },
+                "text": "обслуживание быстрое, очереди большое ОСОБО не было, персонал профессиональный. расположение желает лучшего)",
+                "textLanguage": "unknown",
+                "textTranslations": {},
+                "rating": 4,
+                "updatedTime": "2022-08-16T16:09:23.678Z",
+                "reactions": {
+                    "likes": 3,
+                    "dislikes": 4,
+                    "userReaction": "NONE"
+                },
+                "photos": [],
+                "videos": []
+            },
+            {
+                "reviewId": "7OMhVo5IGiEyJ34cYTiBd3A4inqWxnArk",
+                "businessId": "132483750040",
+                "author": {
+                    "name": "А",
+                    "avatarUrl": "https://avatars.mds.yandex.net/get-yapic/47747/0u-6/{size}",
+                    "professionLevel": "Знаток города 6 уровня",
+                    "publicId": "m4umnp8exja0qmxqmbpkxqgpcw",
+                    "achievements": [],
+                    "professions": [],
+                    "isSubscribed": false
+                },
+                "text": "Сдэк оборзели. Так же как в свое время деловые линии. ОЧЕНЬ дорого. Хамство повсеместное. Задержки посылок. Посылка \"идет\" из Москвы в Пермь, а по факту уже неделю лежит в транзитном городе Москва. Где там граница с Украиной? Сайт лежит. Виртуальный помощник не работает. До операторов не дозвониться",
+                "textLanguage": "unknown",
+                "textTranslations": {},
+                "rating": 1,
+                "updatedTime": "2022-03-08T06:16:17.498Z",
+                "reactions": {
+                    "likes": 5,
+                    "dislikes": 2,
+                    "userReaction": "NONE"
+                },
+                "photos": [],
+                "videos": []
+            },
+            {
+                "reviewId": "K9qpMcoDTuwQDuUwglklzYMHQJ2oiy",
+                "businessId": "132483750040",
+                "author": {
+                    "name": "Вячеслав Веревкин",
+                    "avatarUrl": "https://avatars.mds.yandex.net/get-yapic/28439/xoWL1LOFBVaaUk8udYVUSNF7w-1/{size}",
+                    "professionLevel": "Знаток города 26 уровня",
+                    "publicId": "ky8g82rtu09eycx8btm7ayxh1r",
+                    "achievements": [],
+                    "professions": [],
+                    "isSubscribed": false
+                },
+                "text": "Оформили быстро, помогли всё упаковать. Остался доволен",
+                "textLanguage": "ru",
+                "textTranslations": {},
+                "rating": 5,
+                "updatedTime": "2024-03-01T17:45:50.132Z",
+                "reactions": {
+                    "likes": 6,
+                    "dislikes": 0,
+                    "userReaction": "NONE"
+                },
+                "photos": [],
+                "videos": []
+            },
+            {
+                "reviewId": "5HKhnFQFrVYSBSuPE2-kHsZnPPgB8X",
+                "businessId": "132483750040",
+                "author": {
+                    "name": "v v",
+                    "avatarUrl": "https://avatars.mds.yandex.net/get-yapic/24700/enc-7f29c312fb6d45b998412ef2421dec16ba08c98141b568115898ec6baa71854f/{size}",
+                    "professionLevel": "Знаток города 8 уровня",
+                    "publicId": "x03ftk02b52z91f964kjzd2qd0",
+                    "achievements": [],
+                    "professions": [],
+                    "isSubscribed": false
+                },
+                "text": "Единственный плюс это близость к месту жительство, на этом все. Ни соблюдения сроков, ни вежливости, ни выполнения своих обязательств, ни компетентности, ничего этого нет. Даже режим работы не соответствует заявленному. Открываются и закрываются, как хотят. ",
+                "textLanguage": "unknown",
+                "textTranslations": {},
+                "rating": 1,
+                "updatedTime": "2021-12-04T07:48:31.911Z",
+                "reactions": {
+                    "likes": 6,
+                    "dislikes": 3,
+                    "userReaction": "NONE"
+                },
+                "photos": [],
+                "videos": []
+            },
+            {
+                "reviewId": "nUjIzSCPU6hKk8AMT1CzmG69SXmdNHi6",
+                "businessId": "132483750040",
+                "author": {
+                    "name": "Анна",
+                    "avatarUrl": "https://avatars.mds.yandex.net/get-yapic/21377/enc-be16d3fc667fad2e332de687bf919c05/{size}",
+                    "professionLevel": "Знаток города 17 уровня",
+                    "publicId": "3b7gyv0aeb4t97fkw2y0c67m5c",
+                    "achievements": [],
+                    "professions": [],
+                    "isSubscribed": false
+                },
+                "text": "Хороший пункт. Всегда быстро.",
+                "textLanguage": "ru",
+                "textTranslations": {
+                    "tr": "Güzel nokta. Her zaman hızlıdır."
+                },
+                "rating": 5,
+                "updatedTime": "2024-12-13T10:20:00.136Z",
+                "reactions": {
+                    "likes": 1,
+                    "dislikes": 0,
+                    "userReaction": "NONE"
+                },
+                "photos": [],
+                "videos": []
+            },
+            {
+                "reviewId": "_h8VPOVm6PfpNMMjqXuzB9UAEdhPiy",
+                "businessId": "132483750040",
+                "author": {
+                    "name": "Cac Tus",
+                    "avatarUrl": "https://avatars.mds.yandex.net/get-yapic/43978/enc-e614feca080add78ca62f99021f7125616b098d4c53aa2f725ab028e491e7805/{size}",
+                    "professionLevel": "Знаток города 4 уровня",
+                    "publicId": "mytw82x1cjq382ffwkke9m96n8",
+                    "achievements": [],
+                    "professions": [],
+                    "isSubscribed": false
+                },
+                "text": "Отвратительная контора с молотка. Проще съездить самой в другой город/страну. Сами меняют условия доставки, затягивают просто донельзя. Такое не в первый раз.",
+                "textLanguage": "unknown",
+                "textTranslations": {},
+                "rating": 1,
+                "updatedTime": "2021-04-18T10:20:33.253Z",
+                "reactions": {
+                    "likes": 5,
+                    "dislikes": 1,
+                    "userReaction": "NONE"
+                },
+                "photos": [],
+                "videos": []
+            },
+            {
+                "reviewId": "98_m_Cxsoz6vFIuxysoBewpemXi4fP9j3",
+                "businessId": "132483750040",
+                "author": {
+                    "name": "Софья",
+                    "avatarUrl": "https://avatars.mds.yandex.net/get-yapic/45848/OaaLGKaL9lbEY4UnSMtHighgF28-1/{size}",
+                    "professionLevel": "Знаток города 12 уровня",
+                    "publicId": "v2zvyp41wd4e9eemfk05u643w8",
+                    "achievements": [],
+                    "professions": [],
+                    "isSubscribed": false
+                },
+                "text": "Самый удобный пункт выдачи. Доброжелательный персонал. Удобно, что есть упаковка и коробки, и мешки. ",
+                "textLanguage": "unknown",
+                "textTranslations": {},
+                "rating": 5,
+                "updatedTime": "2020-10-09T12:21:59.817Z",
+                "reactions": {
+                    "likes": 3,
+                    "dislikes": 3,
+                    "userReaction": "NONE"
+                },
+                "photos": [],
+                "videos": []
+            },
+            {
+                "reviewId": "Bauh3qRbcWQPRzH3bhC6UG6FdNOmjpwUB",
+                "businessId": "132483750040",
+                "author": {
+                    "name": "Максим",
+                    "avatarUrl": "https://avatars.mds.yandex.net/get-yapic/64336/0f-8/{size}",
+                    "professionLevel": "Знаток города 17 уровня",
+                    "publicId": "6zzj9fgrukevr566zh7bbn987r",
+                    "achievements": [],
+                    "professions": [],
+                    "isSubscribed": false
+                },
+                "text": "Хорошее обслуживание, вежливый персонал\nЛюди, если у вас срываются сроки, почему в этом обвиняете офис?",
+                "textLanguage": "ru",
+                "textTranslations": {},
+                "rating": 5,
+                "updatedTime": "2024-04-01T14:38:17.382Z",
+                "reactions": {
+                    "likes": 4,
+                    "dislikes": 0,
+                    "userReaction": "NONE"
+                },
+                "photos": [],
+                "videos": []
+            },
+            {
+                "reviewId": "MSx46OOoZ9S26LEdcikdMmteBuTPoRYr",
+                "businessId": "132483750040",
+                "author": {
+                    "name": "Марина",
+                    "avatarUrl": "https://avatars.mds.yandex.net/get-yapic/68143/0l-3/{size}",
+                    "professionLevel": "Знаток города 3 уровня",
+                    "publicId": "9d74mrxzuderwebgvwv430u66g",
+                    "achievements": [],
+                    "professions": [],
+                    "isSubscribed": false
+                },
+                "text": "Ужас! Оператору сказала доставку в четверг нужно, курьер приехал в среду. После неудачной доставки,  на след день решил вообще не приезжать. Как хотят так и ездят, я так поняла, что под курьера ещё подстроиться надо, под его маршрут и время. Очень удобно!!! ",
+                "textLanguage": "unknown",
+                "textTranslations": {},
+                "rating": 1,
+                "updatedTime": "2021-12-03T13:51:51.030Z",
+                "reactions": {
+                    "likes": 5,
+                    "dislikes": 2,
+                    "userReaction": "NONE"
+                },
+                "photos": [],
+                "videos": []
+            },
+            {
+                "reviewId": "5_KqqNYG22-x5xFu0Bm42mP8XQfvMny8",
+                "businessId": "132483750040",
+                "text": "Понравилось обслуживание, есть примерочная, отзывчивый персонал , дали пакет, буду заказывать товары только в этот пункт!",
+                "textLanguage": "unknown",
+                "textTranslations": {},
+                "rating": 5,
+                "updatedTime": "2021-12-06T08:31:48.033Z",
+                "reactions": {
+                    "likes": 4,
+                    "dislikes": 5,
+                    "userReaction": "NONE"
+                },
+                "photos": [],
+                "videos": []
+            },
+            {
+                "reviewId": "ptAO4gHuRoLHGjZqxFr6DvsQXKxid1I",
+                "businessId": "132483750040",
+                "author": {
+                    "name": "Анастасия Брацун",
+                    "avatarUrl": "",
+                    "professionLevel": "Знаток города 3 уровня",
+                    "publicId": "ncneqv7r4k0aw3vbhmwut8zkd0",
+                    "achievements": [],
+                    "professions": [],
+                    "isSubscribed": false
+                },
+                "text": "Если вы в жестких временных рамках, то СДЭК вам не подходит, по несколько дней посылка валяется в сортировочном центре",
+                "textLanguage": "ru",
+                "textTranslations": {},
+                "rating": 1,
+                "updatedTime": "2023-01-31T06:46:13.628Z",
+                "reactions": {
+                    "likes": 4,
+                    "dislikes": 2,
+                    "userReaction": "NONE"
+                },
+                "photos": [],
+                "videos": []
+            },
+            {
+                "reviewId": "z1AQWEw1iVoVdT3rWi6EU6SswbtcWK4",
+                "businessId": "132483750040",
+                "author": {
+                    "name": "Aleksey Zavyalov",
+                    "avatarUrl": "https://avatars.mds.yandex.net/get-yapic/38663/H00jiUCLY4axw2gsgchZw6VBcM-1/{size}",
+                    "professionLevel": "Знаток города 24 уровня",
+                    "publicId": "2g8g9a8wd8hx6y2weam8dmktzc",
+                    "achievements": [],
+                    "professions": [],
+                    "isSubscribed": false
+                },
+                "text": "Вроде работают, были косяки:путаница и медлительность в доставке. Потом на всех подряд валят: это поставщик, это Москва, это людей нет, это машина, короче как везде.",
+                "textLanguage": "unknown",
+                "textTranslations": {},
+                "rating": 2,
+                "updatedTime": "2021-10-13T03:10:42.032Z",
+                "reactions": {
+                    "likes": 2,
+                    "dislikes": 4,
+                    "userReaction": "NONE"
+                },
+                "photos": [],
+                "videos": []
+            },
+            {
+                "reviewId": "B8sOPGKV9jzta__MQeSYr0JXRsoUp1",
+                "businessId": "132483750040",
+                "author": {
+                    "name": "Мария Н.",
+                    "avatarUrl": "https://avatars.mds.yandex.net/get-yapic/21493/enc-d671486aa8e2c09815564b77eab5809498eee9008467e0d4eb455d6405be2647/{size}",
+                    "professionLevel": "Знаток города 3 уровня",
+                    "publicId": "w3vau8zahe67p38ptkwfgr1cjg",
+                    "achievements": [],
+                    "professions": [],
+                    "isSubscribed": false
+                },
+                "text": "Пользовалась услугами этой компании 2 раза. Посылки доставлялись быстро и не поврежденными. Стоимость услуги приемлемая",
+                "textLanguage": "unknown",
+                "textTranslations": {},
+                "rating": 5,
+                "updatedTime": "2021-05-25T11:01:22.129Z",
+                "reactions": {
+                    "likes": 3,
+                    "dislikes": 4,
+                    "userReaction": "NONE"
+                },
+                "photos": [],
+                "videos": []
+            },
+            {
+                "reviewId": "ihJqnV6hLMt-4w6uPUrLEF2DtgTpOW",
+                "businessId": "132483750040",
+                "author": {
+                    "name": "Юлия Дерябина",
+                    "avatarUrl": "https://avatars.mds.yandex.net/get-yapic/15430/0b-7/{size}",
+                    "professionLevel": "Знаток города 3 уровня",
+                    "publicId": "jz8urgx43dxra0a8grkymdnk1g",
+                    "achievements": [],
+                    "professions": [],
+                    "isSubscribed": false
+                },
+                "text": "Быстро, вежливо. Рекомендую!",
+                "textLanguage": "ru",
+                "textTranslations": {
+                    "tr": "Çabuk, kibarca. Tavsiye ederim!"
+                },
+                "rating": 5,
+                "updatedTime": "2025-09-23T07:49:00.241Z",
+                "reactions": {
+                    "likes": 0,
+                    "dislikes": 0,
+                    "userReaction": "NONE"
+                },
+                "photos": [],
+                "videos": []
+            },
+            {
+                "reviewId": "6T-LZpXccgZLZj2szQUpXi4kJviQpe",
+                "businessId": "132483750040",
+                "author": {
+                    "name": "Костя Сероев",
+                    "avatarUrl": "https://avatars.mds.yandex.net/get-yapic/56823/0g-2/{size}",
+                    "professionLevel": "Знаток города 5 уровня",
+                    "publicId": "6djjwhpw72662r353r5v5jx5c0",
+                    "achievements": [],
+                    "professions": [],
+                    "isSubscribed": false
+                },
+                "text": "Посылку не могут доставить уже 2 неделю, хотя было заявлено, что привезут за 5 дней.",
+                "textLanguage": "ru",
+                "textTranslations": {},
+                "rating": 1,
+                "updatedTime": "2023-09-22T06:40:59.079Z",
+                "reactions": {
+                    "likes": 2,
+                    "dislikes": 5,
+                    "userReaction": "NONE"
+                },
+                "photos": [],
+                "videos": []
+            },
+            {
+                "reviewId": "g-PEsx4dRrejgpqH-qSnuohmtAXyG7Jtk",
+                "businessId": "132483750040",
+                "author": {
+                    "name": "Александр З",
+                    "avatarUrl": "https://avatars.mds.yandex.net/get-yapic/68143/0l-3/{size}",
+                    "professionLevel": "Знаток города 8 уровня",
+                    "publicId": "7w1gt19z2mprx8kdzacarbe16g",
+                    "achievements": [],
+                    "professions": [],
+                    "isSubscribed": false
+                },
+                "text": "Очень компетентная и приятная девушка сотрудник.)",
+                "textLanguage": "ru",
+                "textTranslations": {
+                    "tr": "Çok yetkin ve hoş bir kız çalışandır.)"
+                },
+                "rating": 5,
+                "updatedTime": "2025-09-12T10:33:43.963Z",
+                "reactions": {
+                    "likes": 0,
+                    "dislikes": 0,
+                    "userReaction": "NONE"
+                },
+                "photos": [],
+                "videos": []
+            },
+            {
+                "reviewId": "v3Bme437pnlYKxLTT3kPqBnm-nmafPM",
+                "businessId": "132483750040",
+                "author": {
+                    "name": "Валерия М.",
+                    "avatarUrl": "https://avatars.mds.yandex.net/get-yapic/45131/0l-6/{size}",
+                    "professionLevel": "Знаток города 3 уровня",
+                    "publicId": "hrxztua05x1c2ppwbzf8v2fxtw",
+                    "achievements": [],
+                    "professions": [],
+                    "isSubscribed": false
+                },
+                "text": "Самая ужасная доставка!!! Пользовались 2 раза! Никогда больше не обратимся, компания отправитель выбрали СДЭК, чтобы дооправить корм для собак, в первый раз корма  были тоже разобраны, я писать ничего не стала, сегодня это выше всего, 3 мешка корма потаптаны ,грязные, пошорканы, мешок разорван, т.е такой продукт использовать нельзя, стоимость одного мешка около 4000 рублей, пищевой продукт , заплатили цену за доставку, как билет до Москвы... Работаем с ПЭК,. Мешки чистые, всегда , за 4 месяца работы не одного нарекания, написали претензию , если СДЭК не оплатит компенсация, сделаем анализы с порванного мешка о наличии бактерий и грязи и соответственно в суд и органы Роспотребнадзора , далее склад Докучаева, это треш, прогулка по лесу... Дорога яма на яме, подъезжать тоже не удобно...хотя есть филиал выдачи на дружбе , вообщем заоблачная доставка.... Удаленность.... Сервис 0, отношение к клиентам такое же, и вопрос к руководителю, вы дадите своему ребенку вскрытую банку с пюре???? При этом заплатив за это конский ценник????\nЖду обратной связи, как клиента ЮЛ вы потеряли навсегда, кстате есть видео и фото, как вам передавался  на отправку корм и есть видео , того ,что мы получили....",
+                "textLanguage": "unknown",
+                "textTranslations": {},
+                "rating": 1,
+                "updatedTime": "2021-03-30T07:55:25.062Z",
+                "reactions": {
+                    "likes": 8,
+                    "dislikes": 2,
+                    "userReaction": "NONE"
+                },
+                "photos": [],
+                "videos": []
+            },
+            {
+                "reviewId": "3mCFQS29GHTkF70BZgKmZP6HakZcr0MUT",
+                "businessId": "132483750040",
+                "author": {
+                    "name": "Анисия",
+                    "avatarUrl": "https://avatars.mds.yandex.net/get-yapic/29310/GPf3rE82HnoqSfMFzIs1UtqaZ9w-1/{size}",
+                    "professionLevel": "Знаток города 8 уровня",
+                    "publicId": "qe5vwvnkh9bbbkqpmttjk148bc",
+                    "achievements": [],
+                    "professions": [],
+                    "isSubscribed": false
+                },
+                "text": "Отзывчивые менеджеры, удобно в центре города, благодарю ",
+                "textLanguage": "ru",
+                "textTranslations": {},
+                "rating": 5,
+                "updatedTime": "2024-04-12T08:42:45.721Z",
+                "reactions": {
+                    "likes": 3,
+                    "dislikes": 0,
+                    "userReaction": "NONE"
+                },
+                "photos": [],
+                "videos": []
+            },
+            {
+                "reviewId": "IsncmZwrJVT9nXiHF533MhESUzXxk7fcE",
+                "businessId": "132483750040",
+                "author": {
+                    "name": "Ольга Иващенко",
+                    "avatarUrl": "https://avatars.mds.yandex.net/get-yapic/61207/0h-9/{size}",
+                    "professionLevel": "Знаток города 9 уровня",
+                    "publicId": "th2agjn242jh42unqycp1x505w",
+                    "achievements": [],
+                    "professions": [],
+                    "isSubscribed": false
+                },
+                "text": "Всегда все быстро и четко. Пользуюсь часто",
+                "textLanguage": "ru",
+                "textTranslations": {},
+                "rating": 5,
+                "updatedTime": "2024-03-14T15:12:04.182Z",
+                "reactions": {
+                    "likes": 4,
+                    "dislikes": 0,
+                    "userReaction": "NONE"
+                },
+                "photos": [],
+                "videos": []
+            },
+            {
+                "reviewId": "oKgZaKsglPaDofB5QI9pm5jotLRNzPFV",
+                "businessId": "132483750040",
+                "author": {
+                    "name": "Ирина Лобанова",
+                    "avatarUrl": "https://avatars.mds.yandex.net/get-yapic/62162/0b-4/{size}",
+                    "professionLevel": "Знаток города 6 уровня",
+                    "publicId": "etxgyy8hu1fnzb99cn2ku0nyhc",
+                    "achievements": [],
+                    "professions": [],
+                    "isSubscribed": false
+                },
+                "text": "Девушки помогли с отправкой посылки, все рассказали и подсказали как лучше сделать",
+                "textLanguage": "unknown",
+                "textTranslations": {},
+                "rating": 5,
+                "updatedTime": "2021-04-29T10:46:52.592Z",
+                "reactions": {
+                    "likes": 4,
+                    "dislikes": 5,
+                    "userReaction": "NONE"
+                },
+                "photos": [],
+                "videos": []
+            },
+            {
+                "reviewId": "E3dGB6hf5o1LeD5TqbIDxe5NECWBNY",
+                "businessId": "132483750040",
+                "author": {
+                    "name": "Сергей",
+                    "avatarUrl": "https://avatars.mds.yandex.net/get-yapic/26311/0a-2/{size}",
+                    "professionLevel": "Знаток города 14 уровня",
+                    "publicId": "rzpnewvpka0xwe73yrncezb1nc",
+                    "achievements": [],
+                    "professions": [],
+                    "isSubscribed": false
+                },
+                "text": "Вежливый персонал готовый помочь",
+                "textLanguage": "ru",
+                "textTranslations": {
+                    "tr": "Yardım etmeye hazır kibar personel"
+                },
+                "rating": 4,
+                "updatedTime": "2024-12-31T11:00:17.389Z",
+                "reactions": {
+                    "likes": 1,
+                    "dislikes": 0,
+                    "userReaction": "NONE"
+                },
+                "photos": [],
+                "videos": []
+            },
+            {
+                "reviewId": "tR0sMMdPDqGf4FP6v96QbxCsnqp3YX",
+                "businessId": "132483750040",
+                "author": {
+                    "name": "WolfAstral",
+                    "avatarUrl": "https://avatars.mds.yandex.net/get-yapic/27274/ZhPF9jUETVrs1N59Yxbcp8AtoH0-1/{size}",
+                    "professionLevel": "Знаток города 5 уровня",
+                    "publicId": "6kpq2br2xh90jbt9jm3gqjcca4",
+                    "achievements": [],
+                    "professions": [],
+                    "isSubscribed": false
+                },
+                "text": "Хорошая компания, не разу не было проблем, быстрая доставка во время и посылка в порядке не побита, если есть возможность то только сдэк",
+                "textLanguage": "unknown",
+                "textTranslations": {},
+                "rating": 5,
+                "updatedTime": "2021-07-05T09:20:24.554Z",
+                "reactions": {
+                    "likes": 3,
+                    "dislikes": 4,
+                    "userReaction": "NONE"
+                },
+                "photos": [],
+                "videos": []
+            }
+        ],
+        "params": {
+            "offset": 0,
+            "limit": 50,
+            "count": 89,
+            "loadedReviewsCount": 50,
+            "page": 1,
+            "totalPages": 2,
+            "reviewsRemained": 39
+        },
+        "tags": [],
+        "aspects": []
+    }
+}
