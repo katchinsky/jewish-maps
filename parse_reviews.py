@@ -754,6 +754,46 @@ def parse_all_html_files(data_dir='data'):
     return all_reviews
 
 
+def normalize_location(location):
+    """Normalize location names to group the same places together."""
+    location_lower = location.lower()
+    
+    # PokeRamen group
+    if 'poke' in location_lower or 'покерамен' in location_lower:
+        return 'PokeRamen'
+    
+    # Paradnaya (Ryumochnaya) group
+    if 'парадная' in location_lower or 'paradnaya' in location_lower or 'рюмочная' in location_lower or 'ryumochnaya' in location_lower:
+        return 'Ryumochnaya Paradnaya'
+    
+    # Twins group
+    if 'twins' in location_lower:
+        return 'Twins'
+    
+    # CDEK group (including Vrmuse and Cdex which are CDEK locations)
+    if 'cdek' in location_lower or 'cdex' in location_lower or 'сдэк' in location_lower or 'vrmuse' in location_lower:
+        return 'CDEK'
+    
+    # Synagogue group
+    if ('синагог' in location_lower or 'sinagog' in location_lower or 
+        'иудейское религиозное общество' in location_lower):
+        return 'Tsentral\'naya Permskaya Sinagoga'
+    
+    # Khabar/Or Avner group
+    if ('khabar' in location_lower or 'хабад' in location_lower or 
+        'авнер' in location_lower or 'avner' in location_lower or
+        '25 октября' in location_lower or 'краснова' in location_lower or
+        'средняя школа' in location_lower):
+        return 'Or Avner Khabad'
+    
+    # ProBeauty group
+    if 'probeauty' in location_lower or 'пробьюти' in location_lower:
+        return 'ProBeauty'
+    
+    # If no match, return original location
+    return location
+
+
 def save_to_csv(reviews, output_file='reviews.csv'):
     """Save reviews to CSV file."""
     if not reviews:
@@ -763,6 +803,7 @@ def save_to_csv(reviews, output_file='reviews.csv'):
     # Define all possible fields
     fieldnames = [
         'location',
+        'location_normalized',  # Normalized location name for grouping
         'username', 
         'date',
         'rating',
@@ -773,8 +814,13 @@ def save_to_csv(reviews, output_file='reviews.csv'):
         'filename'
     ]
     
-    # Ensure all reviews have all fields
+    # Ensure all reviews have all fields and normalize locations
     for review in reviews:
+        # Add normalized location
+        if 'location_normalized' not in review:
+            review['location_normalized'] = normalize_location(review.get('location', ''))
+        
+        # Ensure all other fields exist
         for field in fieldnames:
             if field not in review:
                 review[field] = ''
@@ -797,12 +843,22 @@ def print_statistics(reviews):
     print("Statistics:")
     print("=" * 60)
     
-    # Reviews by location
+    # Reviews by normalized location
     from collections import Counter
-    locations = Counter(r['location'] for r in reviews)
-    print("\nReviews by location:")
-    for location, count in locations.most_common():
+    normalized_locations = Counter(r.get('location_normalized', r.get('location', '')) for r in reviews)
+    print("\nReviews by normalized location:")
+    for location, count in normalized_locations.most_common():
         print(f"  - {location}: {count} reviews")
+    
+    # Reviews by original location (for reference)
+    locations = Counter(r['location'] for r in reviews)
+    print("\nReviews by original location (detailed):")
+    for location, count in locations.most_common():
+        normalized = normalize_location(location)
+        if normalized != location:
+            print(f"  - {location}: {count} reviews → [{normalized}]")
+        else:
+            print(f"  - {location}: {count} reviews")
     
     # Reviews by source
     sources = Counter(r['source'] for r in reviews)
