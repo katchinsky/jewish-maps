@@ -116,7 +116,7 @@ def create_heatmap_vk(csv_file, sample_size=2000, distance_threshold_meters=1000
     user_groups = df.groupby(['owner_id', 'year']).agg({
         'lat': 'median',
         'long': 'median',
-        'photo_id': 'count',  # Count of photos
+        'photo_id': ['count', lambda x: list(x)[:5]],  # Count and list of photo IDs
         'text': lambda x: ' | '.join([str(t) for t in x if pd.notna(t) and t != ''])[:200],  # Combine texts
         'date': 'min',  # First photo date
         'date_human': 'first',
@@ -125,8 +125,8 @@ def create_heatmap_vk(csv_file, sample_size=2000, distance_threshold_meters=1000
         'image_url': lambda x:  [url for url in x if pd.notna(url)][:5]  # First 5 images
     }).reset_index()
     
-    # Rename photo_id count column
-    user_groups.rename(columns={'photo_id': 'photo_count'}, inplace=True)
+    # Flatten column names and rename
+    user_groups.columns = ['owner_id', 'year', 'lat', 'long', 'photo_count', 'photo_ids', 'text', 'date', 'date_human', 'distance_meters', 'poi_name', 'image_url']
     
     print(f"\nTotal unique user-period combinations: {len(user_groups)}")
     print(f"Unique users across all periods: {user_groups['owner_id'].nunique()}")
@@ -139,19 +139,37 @@ def create_heatmap_vk(csv_file, sample_size=2000, distance_threshold_meters=1000
         # Format date
         date_str = user_row['date_human'] if pd.notna(user_row['date_human']) else datetime.fromtimestamp(user_row['date']).strftime('%Y-%m-%d %H:%M:%S')
         
-        # Create image gallery HTML
-        images_html = f"<img src='{user_row['image_url'][0]}' style='width: 50%; height: 50%;'>"
-        if len(user_row['image_url']) > 1:
-            images_html += "<div style='display: flex; flex-wrap: wrap; gap: 5px; margin-top: 5px; height: 50%; overflow-y: auto;'>"
-            images_html += ''.join([f"<img src='{img}' style='width: 30%; height: auto;'>" 
-                                   for img in user_row['image_url'][1:]])
-            images_html += "</div>"
+        # Create image gallery HTML with links
+        images_html = ""
+        photo_links_html = ""
+        
+        if len(user_row['image_url']) > 0 and len(user_row['photo_ids']) > 0:
+            # Main image with link
+            images_html = f"<a href='https://vk.com/photo{user_row['owner_id']}_{user_row['photo_ids'][0]}' target='_blank'>"
+            images_html += f"<img src='{user_row['image_url'][0]}' style='width: 100%; height: auto; cursor: pointer;'></a>"
+            
+            # Thumbnails with links
+            if len(user_row['image_url']) > 1:
+                images_html += "<div style='display: flex; flex-wrap: wrap; gap: 5px; margin-top: 5px;'>"
+                for i, img in enumerate(user_row['image_url'][1:], 1):
+                    if i < len(user_row['photo_ids']):
+                        images_html += f"<a href='https://vk.com/photo{user_row['owner_id']}_{user_row['photo_ids'][i]}' target='_blank'>"
+                        images_html += f"<img src='{img}' style='width: 30%; height: auto; cursor: pointer;'></a>"
+                images_html += "</div>"
+            
+            # Create list of photo links
+            photo_links_html = "<p><strong>View photos:</strong> "
+            photo_links = []
+            for i, photo_id in enumerate(user_row['photo_ids'], 1):
+                photo_links.append(f"<a href='https://vk.com/photo{user_row['owner_id']}_{photo_id}' target='_blank'>{i}</a>")
+            photo_links_html += " | ".join(photo_links) + "</p>"
         
         popup_html = f"""
         <div style="width:350px">
             {images_html}
             <p><strong>User ID: {user_row['owner_id']}</strong></p>
             <p><strong>Photos in {int(user_row['year'])}: {user_row['photo_count']}</strong></p>
+            {photo_links_html}
             <p>{text}</p>
             <p>Earliest photo: {date_str}</p>
             <p>Closest distance: {user_row['distance_meters']:.1f}m from {user_row['poi_name']}</p>

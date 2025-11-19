@@ -1,0 +1,44 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+dist/
+build/
+
+# Virtual Environment
+venv/
+env/
+ENV/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# VK Photo Collection
+.vk_collection_checkpoint.json
+vk_photos*.csv.backup_*
+*.checkpoint
+
+# Data files (optional - uncomment if you don't want to track)
+# vk_photos_perm.csv
+# perm_cemetery_records.csv
+# reviews.csv
+
+# Jupyter Notebook
+.ipynb_checkpoints/
+*.ipynb_checkpoints/
+
+# Logs
+*.log
+
