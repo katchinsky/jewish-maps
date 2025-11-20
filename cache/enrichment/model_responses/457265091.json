@@ -1,0 +1,16 @@
+{
+  "annotation_text_description": "На фото изображены небольшие ёлочки, обрамляющие яркую надпись \"СЧАСТЬЕ В ГОРАХ\" на белом фоне.",
+  "annotation_location_type": "outdoor",
+  "annotation_photo_type": "city landscape",
+  "annotation_is_advertisement": false,
+  "annotation_situation_summary": "Фото сделано на улице с рекламной надписью в городской среде.",
+  "annotation_city_objects": "фасад здания, ёлочки, табличка",
+  "annotation_city_activities": "unknown",
+  "annotation_has_building": true,
+  "annotation_has_synagogue": false,
+  "annotation_has_feor": false,
+  "annotation_has_other_building": true,
+  "annotation_confidence": 0.9,
+  "model_version": "gpt-4o-mini",
+  "model_timestamp": "2025-11-19T23:29:14.779678+00:00"
+}

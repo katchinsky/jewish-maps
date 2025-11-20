@@ -1,0 +1,11 @@
+{
+  "photo_type": "event",
+  "description": {
+    "event_setup": "Стол с башней из бокалов с напитками и лепестками роз",
+    "infrastructure_elements": "Стулья, свечи",
+    "activity": "Подготовка к торжественному мероприятию"
+  },
+  "is_FEOR_building": false,
+  "model_version": "gpt-4o-mini",
+  "model_timestamp": "2025-11-19T22:47:32.225743+00:00"
+}

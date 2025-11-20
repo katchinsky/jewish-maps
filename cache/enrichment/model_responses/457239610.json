@@ -1,0 +1,16 @@
+{
+  "annotation_text_description": "Граффити на заборе с видом на жилой дом.",
+  "annotation_location_type": "outdoor",
+  "annotation_photo_type": "city landscape",
+  "annotation_is_advertisement": false,
+  "annotation_situation_summary": "Фото сделано на улице, запечатлевая граффити и часть здания.",
+  "annotation_city_objects": "фасад дома, забор, граффити",
+  "annotation_city_activities": "unknown",
+  "annotation_has_building": true,
+  "annotation_has_synagogue": false,
+  "annotation_has_feor": false,
+  "annotation_has_other_building": true,
+  "annotation_confidence": 1.0,
+  "model_version": "gpt-4o-mini",
+  "model_timestamp": "2025-11-19T23:29:20.960051+00:00"
+}

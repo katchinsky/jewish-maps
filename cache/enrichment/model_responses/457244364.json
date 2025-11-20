@@ -1,0 +1,16 @@
+{
+  "annotation_text_description": "Кукла медведя сидит на столе, окруженная другими игрушками и рекламными материалами.",
+  "annotation_location_type": "indoor",
+  "annotation_photo_type": "product photo",
+  "annotation_is_advertisement": false,
+  "annotation_situation_summary": "Фотография игрушек в магазине или на выставке.",
+  "annotation_city_objects": "",
+  "annotation_city_activities": "",
+  "annotation_has_building": false,
+  "annotation_has_synagogue": false,
+  "annotation_has_feor": false,
+  "annotation_has_other_building": false,
+  "annotation_confidence": 0.8,
+  "model_version": "gpt-4o-mini",
+  "model_timestamp": "2025-11-19T23:23:21.235444+00:00"
+}

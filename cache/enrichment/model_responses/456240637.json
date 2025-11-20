@@ -1,0 +1,16 @@
+{
+  "annotation_text_description": "Витрина магазина одежды с манекенами в ассортименте.",
+  "annotation_location_type": "indoor",
+  "annotation_photo_type": "product photo",
+  "annotation_is_advertisement": true,
+  "annotation_situation_summary": "Фото витрины магазина, снято в вечернее время.",
+  "annotation_city_objects": "витрина магазина, манекены",
+  "annotation_city_activities": "покупка одежды",
+  "annotation_has_building": false,
+  "annotation_has_synagogue": false,
+  "annotation_has_feor": false,
+  "annotation_has_other_building": false,
+  "annotation_confidence": 1.0,
+  "model_version": "gpt-4o-mini",
+  "model_timestamp": "2025-11-19T23:23:28.530012+00:00"
+}

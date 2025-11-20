@@ -8,8 +8,13 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
+if __package__ is None or __package__ == '':
+    project_root = Path(__file__).resolve().parents[1]
+    if str(project_root) not in sys.path:
+        sys.path.insert(0, str(project_root))
+
 # Import the main collection function
-from collect_vk_photos import collect_photos_for_pois, get_vk_token
+from scripts.collect_vk_photos import collect_photos_for_pois, get_vk_token
 
 # Import POI configuration (or define your own below)
 from pois_config import PERM_POIS as POIS, RADIUS_SETTINGS, DATE_RANGES

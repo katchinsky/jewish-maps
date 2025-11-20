@@ -1,0 +1,15 @@
+{
+  "annotation_text_description": "На фотографии изображен человек, сидящий на диване в помещении. Он одет в спортивную одежду и боксерские перчатки, что указывает на активность, связанную со спортом, в частности, боксом. В фоне видны предметы интерьера, такие как диван и постеры на стенах, в том числе реклама бокса. Однако не видно никаких еврейских объектов или зданий, и данное место не связано с Федерацией еврейских общин России. Атмосфера в помещении расслабленная, зафиксировано время активного отдыха.",
+  "annotation_location_type": "indoor",
+  "annotation_photo_type": "фото товара",
+  "annotation_is_advertisement": false,
+  "annotation_situation_summary": "Человек занимается боксом, развивает физическую активность в помещении.",
+  "annotation_city_objects_and_activities": "Спортивные перчатки, постер о боксе, предметы интерьера.",
+  "annotation_has_building": false,
+  "annotation_has_synagogue": false,
+  "annotation_has_feor": false,
+  "annotation_has_other_building": false,
+  "annotation_confidence": 0.5,
+  "model_version": "gpt-4o-mini",
+  "model_timestamp": "2025-11-19T23:04:20.729774+00:00"
+}

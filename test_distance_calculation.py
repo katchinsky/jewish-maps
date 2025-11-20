@@ -4,7 +4,7 @@ Test script to verify distance calculations are working correctly.
 This helps ensure the 300m radius filtering is accurate.
 """
 
-from collect_vk_photos import haversine_distance
+from scripts.collect_vk_photos import haversine_distance
 
 def test_distance_calculations():
     """Run various distance calculation tests."""

@@ -1,0 +1,17 @@
+{
+  "photoType": "Activity",
+  "locationDescription": {
+    "city": "Пермь",
+    "landmarks": [],
+    "infrastructure": {
+      "park": true,
+      "trees": true
+    }
+  },
+  "activities": [
+    "Дети, одетые в школьную форму, занимаются учебной деятельностью на свежем воздухе. Некоторые пишут, другие читают."
+  ],
+  "isFederationBuilding": false,
+  "model_version": "gpt-4o-mini",
+  "model_timestamp": "2025-11-19T22:47:55.502137+00:00"
+}

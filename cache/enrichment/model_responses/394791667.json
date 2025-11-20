@@ -1,0 +1,15 @@
+{
+  "annotation_text_description": "На снимке изображён мужчина в боксерских перчатках, сидящий на диване в помещении. Он выглядит расслабленным, с улыбкой на лице. Сзади виден диван с характерным узором. Одежда мужчины спортивная, можно заметить татуировки на его руках и ногах.",
+  "annotation_location_type": "indoor",
+  "annotation_photo_type": "фото товара",
+  "annotation_is_advertisement": false,
+  "annotation_situation_summary": "Мужчина после тренировки или в перерыве на отдых, возможно, занимается боксом.",
+  "annotation_city_objects_and_activities": "Спортивные действия, наличие боксерских перчаток, элементы домашнего интерьера.",
+  "annotation_has_building": false,
+  "annotation_has_synagogue": false,
+  "annotation_has_feor": false,
+  "annotation_has_other_building": false,
+  "annotation_confidence": 0.8,
+  "model_version": "gpt-4o-mini",
+  "model_timestamp": "2025-11-19T23:04:40.747670+00:00"
+}

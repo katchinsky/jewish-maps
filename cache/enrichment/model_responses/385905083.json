@@ -1,0 +1,15 @@
+{
+  "annotation_text_description": "На фотографии изображён человек, сидящий в автомобиле. Видно, что он одет в яркую куртку. Не видно каких-либо еврейских объектов, зданий или городской инфраструктуры.",
+  "annotation_location_type": "unknown",
+  "annotation_photo_type": "портрет",
+  "annotation_is_advertisement": false,
+  "annotation_situation_summary": "Фотография выполнена в закрытом пространстве автомобиля.",
+  "annotation_city_objects_and_activities": "",
+  "annotation_has_building": false,
+  "annotation_has_synagogue": false,
+  "annotation_has_feor": false,
+  "annotation_has_other_building": false,
+  "annotation_confidence": 0.5,
+  "model_version": "gpt-4o-mini",
+  "model_timestamp": "2025-11-19T23:04:33.058053+00:00"
+}
