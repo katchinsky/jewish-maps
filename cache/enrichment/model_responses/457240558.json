@@ -1,0 +1,16 @@
+{
+  "annotation_text_description": "На фото представлены бутылки вина, украшенные новогодними аксессуарами, на фоне с черной стеной с текстом.",
+  "annotation_location_type": "indoor",
+  "annotation_photo_type": "product photo",
+  "annotation_is_advertisement": false,
+  "annotation_situation_summary": "Снимок сделан в магазине или кафе, где представлены праздничные вина.",
+  "annotation_city_objects": "",
+  "annotation_city_activities": "",
+  "annotation_has_building": false,
+  "annotation_has_synagogue": false,
+  "annotation_has_feor": false,
+  "annotation_has_other_building": false,
+  "annotation_confidence": 0.85,
+  "model_version": "gpt-4o-mini",
+  "model_timestamp": "2025-11-19T23:29:00.623590+00:00"
+}

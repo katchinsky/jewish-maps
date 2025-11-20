@@ -1,0 +1,16 @@
+{
+  "annotation_text_description": "Мужчина в черном пиджаке и белой рубашке.",
+  "annotation_location_type": "indoor",
+  "annotation_photo_type": "portrait",
+  "annotation_is_advertisement": false,
+  "annotation_situation_summary": "Нет описания ситуации.",
+  "annotation_city_objects": "",
+  "annotation_city_activities": "",
+  "annotation_has_building": false,
+  "annotation_has_synagogue": false,
+  "annotation_has_feor": false,
+  "annotation_has_other_building": false,
+  "annotation_confidence": 0.9,
+  "model_version": "gpt-4o-mini",
+  "model_timestamp": "2025-11-19T23:22:01.541280+00:00"
+}

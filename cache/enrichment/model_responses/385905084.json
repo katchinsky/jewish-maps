@@ -1,0 +1,15 @@
+{
+  "annotation_text_description": "На фотографии изображен человек в автомобиле, сделан селфи. В фоне видна часть здания с красным кирпичным фасадом и окнами. Примечательные элементы: видимо, это улица в городе, вероятно, Пермь. Нет четких признаков еврейских объектов или зданий ФЕОР.",
+  "annotation_location_type": "outdoor",
+  "annotation_photo_type": "фото товара",
+  "annotation_is_advertisement": false,
+  "annotation_situation_summary": "Человек в салоне автомобиля.",
+  "annotation_city_objects_and_activities": "Автомобильная улица, здание с окнами на фоне.",
+  "annotation_has_building": true,
+  "annotation_has_synagogue": false,
+  "annotation_has_feor": false,
+  "annotation_has_other_building": false,
+  "annotation_confidence": 0.7,
+  "model_version": "gpt-4o-mini",
+  "model_timestamp": "2025-11-19T23:04:26.865988+00:00"
+}

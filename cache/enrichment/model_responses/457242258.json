@@ -1,0 +1,16 @@
+{
+  "annotation_text_description": "Мальчик держит деревянный домик на фоне деревянной стены с надписью.",
+  "annotation_location_type": "indoor",
+  "annotation_photo_type": "portrait",
+  "annotation_is_advertisement": false,
+  "annotation_situation_summary": "Фотография сделана в помещении, вероятно в мастерской или учебном заведении.",
+  "annotation_city_objects": "",
+  "annotation_city_activities": "",
+  "annotation_has_building": false,
+  "annotation_has_synagogue": false,
+  "annotation_has_feor": false,
+  "annotation_has_other_building": false,
+  "annotation_confidence": 0.85,
+  "model_version": "gpt-4o-mini",
+  "model_timestamp": "2025-11-19T23:23:43.527198+00:00"
+}

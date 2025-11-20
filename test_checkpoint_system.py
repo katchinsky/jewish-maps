@@ -6,7 +6,7 @@ Test script to demonstrate the checkpoint system functionality.
 import json
 from datetime import datetime
 from pathlib import Path
-from collect_vk_photos import (
+from scripts.collect_vk_photos import (
     create_config_hash, 
     save_checkpoint, 
     load_checkpoint, 

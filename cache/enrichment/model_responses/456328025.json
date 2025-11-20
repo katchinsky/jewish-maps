@@ -1,0 +1,17 @@
+{
+  "annotation_text_description": "Крупный план глаза с длительными ресницами.",
+  "annotation_location_type": "unknown",
+  "annotation_photo_type": "other",
+  "annotation_is_advertisement": true,
+  "annotation_situation_summary": "На фотографии крупный план глаза, показывающий наращенные ресницы.",
+  "annotation_city_objects": "",
+  "annotation_city_activities": "",
+  "annotation_user_intent": "показать результат наращивания ресниц",
+  "annotation_has_building": false,
+  "annotation_has_synagogue": false,
+  "annotation_has_feor": false,
+  "annotation_has_other_building": false,
+  "annotation_confidence": 0.8,
+  "model_version": "gpt-4o-mini",
+  "model_timestamp": "2025-11-20T00:43:36.613692+00:00"
+}
