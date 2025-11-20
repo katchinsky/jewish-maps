@@ -39,10 +39,54 @@ DEFAULT_MODEL_CACHE = DEFAULT_CACHE_DIR / "model_responses"
 DEFAULT_USER_CACHE = DEFAULT_CACHE_DIR / "users.json"
 
 MODEL_PRICING_USD_PER_1K = {
-    # Reference rates taken from OpenAI pricing pages (USD per 1K tokens).
+    "gpt-5.1": {"input": 0.00125, "output": 0.01},
+    "gpt-5": {"input": 0.00125, "output": 0.01},
+    "gpt-5-mini": {"input": 0.00025, "output": 0.002},
+    "gpt-5-nano": {"input": 0.00005, "output": 0.0004},
+    "gpt-5.1-chat-latest": {"input": 0.00125, "output": 0.01},
+    "gpt-5-chat-latest": {"input": 0.00125, "output": 0.01},
+    "gpt-5.1-codex": {"input": 0.00125, "output": 0.01},
+    "gpt-5-codex": {"input": 0.00125, "output": 0.01},
+    "gpt-5-pro": {"input": 0.015, "output": 0.12},
+    "gpt-4.1": {"input": 0.002, "output": 0.008},
+    "gpt-4.1-mini": {"input": 0.0004, "output": 0.0016},
+    "gpt-4.1-nano": {"input": 0.0001, "output": 0.0004},
+    "gpt-4o": {"input": 0.0025, "output": 0.01},
+    "gpt-4o-2024-05-13": {"input": 0.005, "output": 0.015},
     "gpt-4o-mini": {"input": 0.00015, "output": 0.0006},
-    "gpt-4o-mini-2024-07-18": {"input": 0.00015, "output": 0.0006},
-    "gpt-4o-2024-08-06": {"input": 0.0025, "output": 0.01},
+    "gpt-4o-mini-2024-07-18": {"input": 0.0003, "output": 0.0012},
+    "gpt-4o-mini-search-preview": {"input": 0.00015, "output": 0.0006},
+    "gpt-4o-search-preview": {"input": 0.0025, "output": 0.01},
+    "gpt-4o-mini-realtime-preview": {"input": 0.0006, "output": 0.0024},
+    "gpt-4o-realtime-preview": {"input": 0.005, "output": 0.02},
+    "gpt-4o-mini-audio-preview": {"input": 0.00015, "output": 0.0006},
+    "gpt-4o-audio-preview": {"input": 0.0025, "output": 0.01},
+    "gpt-4o-mini-tts": {"input": 0.0006, "output": 0.012},
+    "gpt-4o-transcribe": {"input": 0.0025, "output": 0.01},
+    "gpt-4o-mini-transcribe": {"input": 0.00125, "output": 0.005},
+    "gpt-4o-mini-tts": {"input": 0.0006, "output": 0.012},
+    "gpt-4o-mini-transcribe": {"input": 0.003, "output": 0.012},
+    "gpt-4o-mini-tts": {"input": 0.0006, "output": 0.012},
+    "gpt-4o-mini-transcribe-diarize": {"input": 0.003, "output": 0.012},
+    "o1": {"input": 0.015, "output": 0.06},
+    "o1-mini": {"input": 0.0011, "output": 0.0044},
+    "o1-pro": {"input": 0.15, "output": 0.6},
+    "o3": {"input": 0.002, "output": 0.008},
+    "o3-pro": {"input": 0.02, "output": 0.08},
+    "o3-deep-research": {"input": 0.01, "output": 0.04},
+    "o3-mini": {"input": 0.0011, "output": 0.0044},
+    "o4-mini": {"input": 0.0011, "output": 0.0044},
+    "o4-mini-deep-research": {"input": 0.002, "output": 0.008},
+    "gpt-4.1-2025-04-14": {"input": 0.003, "output": 0.012},
+    "gpt-4.1-mini-2025-04-14": {"input": 0.0008, "output": 0.0032},
+    "gpt-4.1-nano-2025-04-14": {"input": 0.0002, "output": 0.0008},
+    "gpt-4o-2024-08-06": {"input": 0.00375, "output": 0.015},
+    "gpt-4o-mini-2024-08-06": {"input": 0.0003, "output": 0.0012},
+    "gpt-3.5-turbo": {"input": 0.0005, "output": 0.0015},
+    "gpt-3.5-turbo-0125": {"input": 0.0005, "output": 0.0015},
+    "gpt-3.5-turbo-1106": {"input": 0.001, "output": 0.002},
+    "gpt-3.5-turbo-0613": {"input": 0.0015, "output": 0.002},
+    "gpt-3.5-0301": {"input": 0.0015, "output": 0.002},
 }
 
 
@@ -116,6 +160,12 @@ class PhotoAnnotationModel(BaseModel):
     annotation_has_feor: bool
     annotation_has_other_building: bool
     annotation_confidence: float = Field(ge=0.0, le=1.0)
+    model_config = {"extra": "forbid"}
+
+
+class BuildingVerificationModel(BaseModel):
+    matches_reference: bool
+    verification_confidence: float = Field(ge=0.0, le=1.0)
     model_config = {"extra": "forbid"}
 
 
@@ -373,6 +423,17 @@ def build_resized_image_url(image_url: str, target_width: int = 480) -> str:
     return urlunsplit(parsed._replace(query=new_query))
 
 
+def resolve_building_focus(poi_name: Optional[str]) -> Optional[str]:
+    if not poi_name or not isinstance(poi_name, str):
+        return None
+    name = poi_name.lower()
+    if any(token in name for token in ["feor", "феор", "f.e.o.r", "f e o r"]):
+        return "feor"
+    if "synagogue" in name or "синагог" in name:
+        return "synagogue"
+    return None
+
+
 def build_post_url(owner_id: Any, post_id: Any) -> Optional[str]:
     if pd.isna(post_id):
         return None
@@ -623,7 +684,7 @@ class OpenAIMultimodalClient(MultimodalModelClient):
         model_name: str,
         api_key: Optional[str],
         base_url: Optional[str],
-        reference_images: Sequence[Tuple[str, Dict[str, str]]] = (),
+        reference_images: Sequence[Tuple[str, str, Dict[str, str]]] = (),
     ):
         if OpenAI is None:
             raise RuntimeError("openai package is required but not installed.")
@@ -631,12 +692,19 @@ class OpenAIMultimodalClient(MultimodalModelClient):
             raise RuntimeError("OPENAI_API_KEY is required for model inference.")
         self.client = OpenAI(api_key=api_key, base_url=base_url)
         self.model_name = model_name
-        self.reference_images = reference_images
+        self.reference_images = list(reference_images)
+        self.reference_map: Dict[str, Tuple[str, Dict[str, str]]] = {
+            kind: (label, payload) for kind, label, payload in self.reference_images
+        }
 
     def annotate(self, photo_row: Dict[str, Any]) -> Dict[str, Any]:
+        poi_name = ensure_text(photo_row.get("poi_name"))
+        building_focus = resolve_building_focus(poi_name)
+        poi_label = poi_name or "неизвестный POI"
+
         prompt = textwrap.dedent(
-            """
-                Ты — специалист по описанию и классификации городских фотографий.
+            f"""
+                Ты — специалист по описанию и классификации городских фотографий из социальных сетей.
 
                 Твоя задача: проанализировать переданное изображение (и дополнительный текстовый контекст, если он есть) и вернуть JSON-объект с разметкой фотографии.
                 Требования:
@@ -648,7 +716,7 @@ class OpenAIMultimodalClient(MultimodalModelClient):
                 - "group_portrait" — групповой портрет людей
                 - "interior" — фото интерьера (помещение, зал, коридор, комната, и т.п.)
                 - "cityscape" — городской пейзаж (улица, площадь, двор, вид города, открытое пространство)
-                - "product" — фото товара или услуги (витрина, вывеска, демонстрация результата услуги, предмет на нейтральном фоне, промо-фото)
+                - "product" — фото товара или услуги (витрина с выкладкой, фото товара, демонстрация результата услуги, промо-фото)
                 - "urban_detail" — деталь городской среды (фасад, табличка, дверь, фрагмент здания, фрагмент тротуара, уличный объект крупным планом)
                 - "food" — еда или напитки (тарелки, стол, сервировка, кафе)
                 - "animal" — животное в фокусе снимка
@@ -659,28 +727,20 @@ class OpenAIMultimodalClient(MultimodalModelClient):
                 - "outdoor" — фотография сделана на улице / во дворе / на открытом воздухе
                 - "mixed" — и помещение, и улица явно присутствуют в кадре
                 - "unknown" — невозможно определить
-                5. Поле "is_advertising" — булево значение:
-                - true — если фотография выглядит как реклама товара или услуги (витрина с выкладкой, рекламный баннер, промо-фото салона/кафе, результат косметических услуг, предмет одежды, аксессуаров и т.п.)
-                - false — если это обычное фото (бытовой кадр, прогулка, документальная фиксация и т.п.)
-                6. Поле "situation" — краткое описание ситуации по визуальным признакам.
-                   Объясни, что происходит, кто чем занят, что пользователь хочет показать. Не добавляй предположений о чувствах/мотивах/биографии.
-                7. Поле "user_intent" — интерпретация интенции фотографа, основанная на композиции, фокусе, масштабе, ракурсе и типе объекта съёмки.
-                   Примеры: "показать архитектурную деталь", "задокументировать пространство", "сделать селфи", "показать товар", "показать еду".
-                   Не придумывай сложных внутренних мотивов, фиксируй только то, что считывается из кадра.
-                8. Поле "urban_elements" — перечисли элементы городской среды и инфраструктуры (например: "фасад дома", "дорога", "тротуар", "лавочка", "детская площадка", "забор").
-                   Если фото очевидно не про городскую среду, оставь пустую строку.
-                9. Поле "urban_practices" — перечисли городские практики и виды активности, видимые на фото (например: "прогулка", "ожидание транспорта", "поход в магазин", "посещение религиозного центра", "ремонт", "сидение на лавочке").
-                   Если людей нет или активность не считывается — пустая строка.
-                10. Флаги зданий:
-                - "has_buildings": true, если есть хотя бы одно здание или заметная часть (фасад, стена, вход); иначе false.
-                - "has_synagogue_building": true, только если визуально совпадает с синагогой (используй справочные изображения, если переданы). При сомнении — false.
-                - "has_feor_building": true, только если видно здание ФЕОР. При сомнении — false.
-                - "has_other_buildings": true, если есть другие здания (жилые дома, магазины и т.п.), отличные от синагоги и здания ФЕОР; иначе false.
+                5. Поле "is_advertising":
+                - true — если фотография выглядит как реклама товара или услуги (витрина с выкладкой, фото товара, промо-сцена, демонстрация результата услуги)
+                - false — если это бытовой/репортажный кадр.
+                6. Поле "situation" — краткое описание ситуации по визуальным признакам. Объясни, что происходит, где, кто чем занят, что пользователь хочет показать. Не описывай чувства/мотивы/биографию.
+                7. Поле "user_intent" — интерпретация интенции фотографа по композиции, фокусу, масштабу, ракурсу и типу объекта. Примеры: "показать архитектурную деталь", "задокументировать пространство", "показать товар", "показать еду", "сделать селфи". Не придумывай сложных внутренних мотивов.
+                8. Поле "urban_elements" — перечисли элементы городской среды и инфраструктуры (если нет — пустая строка). Примеры: "фасад здания", "стена", "вход", "улица", "тротуар", "дерево", "окно", "граффити".
+                9. Поле "urban_practices" — перечисли городские активности (если не видно людей/активностей — пустая строка).
+                10. Поле "has_buildings": true, если есть хотя бы одно здание или заметная часть (фасад, стена, вход); иначе false.
+    
                 11. Используй дополнительный текстовый контекст (описание поста, дату), но не придумывай факты, не подтверждаемые изображением.
 
                 Верни JSON-объект строго следующей структуры:
 
-                {
+                {{
                 "annotation_text_description": string,
                 "annotation_location_type": string,
                 "annotation_photo_type": string,
@@ -690,56 +750,12 @@ class OpenAIMultimodalClient(MultimodalModelClient):
                 "annotation_city_activities": string,
                 "annotation_user_intent": string,
                 "annotation_has_building": boolean,
-                "annotation_has_synagogue": boolean,
-                "annotation_has_feor": boolean,
-                "annotation_has_other_building": boolean,
                 "annotation_confidence": number (0-1)
-                }
+                }}
 
                 """
         ).strip()
-        # prompt = textwrap.dedent(
-        #     """
-        #     Ты занимаешься описанием и классификацией городских фотографий.
 
-        #     Проанализируй изображение (и текстовый контекст, если он есть) и верни строго ОДИН JSON-объект со следующими полями. Используй подчёркнутые имена ключей ровно как указано.. Значения должны быть на русском языке, кроме перечисленных категорий.
-
-        #     Поле annotation_photo_type — одно значение из:
-        #     "portrait", "selfie", "group_portrait", "interior", "cityscape", "product", "urban_detail", "food", "animal", "building", "other".
-
-        #     Поле annotation_location_type — одно из:
-        #     "indoor", "outdoor", "mixed", "unknown".
-
-        #     annotation_is_advertisement:
-        #     true — если кадр похож на рекламу товара/услуги (витрина, промо, результат услуги, демонстрация товара и т.п.);
-        #     false — иначе.
-
-        #     annotation_city_objects — перечисли элементы городской среды и инфраструктуры (строкой). Если нет — оставь пустую строку.
-        #     annotation_city_activities — перечисли видимые городские активности (строкой). Если людей нет или практики не считываются — пустая строка.
-
-        #     Флаги зданий:
-        #     - annotation_has_building — любое здание или его часть.
-        #     - annotation_has_synagogue — только если видно синагогу (используй справочные изображения, если переданы).
-        #     - annotation_has_feor — только если видно здание ФЕОР.
-        #     - annotation_has_other_building — остальные здания (жилые дома, магазины и т.п.).
-
-        #     Верни JSON с ключами:
-        #     {
-        #         "annotation_text_description": string,
-        #         "annotation_location_type": string,
-        #         "annotation_photo_type": string,
-        #         "annotation_is_advertisement": boolean,
-        #         "annotation_situation_summary": string,
-        #         "annotation_city_objects": string,
-        #         "annotation_city_activities": string,
-        #         "annotation_has_building": boolean,
-        #         "annotation_has_synagogue": boolean,
-        #         "annotation_has_feor": boolean,
-        #         "annotation_has_other_building": boolean,
-        #         "annotation_confidence": number between 0 and 1
-        #     }
-        #     """
-        # ).strip()
         content = [
             {"type": "input_text", "text": prompt},
             {
@@ -748,24 +764,20 @@ class OpenAIMultimodalClient(MultimodalModelClient):
                     "Дополнительный контекст: "
                     f"описание поста: {photo_row.get('post_text', '') or 'нет описания'}. "
                     "Дата и время: "
-                    f"{photo_row.get('date_human', 'unknown')}."
+                    f"{photo_row.get('date_human', 'unknown')}. "
+                    f"POI: {poi_label}."
                 ),
             },
         ]
 
         resized_image_url = build_resized_image_url(photo_row.get("image_url"), target_width=360)
-        logging.info(resized_image_url)
+        image_for_model = resized_image_url or photo_row.get("image_url")
         content.append(
             {
                 "type": "input_image",
-                "image_url": resized_image_url or photo_row.get("image_url"),
+                "image_url": image_for_model,
             }
         )
-
-        for label, payload in self.reference_images:
-            helper_text = f"Справочное изображение: {label}"
-            content.append({"type": "input_text", "text": helper_text})
-            content.append(payload)
 
         start_time = time.perf_counter()
         try:
@@ -805,9 +817,114 @@ class OpenAIMultimodalClient(MultimodalModelClient):
             log_message += f", est_cost=${est_cost:.4f}"
         logging.info(log_message)
 
+        if not parsed.get("annotation_has_building") or parsed.get("annotation_location_type") != "outdoor":
+            parsed["annotation_has_synagogue"] = False
+            parsed["annotation_has_feor"] = False
+            parsed["annotation_has_other_building"] = False
+        elif building_focus in {"synagogue", "feor"}:
+            verify_result = self._verify_special_building(
+                image_for_model,
+                building_focus,
+                poi_label,
+                photo_id,
+            )
+            if verify_result is not None:
+                if building_focus == "synagogue":
+                    parsed["annotation_has_synagogue"] = verify_result
+                    if verify_result:
+                        parsed["annotation_has_other_building"] = bool(
+                            parsed.get("annotation_has_other_building")
+                        )
+                elif building_focus == "feor":
+                    parsed["annotation_has_feor"] = verify_result
+                    if verify_result:
+                        parsed["annotation_has_other_building"] = bool(
+                            parsed.get("annotation_has_other_building")
+                        )
+
         parsed["model_version"] = self.model_name
         parsed["model_timestamp"] = utc_now_iso()
         return parsed
+
+    def _verify_special_building(
+        self,
+        image_url: Optional[str],
+        building_focus: str,
+        poi_label: str,
+        photo_id: Any,
+    ) -> Optional[bool]:
+        if not image_url:
+            return None
+        reference = self.reference_map.get(building_focus)
+        if not reference:
+            return None
+
+        label, payload = reference
+        prompt = textwrap.dedent(
+            f"""
+            Ты сравниваешь здание на фото с эталонным изображением {building_focus}.
+            Ответь только JSON-объектом с полями:
+            {{
+              "matches_reference": boolean,
+              "verification_confidence": number (0-1)
+            }}
+            Установи matches_reference=true только если здание на фото уверенно совпадает со справочным ({label}). При сомнении возвращай false.
+            POI: {poi_label}
+            """
+        ).strip()
+
+        content = [
+            {"type": "input_text", "text": prompt},
+            {"type": "input_image", "image_url": image_url},
+            {
+                "type": "input_text",
+                "text": f"Справочное изображение ({building_focus}): {label}",
+            },
+            payload,
+        ]
+
+        start_time = time.perf_counter()
+        try:
+            response = self.client.responses.parse(
+                model=self.model_name,
+                input=[
+                    {
+                        "role": "user",
+                        "content": content,
+                    }
+                ],
+                text_format=BuildingVerificationModel,
+            )
+            parsed = response.output_parsed
+            elapsed = time.perf_counter() - start_time
+            usage = getattr(response, "usage", None)
+            input_tokens = getattr(usage, "input_tokens", None) if usage else None
+            if input_tokens is None and usage:
+                input_tokens = getattr(usage, "prompt_tokens", None)
+            output_tokens = getattr(usage, "output_tokens", None) if usage else None
+            if output_tokens is None and usage:
+                output_tokens = getattr(usage, "completion_tokens", None)
+            est_cost = estimate_usage_cost(
+                self.model_name, input_tokens, output_tokens
+            )
+            log_msg = (
+                f"OpenAI {self.model_name} building-check ({building_focus}) photo {photo_id}: "
+                f"{elapsed:.2f}s"
+            )
+            if input_tokens is not None or output_tokens is not None:
+                log_msg += f", tokens in={input_tokens or 0}, out={output_tokens or 0}"
+            if est_cost is not None:
+                log_msg += f", est_cost=${est_cost:.4f}"
+            logging.info(log_msg)
+            return bool(parsed.matches_reference)
+        except Exception as exc:  # pragma: no cover - network errors
+            logging.warning(
+                "Failed building verification for photo %s (%s): %s",
+                photo_id,
+                building_focus,
+                exc,
+            )
+            return None
 
 
 def load_reference_image(source: Optional[str]) -> Optional[Tuple[str, Dict[str, str]]]:
@@ -1051,7 +1168,7 @@ def run_annotate(args: argparse.Namespace) -> None:
     df = load_csv(args.input_csv)
 
     if args.shuffle:
-        df = df.sample(frac=1.0, random_state=46).reset_index(drop=True)
+        df = df.sample(frac=1.0, random_state=41).reset_index(drop=True)
     if args.limit:
         df = df.head(args.limit)        
 
@@ -1071,12 +1188,12 @@ def run_annotate(args: argparse.Namespace) -> None:
     model_client: Optional[MultimodalModelClient] = None
     if args.model_provider == "openai":
         references = []
-        for ref in (
-            load_reference_image(args.reference_synagogue),
-            load_reference_image(args.reference_feor),
-        ):
-            if ref:
-                references.append(ref)
+        syn_ref = load_reference_image(args.reference_synagogue)
+        if syn_ref:
+            references.append(("synagogue", syn_ref[0], syn_ref[1]))
+        feor_ref = load_reference_image(args.reference_feor)
+        if feor_ref:
+            references.append(("feor", feor_ref[0], feor_ref[1]))
         model_client = OpenAIMultimodalClient(
             model_name=args.model_name,
             api_key=args.openai_api_key,
