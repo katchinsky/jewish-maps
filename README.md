@@ -50,6 +50,7 @@ Update it before running collection scripts if you need different locations.
 | Collect VK photos with checkpointing | `python -m scripts.run_photo_collection` | `@vk_photos_perm_historical.csv` |
 | Run the raw collector sample | `python -m scripts.collect_vk_photos` | `vk_photos_perm.csv` |
 | Annotate/markup photos + cache results | `python -m scripts.enrich_vk_dataset annotate --input-csv @vk_photos_perm_historical.csv --resume --checkpoint-file cache/enrichment/annotate_checkpoint.json` | `vk_photos_perm_enriched.csv` + `*.model_responses.jsonl` |
+| Prepare OpenAI batch input | `python -m scripts.enrich_vk_dataset openai-batch prepare --help` | `openai_batch_input.jsonl` + manifest |
 | Parse business reviews | `python -m scripts.parse_reviews --help` | `reviews.csv` |
 | Build static heatmaps | `python -m scripts.create_heatmap` | `photo_heatmap.html` / PNG |
 | Explore distributions | `python -m scripts.analyze_photo_distribution` | `photo_distribution_analysis.png` |
@@ -76,6 +77,19 @@ Notebooks (`cemetery.ipynb`, `ml.ipynb`) can be opened with Jupyter Lab/Notebook
   - `--checkpoint-interval 25` (default) flushes the checkpoint after every N photos.
   - Restart with `--resume` to skip already-labeled photos using both the checkpoint file and cached per-photo JSON responses.
   - Caches live in `cache/enrichment/model_responses/`; delete them to force a clean rerun.
+
+#### OpenAI Batch mode
+
+Use `python -m scripts.enrich_vk_dataset openai-batch ...` to offload large annotation jobs to OpenAI's Batch API (50% cheaper and higher throughput):
+
+1. `openai-batch prepare` — reads the dataset (same flags as `annotate`), writes a `.jsonl` request file, and saves a manifest with the exact `photo_id` mapping.
+2. `openai-batch upload` — uploads the `.jsonl` via the Files API (`--openai-api-key` is required for all API-facing subcommands).
+3. `openai-batch create` — starts a batch job using the uploaded file; capture the `batch_id`, `output_file_id`, and `error_file_id`.
+4. `openai-batch status|list|cancel` — monitor the job while it runs asynchronously (guaranteed within 24h).
+5. `openai-batch results --file-id <output_file_id> --output batch_output.jsonl` — download the finished responses (repeat for the error file if present).
+6. `openai-batch apply --batch-output batch_output.jsonl --manifest cache/enrichment/openai_batch_manifest.json --output-csv vk_photos_perm_enriched.csv` — merges the batch results back into the dataset, reproducing the same CSV/model response files as the synchronous pipeline.
+
+This keeps the interactive script lightweight while enabling large backfills under separate rate limits.
 
 ## Testing
 

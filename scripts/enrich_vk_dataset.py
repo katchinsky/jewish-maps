@@ -21,7 +21,8 @@ import textwrap
 import time
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Dict, Iterable, List, Literal, Optional, Sequence, Set, Tuple
+from dataclasses import dataclass
+from typing import Any, Dict, Iterable, List, Literal, Optional, Sequence, Set, Tuple, Type
 from urllib.parse import parse_qs, urlencode, urlsplit, urlunsplit
 
 import pandas as pd
@@ -38,6 +39,8 @@ VK_API_VERSION = "5.131"
 DEFAULT_CACHE_DIR = Path("cache/enrichment")
 DEFAULT_MODEL_CACHE = DEFAULT_CACHE_DIR / "model_responses"
 DEFAULT_USER_CACHE = DEFAULT_CACHE_DIR / "users.json"
+DEFAULT_BATCH_INPUT = DEFAULT_CACHE_DIR / "openai_batch_input.jsonl"
+DEFAULT_BATCH_MANIFEST = DEFAULT_CACHE_DIR / "openai_batch_manifest.json"
 
 MODEL_PRICING_USD_PER_1K = {
     "gpt-5.1": {"input": 0.00125, "output": 0.01},
@@ -96,7 +99,6 @@ ANNOTATION_FIELDS = [
     "annotation_location_type",
     "annotation_photo_type",
     "annotation_is_advertisement",
-    "annotation_situation_summary",
     "annotation_city_objects",
     "annotation_city_activities",
     "annotation_user_intent",
@@ -152,7 +154,6 @@ class PhotoAnnotationModel(BaseModel):
         "other",
     ]
     annotation_is_advertisement: bool
-    annotation_situation_summary: str
     annotation_city_objects: str
     annotation_city_activities: str
     annotation_user_intent: str
@@ -170,6 +171,78 @@ class BuildingVerificationModel(BaseModel):
     model_config = {"extra": "forbid"}
 
 
+def add_dataset_common_args(
+    parser: argparse.ArgumentParser, include_subset_controls: bool = True
+) -> None:
+    parser.add_argument(
+        "--input-csv",
+        type=Path,
+        default=Path("vk_photos_perm_historical_with_polygons.csv"),
+        help="Dataset with spatial flags produced by check_poi_containment.py",
+    )
+    parser.add_argument(
+        "--vk-token",
+        type=str,
+        default=os.environ.get("VK_TOKEN"),
+        help="VK API token; falls back to VK_TOKEN env variable.",
+    )
+    parser.add_argument(
+        "--skip-user-fetch",
+        action="store_true",
+        help="Skip VK user metadata fetch (keeps user columns empty).",
+    )
+    parser.add_argument(
+        "--cache-dir",
+        type=Path,
+        default=DEFAULT_CACHE_DIR,
+        help="Base directory for cached model responses and user data.",
+    )
+    if include_subset_controls:
+        parser.add_argument(
+            "--limit",
+            type=int,
+            default=None,
+            help="Process only the first N photos (useful for dry runs).",
+        )
+        parser.add_argument(
+            "--shuffle",
+            action="store_true",
+            help="Randomize processing order to balance model load.",
+        )
+
+
+def add_reference_image_args(parser: argparse.ArgumentParser) -> None:
+    parser.add_argument(
+        "--reference-synagogue",
+        action="append",
+        default=None,
+        metavar="PATH_OR_URL",
+        help="Optional URL or local path with canonical synagogue photo (repeatable).",
+    )
+    parser.add_argument(
+        "--reference-feor",
+        action="append",
+        default=None,
+        metavar="PATH_OR_URL",
+        help="Optional URL or local path with canonical FEOR building photo (repeatable).",
+    )
+
+
+def add_openai_client_args(parser: argparse.ArgumentParser) -> None:
+    parser.add_argument(
+        "--openai-base-url",
+        type=str,
+        default=None,
+        help="Custom OpenAI-compatible base URL (for local gateways).",
+    )
+    parser.add_argument(
+        "--openai-api-key",
+        type=str,
+        default=os.environ.get("OPENAI_API_KEY"),
+        help="API key for OpenAI or compatible provider.",
+    )
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Enrich VK photo dataset with multimodal annotations."
@@ -181,12 +254,7 @@ def parse_args() -> argparse.Namespace:
         "annotate",
         help="Run the enrichment pipeline and write an augmented CSV.",
     )
-    annotate.add_argument(
-        "--input-csv",
-        type=Path,
-        default=Path("vk_photos_perm_historical_with_polygons.csv"),
-        help="Dataset with spatial flags produced by check_poi_containment.py",
-    )
+    add_dataset_common_args(annotate)
     annotate.add_argument(
         "--output-csv",
         type=Path,
@@ -200,12 +268,6 @@ def parse_args() -> argparse.Namespace:
         help="Path to write raw model responses for auditing.",
     )
     annotate.add_argument(
-        "--vk-token",
-        type=str,
-        default=os.environ.get("VK_TOKEN"),
-        help="VK API token; falls back to VK_TOKEN env variable.",
-    )
-    annotate.add_argument(
         "--model-provider",
         choices=["none", "openai"],
         default="none",
@@ -217,47 +279,8 @@ def parse_args() -> argparse.Namespace:
         default="gpt-4o-mini",
         help="Model identifier for the multimodal provider.",
     )
-    annotate.add_argument(
-        "--openai-base-url",
-        type=str,
-        default=None,
-        help="Custom OpenAI-compatible base URL (for local gateways).",
-    )
-    annotate.add_argument(
-        "--openai-api-key",
-        type=str,
-        default=os.environ.get("OPENAI_API_KEY"),
-        help="API key for OpenAI or compatible provider.",
-    )
-    annotate.add_argument(
-        "--reference-synagogue",
-        type=str,
-        default=None,
-        help="Optional URL or local path with canonical synagogue photo.",
-    )
-    annotate.add_argument(
-        "--reference-feor",
-        type=str,
-        default=None,
-        help="Optional URL or local path with canonical FEOR building photo.",
-    )
-    annotate.add_argument(
-        "--limit",
-        type=int,
-        default=None,
-        help="Process only the first N photos (useful for dry runs).",
-    )
-    annotate.add_argument(
-        "--skip-user-fetch",
-        action="store_true",
-        help="Skip VK user metadata fetch (keeps user columns empty).",
-    )
-    annotate.add_argument(
-        "--cache-dir",
-        type=Path,
-        default=DEFAULT_CACHE_DIR,
-        help="Base directory for cached model responses and user data.",
-    )
+    add_openai_client_args(annotate)
+    add_reference_image_args(annotate)
     annotate.add_argument(
         "--checkpoint-file",
         type=Path,
@@ -276,9 +299,182 @@ def parse_args() -> argparse.Namespace:
         help="Respect cached model responses and skip already annotated photos.",
     )
     annotate.add_argument(
-        "--shuffle",
-        action="store_true",
-        help="Randomize processing order to balance model load.",
+        "--only-photo-id",
+        action="append",
+        dest="only_photo_ids",
+        default=None,
+        metavar="PHOTO_ID",
+        help="Annotate only the specified photo_id (repeatable).",
+    )
+
+    batch = subparsers.add_parser(
+        "openai-batch",
+        help="Prepare, submit, and consume OpenAI Batch API jobs.",
+    )
+    batch_sub = batch.add_subparsers(dest="batch_command", required=True)
+
+    batch_prepare = batch_sub.add_parser(
+        "prepare",
+        help="Convert the dataset into an OpenAI Batch input file.",
+    )
+    add_dataset_common_args(batch_prepare)
+    add_reference_image_args(batch_prepare)
+    batch_prepare.add_argument(
+        "--model-name",
+        type=str,
+        default="gpt-4o-mini",
+        help="Model identifier to use inside the batch job.",
+    )
+    batch_prepare.add_argument(
+        "--batch-input",
+        type=Path,
+        default=DEFAULT_BATCH_INPUT,
+        help="Destination .jsonl file with batch requests.",
+    )
+    batch_prepare.add_argument(
+        "--manifest",
+        type=Path,
+        default=DEFAULT_BATCH_MANIFEST,
+        help="Path to write the manifest that maps custom_ids to photo_ids.",
+    )
+
+    batch_apply = batch_sub.add_parser(
+        "apply",
+        help="Merge a completed Batch output file back into the dataset.",
+    )
+    add_dataset_common_args(batch_apply, include_subset_controls=False)
+    batch_apply.add_argument(
+        "--manifest",
+        type=Path,
+        default=DEFAULT_BATCH_MANIFEST,
+        help="Manifest produced by the prepare command.",
+    )
+    batch_apply.add_argument(
+        "--batch-output",
+        type=Path,
+        required=True,
+        help="Output JSONL downloaded from OpenAI (contains successful responses).",
+    )
+    batch_apply.add_argument(
+        "--batch-errors",
+        type=Path,
+        default=None,
+        help="Optional JSONL file with failed/expired requests.",
+    )
+    batch_apply.add_argument(
+        "--output-csv",
+        type=Path,
+        default=Path("vk_photos_perm_enriched.csv"),
+        help="Destination CSV with merged annotations.",
+    )
+    batch_apply.add_argument(
+        "--model-responses",
+        type=Path,
+        default=Path("vk_photos_perm_enriched.model_responses.jsonl"),
+        help="Where to store flattened model responses for auditing.",
+    )
+
+    batch_upload = batch_sub.add_parser(
+        "upload",
+        help="Upload a prepared batch JSONL via the Files API.",
+    )
+    add_openai_client_args(batch_upload)
+    batch_upload.add_argument(
+        "--file-path",
+        type=Path,
+        default=DEFAULT_BATCH_INPUT,
+        help="Local batch input JSONL to upload.",
+    )
+
+    batch_create = batch_sub.add_parser(
+        "create",
+        help="Create a Batch job using a previously uploaded file.",
+    )
+    add_openai_client_args(batch_create)
+    batch_create.add_argument(
+        "--input-file-id",
+        type=str,
+        required=True,
+        help="File ID returned by the upload step.",
+    )
+    batch_create.add_argument(
+        "--endpoint",
+        type=str,
+        default="/v1/responses",
+        help="Target endpoint for the batch job.",
+    )
+    batch_create.add_argument(
+        "--completion-window",
+        type=str,
+        default="24h",
+        help="Completion window requested from the API (currently only 24h).",
+    )
+    batch_create.add_argument(
+        "--metadata",
+        action="append",
+        default=[],
+        metavar="KEY=VALUE",
+        help="Optional metadata entries to attach to the batch (repeatable).",
+    )
+
+    batch_status = batch_sub.add_parser(
+        "status",
+        help="Retrieve the latest status for a batch ID.",
+    )
+    add_openai_client_args(batch_status)
+    batch_status.add_argument(
+        "--batch-id",
+        type=str,
+        required=True,
+        help="Batch identifier returned by the create step.",
+    )
+
+    batch_results = batch_sub.add_parser(
+        "results",
+        help="Download a file (output or error) produced by a Batch job.",
+    )
+    add_openai_client_args(batch_results)
+    batch_results.add_argument(
+        "--file-id",
+        type=str,
+        required=True,
+        help="ID of the file to download (output_file_id or error_file_id).",
+    )
+    batch_results.add_argument(
+        "--output",
+        type=Path,
+        required=True,
+        help="Where to store the downloaded file.",
+    )
+
+    batch_cancel = batch_sub.add_parser(
+        "cancel",
+        help="Cancel an in-flight batch job.",
+    )
+    add_openai_client_args(batch_cancel)
+    batch_cancel.add_argument(
+        "--batch-id",
+        type=str,
+        required=True,
+        help="Identifier of the batch to cancel.",
+    )
+
+    batch_list = batch_sub.add_parser(
+        "list",
+        help="List recent batch jobs.",
+    )
+    add_openai_client_args(batch_list)
+    batch_list.add_argument(
+        "--limit",
+        type=int,
+        default=10,
+        help="Maximum number of batches to display.",
+    )
+    batch_list.add_argument(
+        "--after",
+        type=str,
+        default=None,
+        help="Pagination cursor to continue listing.",
     )
 
     # golden draft command
@@ -478,7 +674,6 @@ def default_annotation() -> Dict[str, Any]:
         "annotation_location_type": "unknown",
         "annotation_photo_type": "",
         "annotation_is_advertisement": False,
-        "annotation_situation_summary": "",
         "annotation_city_objects": "",
         "annotation_city_activities": "",
         "annotation_user_intent": "",
@@ -679,6 +874,147 @@ class MultimodalModelClient:
         raise NotImplementedError
 
 
+@dataclass
+class AnnotationPromptBundle:
+    content: List[Dict[str, Any]]
+    image_for_model: Optional[str]
+    building_focus: Optional[str]
+    poi_label: str
+
+
+def build_annotation_prompt_bundle(photo_row: Dict[str, Any]) -> AnnotationPromptBundle:
+    poi_name = ensure_text(photo_row.get("poi_name"))
+    building_focus = resolve_building_focus(poi_name)
+    poi_label = poi_name or "неизвестный POI"
+
+    prompt = textwrap.dedent(
+        """
+        Ты — специалист по описанию и классификации городских фотографий из социальных сетей.
+
+        Проанализируй изображение (и текстовый контекст, если он есть) и верни строго ОДИН JSON-объект указанной структуры.
+        Не добавляй ничего, что не видно на изображении или не подтверждается текстовым контекстом.
+        Если данных недостаточно — используй "unknown", пустую строку или false.
+
+        photo_type — одно значение:
+        "portrait", "selfie", "group_portrait", "interior", "cityscape",
+        "product", "urban_detail", "food", "animal", "building", "other".
+
+        Уточнения:
+        - "building" — здание является главным объектом и видно целиком/почти целиком.
+        - "cityscape" — широкий городской план; здания — часть окружения.
+        - "urban_detail" — крупный план городской среды, но не товар.
+        - "product" — объект выглядит как товар/услуга, подготовленный или продемонстрированный.
+
+        location_type: "indoor", "outdoor", "mixed", "unknown".
+
+        is_advertising:
+        true — реклама товара/услуги; false — бытовое/репортажное фото.
+
+        Поле "user_intent": сжато опиши визуально считываемую цель снимка (главный объект, ракурс, композиция). Не выдумывай мотивацию. Примеры: "показать одежду", "задокументировать городскую сцену", "показать товар", "показать еду", "сделать селфи", "поделиться впечатлением от поездки".
+
+        Поле "urban_elements": перечисли объекты городской среды короткими, однотипными сущностями.
+        Поле "urban_practices": перечисли различимые городские активности.
+        Если объектов/активностей нет — пустая строка.
+
+        has_buildings: true/false на основе визуального наличия здания или его части.
+
+        annotation_confidence — число от 0 до 1, отражающее твою уверенность в аннотации в целом.
+
+        Пример формата:
+        {
+            "annotation_text_description": "Фасад кирпичного здания на улице, люди идут по тротуару",
+            "annotation_location_type": "outdoor",
+            "annotation_photo_type": "cityscape",
+            "annotation_is_advertisement": false,
+            "annotation_city_objects": "тротуар, дорога, фасад здания, вывеска",
+            "annotation_city_activities": "прогулка",
+            "annotation_user_intent": "задокументировать городскую сцену",
+            "annotation_has_building": true,
+            "annotation_confidence": 0.83
+        }
+
+
+        """
+    ).strip()
+
+    content = [
+        {"type": "input_text", "text": prompt},
+        {
+            "type": "input_text",
+            "text": (
+                "Дополнительный контекст: "
+                f"описание поста: {photo_row.get('post_text', '') or 'нет описания'}. "
+            ),
+        },
+    ]
+
+    resized_image_url = build_resized_image_url(
+        photo_row.get("image_url"), target_width=360
+    )
+    image_for_model = resized_image_url or photo_row.get("image_url")
+    content.append(
+        {
+            "type": "input_image",
+            "image_url": image_for_model,
+        }
+    )
+    return AnnotationPromptBundle(
+        content=content,
+        image_for_model=image_for_model,
+        building_focus=building_focus,
+        poi_label=poi_label,
+    )
+
+
+def build_building_verification_content(
+    image_url: Optional[str],
+    building_focus: str,
+    poi_label: str,
+    reference: Tuple[str, Dict[str, str]],
+) -> Optional[List[Dict[str, Any]]]:
+    if not image_url:
+        return None
+    label, payload = reference
+    prompt = textwrap.dedent(
+        f"""
+        Ты сравниваешь здание или пространство на фото с эталонным изображением {building_focus}.
+        Ответь только JSON-объектом с полями:
+        {{
+          "matches_reference": boolean,
+          "verification_confidence": number (0-1)
+        }}
+        Установи matches_reference=true, если здание на фото совпадает со справочным ({label}).
+        Используй видимые характерные детали, высотность, архитектурные элементы, чтобы сделать вывод о совпадении.
+        Учти, что здание или пространство может быть не полностью видно. 
+        Также учти, что фото может быть сделано с разных ракурсов и масштабов, а также может быть сделано в другое время суток или в другое время года. Это не означает, что здание на фото не совпадает с эталонным. 
+        Здание может быть не главным объектом фото. 
+        Фото может показывать исторический облик здания, не соответствующий его современному эталонному виду, но вывод о совпадении все же должен быть true.
+        """
+    ).strip()
+
+    content = [
+        {"type": "input_text", "text": prompt},
+        {"type": "input_image", "image_url": image_url},
+        {
+            "type": "input_text",
+            "text": f"Справочное изображение ({building_focus}): {label}",
+        },
+        dict(payload),
+    ]
+    return content
+
+
+def json_schema_response_format(model_cls: Type[BaseModel]) -> Dict[str, Any]:
+    schema = model_cls.model_json_schema()
+    return {
+        "type": "json_schema",
+        "json_schema": {
+            "name": model_cls.__name__,
+            "schema": schema,
+        },
+    }
+
+
 class OpenAIMultimodalClient(MultimodalModelClient):
     def __init__(
         self,
@@ -694,88 +1030,12 @@ class OpenAIMultimodalClient(MultimodalModelClient):
         self.client = OpenAI(api_key=api_key, base_url=base_url)
         self.model_name = model_name
         self.reference_images = list(reference_images)
-        self.reference_map: Dict[str, Tuple[str, Dict[str, str]]] = {
-            kind: (label, payload) for kind, label, payload in self.reference_images
-        }
+        self.reference_map: Dict[str, List[Tuple[str, Dict[str, str]]]] = {}
+        for kind, label, payload in self.reference_images:
+            self.reference_map.setdefault(kind, []).append((label, payload))
 
     def annotate(self, photo_row: Dict[str, Any]) -> Dict[str, Any]:
-        poi_name = ensure_text(photo_row.get("poi_name"))
-        building_focus = resolve_building_focus(poi_name)
-        poi_label = poi_name or "неизвестный POI"
-
-        prompt = textwrap.dedent(
-            f"""
-                Ты — специалист по описанию и классификации городских фотографий из социальных сетей.
-
-                Твоя задача: проанализировать переданное изображение (и дополнительный текстовый контекст, если он есть) и вернуть JSON-объект с разметкой фотографии.
-                Требования:
-                1. Всегда отвечай строго ОДНИМ JSON-объектом, без поясняющего текста до или после него.
-                2. Заполняй все поля JSON. Если информации недостаточно, используй значение "unknown" или пустую строку, но не пропускай ключ.
-                3. Поле "photo_type" должно быть ровно ОДНИМ значением из допустимого списка:
-                - "portrait" — одиночный портрет человека
-                - "selfie" — селфи или кадр, где фотограф снимает себя
-                - "group_portrait" — групповой портрет людей
-                - "interior" — фото интерьера (помещение, зал, коридор, комната, и т.п.)
-                - "cityscape" — городской пейзаж (улица, площадь, двор, вид города, открытое пространство)
-                - "product" — фото товара или услуги (витрина с выкладкой, фото товара, демонстрация результата услуги, промо-фото)
-                - "urban_detail" — деталь городской среды (фасад, табличка, дверь, фрагмент здания, фрагмент тротуара, уличный объект крупным планом)
-                - "food" — еда или напитки (тарелки, стол, сервировка, кафе)
-                - "animal" — животное в фокусе снимка
-                - "building" — отдельно стоящее здание целиком
-                - "other" — всё, что не подходит под категории выше
-                4. Поле "location_type" должно принимать одно из значений:
-                - "indoor" — фотография сделана в помещении
-                - "outdoor" — фотография сделана на улице / во дворе / на открытом воздухе
-                - "mixed" — и помещение, и улица явно присутствуют в кадре
-                - "unknown" — невозможно определить
-                5. Поле "is_advertising":
-                - true — если фотография выглядит как реклама товара или услуги (витрина с выкладкой, фото товара, промо-сцена, демонстрация результата услуги), 
-                - false — если это бытовой/репортажный кадр
-                6. Поле "situation" — краткое описание ситуации по визуальным признакам. Почему пользователь пришел в это место? Что он делает? Что он видит?
-                7. Поле "user_intent" — интерпретация интенции фотографа по композиции, фокусу, масштабу, ракурсу и типу объекта. Примеры: "показать архитектурную деталь", "задокументировать пространство", "показать товар", "показать еду", "сделать селфи", "поделиться впечатлением от поездки". Не придумывай сложных внутренних мотивов.
-                8. Поле "urban_elements" — перечисли объекты, которые присутствуют на фото. Удели особенное внимание объектам, которые являются характерными для городской среды. Примеры: "фасад здания", "стена", "вход", "улица", "тротуар", "дерево", "окно", "граффити". Если на фото нет объектов городской среды или фото сделано в помещении — пустая строка.
-                9. Поле "urban_practices" — перечисли активности, характерные для городской среды, в которые вовлечен пользователь или люди на фото. Не придумывай активности, которых нет на фото. Если не можешь определить активность точно — пустая строка.
-                10. Поле "has_buildings": true, если есть хотя бы одно здание или заметная часть (фасад, стена, вход); иначе false.
-
-                11. Используй дополнительный текстовый контекст (описание поста, дату), но не придумывай факты, не подтверждаемые изображением.
-                12. Для поля "description_text" используй только информацию из изображения и дополнительного текстового контекста.
-                Верни JSON-объект строго следующей структуры:
-
-                {{
-                "annotation_text_description": string,
-                "annotation_location_type": string,
-                "annotation_photo_type": string,
-                "annotation_is_advertisement": boolean,
-                "annotation_situation_summary": string,
-                "annotation_city_objects": string,
-                "annotation_city_activities": string,
-                "annotation_user_intent": string,
-                "annotation_has_building": boolean,
-                "annotation_confidence": number (0-1)
-                }}
-
-                """
-        ).strip()
-
-        content = [
-            {"type": "input_text", "text": prompt},
-            {
-                "type": "input_text",
-                "text": (
-                    "Дополнительный контекст: "
-                    f"описание поста: {photo_row.get('post_text', '') or 'нет описания'}. "
-                ),
-            },
-        ]
-
-        resized_image_url = build_resized_image_url(photo_row.get("image_url"), target_width=360)
-        image_for_model = resized_image_url or photo_row.get("image_url")
-        content.append(
-            {
-                "type": "input_image",
-                "image_url": image_for_model,
-            }
-        )
+        bundle = build_annotation_prompt_bundle(photo_row)
 
         start_time = time.perf_counter()
         try:
@@ -784,7 +1044,7 @@ class OpenAIMultimodalClient(MultimodalModelClient):
                 input=[
                     {
                         "role": "user",
-                        "content": content,
+                        "content": bundle.content,
                     }
                 ],
                 text_format=PhotoAnnotationModel,
@@ -819,21 +1079,21 @@ class OpenAIMultimodalClient(MultimodalModelClient):
             parsed["annotation_has_synagogue"] = False
             parsed["annotation_has_feor"] = False
             parsed["annotation_has_other_building"] = False
-        elif building_focus in {"synagogue", "feor"}:
+        elif bundle.building_focus in {"synagogue", "feor"}:
             verify_result = self._verify_special_building(
-                image_for_model,
-                building_focus,
-                poi_label,
+                bundle.image_for_model,
+                bundle.building_focus,
+                bundle.poi_label,
                 photo_id,
             )
             if verify_result is not None:
-                if building_focus == "synagogue":
+                if bundle.building_focus == "synagogue":
                     parsed["annotation_has_synagogue"] = verify_result
                     if verify_result:
                         parsed["annotation_has_other_building"] = bool(
                             parsed.get("annotation_has_other_building")
                         )
-                elif building_focus == "feor":
+                elif bundle.building_focus == "feor":
                     parsed["annotation_has_feor"] = verify_result
                     if verify_result:
                         parsed["annotation_has_other_building"] = bool(
@@ -853,76 +1113,82 @@ class OpenAIMultimodalClient(MultimodalModelClient):
     ) -> Optional[bool]:
         if not image_url:
             return None
-        reference = self.reference_map.get(building_focus)
-        if not reference:
+        references = self.reference_map.get(building_focus)
+        if not references:
             return None
 
-        label, payload = reference
-        prompt = textwrap.dedent(
-            f"""
-            Ты сравниваешь здание на фото с эталонным изображением {building_focus}.
-            Ответь только JSON-объектом с полями:
-            {{
-              "matches_reference": boolean,
-              "verification_confidence": number (0-1)
-            }}
-            Установи matches_reference=true только если здание на фото уверенно совпадает со справочным ({label}). При сомнении возвращай false.
-            POI: {poi_label}
-            """
-        ).strip()
+        any_success = None
+        for idx, reference in enumerate(references, start=1):
+            content = build_building_verification_content(
+                image_url, building_focus, poi_label, reference
+            )
+            if content is None:
+                continue
 
-        content = [
-            {"type": "input_text", "text": prompt},
-            {"type": "input_image", "image_url": image_url},
-            {
-                "type": "input_text",
-                "text": f"Справочное изображение ({building_focus}): {label}",
-            },
-            payload,
-        ]
-
-        start_time = time.perf_counter()
-        try:
-            response = self.client.responses.parse(
-                model=self.model_name,
-                input=[
-                    {
-                        "role": "user",
-                        "content": content,
-                    }
-                ],
-                text_format=BuildingVerificationModel,
-            )
-            parsed = response.output_parsed
-            elapsed = time.perf_counter() - start_time
-            usage = getattr(response, "usage", None)
-            input_tokens = getattr(usage, "input_tokens", None) if usage else None
-            if input_tokens is None and usage:
-                input_tokens = getattr(usage, "prompt_tokens", None)
-            output_tokens = getattr(usage, "output_tokens", None) if usage else None
-            if output_tokens is None and usage:
-                output_tokens = getattr(usage, "completion_tokens", None)
-            est_cost = estimate_usage_cost(
-                self.model_name, input_tokens, output_tokens
-            )
-            log_msg = (
-                f"OpenAI {self.model_name} building-check ({building_focus}) photo {photo_id}: "
-                f"{elapsed:.2f}s"
-            )
-            if input_tokens is not None or output_tokens is not None:
-                log_msg += f", tokens in={input_tokens or 0}, out={output_tokens or 0}"
-            if est_cost is not None:
-                log_msg += f", est_cost=${est_cost:.4f}"
-            logging.info(log_msg)
-            return bool(parsed.matches_reference)
-        except Exception as exc:  # pragma: no cover - network errors
-            logging.warning(
-                "Failed building verification for photo %s (%s): %s",
+            logging.debug(
+                "Building verification request #%d (photo=%s, focus=%s): %s",
+                idx,
                 photo_id,
                 building_focus,
-                exc,
+                json.dumps(content, ensure_ascii=False),
             )
-            return None
+            start_time = time.perf_counter()
+            try:
+                response = self.client.responses.parse(
+                    model=self.model_name,
+                    input=[
+                        {
+                            "role": "user",
+                            "content": content,
+                        }
+                    ],
+                    text_format=BuildingVerificationModel,
+                )
+                parsed = response.output_parsed
+                elapsed = time.perf_counter() - start_time
+                usage = getattr(response, "usage", None)
+                input_tokens = getattr(usage, "input_tokens", None) if usage else None
+                if input_tokens is None and usage:
+                    input_tokens = getattr(usage, "prompt_tokens", None)
+                output_tokens = getattr(usage, "output_tokens", None) if usage else None
+                if output_tokens is None and usage:
+                    output_tokens = getattr(usage, "completion_tokens", None)
+                est_cost = estimate_usage_cost(
+                    self.model_name, input_tokens, output_tokens
+                )
+                log_msg = (
+                    f"OpenAI {self.model_name} building-check ({building_focus}) photo {photo_id} "
+                    f"[ref #{idx}/{len(references)}]: {elapsed:.2f}s"
+                )
+                if input_tokens is not None or output_tokens is not None:
+                    log_msg += (
+                        f", tokens in={input_tokens or 0}, out={output_tokens or 0}"
+                    )
+                if est_cost is not None:
+                    log_msg += f", est_cost=${est_cost:.4f}"
+                logging.info(log_msg)
+                logging.debug(
+                    "Building verification response #%d (photo=%s, focus=%s): %s",
+                    idx,
+                    photo_id,
+                    building_focus,
+                    json.dumps(parsed.model_dump(), ensure_ascii=False),
+                )
+                matches = bool(parsed.matches_reference)
+                any_success = matches if any_success is None else any_success or matches
+                if matches:
+                    return True
+            except Exception as exc:  # pragma: no cover - network errors
+                logging.warning(
+                    "Failed building verification for photo %s (%s) ref #%d: %s",
+                    photo_id,
+                    building_focus,
+                    idx,
+                    exc,
+                )
+                continue
+
+        return any_success
 
 
 def load_reference_image(source: Optional[str]) -> Optional[Tuple[str, Dict[str, str]]]:
@@ -936,6 +1202,222 @@ def load_reference_image(source: Optional[str]) -> Optional[Tuple[str, Dict[str,
         return None
     encoded = base64.b64encode(path.read_bytes()).decode("utf-8")
     return (str(path), {"type": "input_image", "image_base64": encoded})
+
+
+def _collect_reference_entries(
+    sources: Optional[Sequence[str]],
+    kind: str,
+    collector: List[Tuple[str, str, Dict[str, str]]],
+) -> None:
+    if not sources:
+        return
+    for source in sources:
+        reference = load_reference_image(source)
+        if reference:
+            collector.append((kind, reference[0], reference[1]))
+
+
+def gather_reference_images(
+    synagogue_sources: Optional[Sequence[str]], feor_sources: Optional[Sequence[str]]
+) -> List[Tuple[str, str, Dict[str, str]]]:
+    references: List[Tuple[str, str, Dict[str, str]]] = []
+    _collect_reference_entries(synagogue_sources, "synagogue", references)
+    _collect_reference_entries(feor_sources, "feor", references)
+    return references
+
+
+# ---------------------------------------------------------------------------
+# OpenAI Batch helpers
+# ---------------------------------------------------------------------------
+
+
+class OpenAIBatchRequestBuilder:
+    def __init__(
+        self,
+        model_name: str,
+        reference_images: Sequence[Tuple[str, str, Dict[str, str]]] = (),
+    ):
+        self.model_name = model_name
+        self.reference_map: Dict[str, List[Tuple[str, Dict[str, str]]]] = {}
+        for kind, label, payload in reference_images:
+            self.reference_map.setdefault(kind, []).append((label, payload))
+        self.annotation_format = json_schema_response_format(PhotoAnnotationModel)
+        self.verification_format = json_schema_response_format(
+            BuildingVerificationModel
+        )
+
+    def build_requests(
+        self, df: pd.DataFrame
+    ) -> Tuple[List[Dict[str, Any]], Dict[str, Dict[str, Any]], List[str]]:
+        requests: List[Dict[str, Any]] = []
+        manifest_photos: Dict[str, Dict[str, Any]] = {}
+        ordered_photo_ids: List[str] = []
+
+        for _, row in df.iterrows():
+            record = row.to_dict()
+            photo_id = str(record.get("photo_id"))
+            ordered_photo_ids.append(photo_id)
+            bundle = build_annotation_prompt_bundle(record)
+            annotation_custom_id = f"annotation:{photo_id}"
+
+            requests.append(
+                {
+                    "custom_id": annotation_custom_id,
+                    "method": "POST",
+                    "url": "/v1/responses",
+                    "body": {
+                        "model": self.model_name,
+                        "input": [{"role": "user", "content": bundle.content}],
+                        "response_format": self.annotation_format,
+                    },
+                }
+            )
+
+            manifest_photos[photo_id] = {
+                "annotation_custom_id": annotation_custom_id,
+                "verification_custom_ids": [],
+                "building_focus": bundle.building_focus,
+                "poi_label": bundle.poi_label,
+            }
+
+            if (
+                bundle.building_focus
+                and bundle.building_focus in self.reference_map
+                and bundle.image_for_model
+            ):
+                verification_ids: List[str] = []
+                for ref_idx, reference in enumerate(
+                    self.reference_map[bundle.building_focus], start=1
+                ):
+                    verification_content = build_building_verification_content(
+                        bundle.image_for_model,
+                        bundle.building_focus,
+                        bundle.poi_label,
+                        reference,
+                    )
+                    if not verification_content:
+                        continue
+                    verification_custom_id = f"verify:{photo_id}:{ref_idx}"
+                    requests.append(
+                        {
+                            "custom_id": verification_custom_id,
+                            "method": "POST",
+                            "url": "/v1/responses",
+                            "body": {
+                                "model": self.model_name,
+                                "input": [
+                                    {"role": "user", "content": verification_content}
+                                ],
+                                "response_format": self.verification_format,
+                            },
+                        }
+                    )
+                    verification_ids.append(verification_custom_id)
+
+                if verification_ids:
+                    manifest_photos[photo_id]["verification_custom_ids"] = verification_ids
+                    # Backwards-compatible single entry for older manifests
+                    manifest_photos[photo_id]["verification_custom_id"] = verification_ids[
+                        0
+                    ]
+
+        return requests, manifest_photos, ordered_photo_ids
+
+
+def load_jsonl(path: Path) -> List[Dict[str, Any]]:
+    if not path.exists():
+        raise FileNotFoundError(f"JSONL file not found: {path}")
+    entries: List[Dict[str, Any]] = []
+    with path.open("r", encoding="utf-8") as handle:
+        for idx, line in enumerate(handle, start=1):
+            content = line.strip()
+            if not content:
+                continue
+            try:
+                entries.append(json.loads(content))
+            except json.JSONDecodeError as exc:
+                logging.warning(
+                    "Skipping malformed JSON at %s line %d: %s", path, idx, exc
+                )
+    return entries
+
+
+def parse_metadata_args(pairs: Sequence[str]) -> Dict[str, str]:
+    metadata: Dict[str, str] = {}
+    for raw in pairs:
+        if "=" not in raw:
+            logging.warning(
+                "Ignoring metadata entry '%s'; expected KEY=VALUE format.", raw
+            )
+            continue
+        key, value = raw.split("=", 1)
+        key_clean = key.strip()
+        if not key_clean:
+            logging.warning("Skipping metadata entry with empty key: %s", raw)
+            continue
+        metadata[key_clean] = value.strip()
+    return metadata
+
+
+def build_openai_client(api_key: Optional[str], base_url: Optional[str]):
+    if OpenAI is None:
+        raise RuntimeError("openai package is required but not installed.")
+    if not api_key:
+        raise RuntimeError("OPENAI_API_KEY is required for OpenAI Batch commands.")
+    return OpenAI(api_key=api_key, base_url=base_url)
+
+
+def extract_response_text(body: Dict[str, Any]) -> Optional[str]:
+    output_items = body.get("output") or []
+    collected: List[str] = []
+    for output in output_items:
+        content_items = output.get("content") or []
+        for item in content_items:
+            item_type = item.get("type")
+            if item_type in {"output_text", "text"}:
+                text_value = item.get("text")
+                if isinstance(text_value, list):
+                    collected.append(
+                        "".join(part.get("text", "") for part in text_value)
+                    )
+                elif isinstance(text_value, str):
+                    collected.append(text_value)
+    if collected:
+        return "".join(collected).strip()
+    fallback = body.get("output_text")
+    if isinstance(fallback, str):
+        return fallback.strip()
+    return None
+
+
+def parse_batch_response_json(
+    entry: Dict[str, Any], label: str
+) -> Optional[Dict[str, Any]]:
+    response = entry.get("response") or {}
+    body = response.get("body")
+    if not body:
+        logging.warning("Batch entry %s missing body.", label)
+        return None
+    text = extract_response_text(body)
+    if not text:
+        logging.warning("Batch entry %s missing textual output.", label)
+        return None
+    try:
+        return json.loads(text)
+    except json.JSONDecodeError as exc:
+        logging.error("Failed to parse JSON payload for %s: %s", label, exc)
+        return None
+
+
+def extract_usage_tokens(
+    entry: Dict[str, Any]
+) -> Tuple[Optional[int], Optional[int]]:
+    response = entry.get("response") or {}
+    body = response.get("body") or {}
+    usage = body.get("usage") or {}
+    input_tokens = usage.get("input_tokens", usage.get("prompt_tokens"))
+    output_tokens = usage.get("output_tokens", usage.get("completion_tokens"))
+    return input_tokens, output_tokens
 
 
 # ---------------------------------------------------------------------------
@@ -1026,6 +1508,51 @@ def merge_annotations(
         merged[col] = None
     merged = merged[CSV_COLUMNS]
     return merged
+
+
+def prepare_annotation_dataframe(
+    input_csv: Path,
+    vk_token: Optional[str],
+    skip_user_fetch: bool,
+    cache_dir: Path,
+    limit: Optional[int],
+    shuffle: bool,
+    subset_photo_ids: Optional[List[str]] = None,
+) -> pd.DataFrame:
+    df = load_csv(input_csv)
+    df = filter_visible_rows(df)
+
+    subset_order: Dict[str, int] = {}
+    if subset_photo_ids:
+        subset_strings = [str(pid) for pid in subset_photo_ids]
+        subset_lookup = set(subset_strings)
+        df = df[df["photo_id"].astype(str).isin(subset_lookup)].copy()
+        subset_order = {photo_id: idx for idx, photo_id in enumerate(subset_strings)}
+
+    if shuffle:
+        df = df.sample(frac=1.0, random_state=41).reset_index(drop=True)
+    if limit:
+        df = df.head(limit)
+
+    related_links = normalize_related_links(df)
+    if skip_user_fetch:
+        user_info = {}
+    else:
+        fetcher = VKUserMetadataFetcher(
+            token=vk_token,
+            cache_file=cache_dir / "users.json",
+        )
+        user_info = fetcher.enrich(df["user_id"].unique())
+
+    enriched = restructure_dataframe(df, related_links, user_info)
+    if subset_photo_ids:
+        order_series = enriched["photo_id"].astype(str).map(subset_order)
+        enriched = (
+            enriched.assign(_order=order_series)
+            .sort_values("_order", na_position="last")
+            .drop(columns="_order")
+        )
+    return enriched.reset_index(drop=True)
 
 
 def restructure_dataframe(
@@ -1205,36 +1732,21 @@ def evaluate_predictions(predictions: Path, golden_csv: Path, report_json: Path)
 
 
 def run_annotate(args: argparse.Namespace) -> None:
-    df = load_csv(args.input_csv)
-    df = filter_visible_rows(df)
-
-    if args.shuffle:
-        df = df.sample(frac=1.0, random_state=41).reset_index(drop=True)
-    if args.limit:
-        df = df.head(args.limit)        
-
-    related_links = normalize_related_links(df)
-
-    if args.skip_user_fetch:
-        user_info = {}
-    else:
-        fetcher = VKUserMetadataFetcher(
-            token=args.vk_token,
-            cache_file=args.cache_dir / "users.json",
-        )
-        user_info = fetcher.enrich(df["user_id"].unique())
-
-    enriched = restructure_dataframe(df, related_links, user_info)
+    enriched = prepare_annotation_dataframe(
+        input_csv=args.input_csv,
+        vk_token=args.vk_token,
+        skip_user_fetch=args.skip_user_fetch,
+        cache_dir=args.cache_dir,
+        limit=args.limit,
+        shuffle=args.shuffle,
+        subset_photo_ids=args.only_photo_ids,
+    )
 
     model_client: Optional[MultimodalModelClient] = None
     if args.model_provider == "openai":
-        references = []
-        syn_ref = load_reference_image(args.reference_synagogue)
-        if syn_ref:
-            references.append(("synagogue", syn_ref[0], syn_ref[1]))
-        feor_ref = load_reference_image(args.reference_feor)
-        if feor_ref:
-            references.append(("feor", feor_ref[0], feor_ref[1]))
+        references = gather_reference_images(
+            args.reference_synagogue, args.reference_feor
+        )
         model_client = OpenAIMultimodalClient(
             model_name=args.model_name,
             api_key=args.openai_api_key,
@@ -1277,6 +1789,310 @@ def run_annotate(args: argparse.Namespace) -> None:
             )
     logging.info("Model responses exported to %s", args.model_responses)
 
+    if args.only_photo_ids:
+        for pid in args.only_photo_ids:
+            payload = annotations.get(str(pid))
+            if payload is None:
+                logging.warning("Requested photo_id %s not processed.", pid)
+                continue
+            logging.info(
+                "Annotation for photo_id %s:\n%s",
+                pid,
+                json.dumps(payload, ensure_ascii=False, indent=2),
+            )
+
+
+def run_openai_batch_prepare(args: argparse.Namespace) -> None:
+    enriched = prepare_annotation_dataframe(
+        input_csv=args.input_csv,
+        vk_token=args.vk_token,
+        skip_user_fetch=args.skip_user_fetch,
+        cache_dir=args.cache_dir,
+        limit=args.limit,
+        shuffle=args.shuffle,
+    )
+    references = gather_reference_images(
+        args.reference_synagogue, args.reference_feor
+    )
+    builder = OpenAIBatchRequestBuilder(args.model_name, references)
+    requests, manifest_photos, photo_ids = builder.build_requests(enriched)
+
+    ensure_directory(args.batch_input.parent)
+    with args.batch_input.open("w", encoding="utf-8") as handle:
+        for record in requests:
+            handle.write(json.dumps(record, ensure_ascii=False))
+            handle.write("\n")
+
+    manifest = {
+        "version": 1,
+        "generated_at": utc_now_iso(),
+        "model_name": args.model_name,
+        "dataset": {
+            "input_csv": str(args.input_csv),
+            "limit": args.limit,
+            "shuffle": args.shuffle,
+            "skip_user_fetch": args.skip_user_fetch,
+            "row_count": len(enriched),
+        },
+        "photo_ids": photo_ids,
+        "photos": manifest_photos,
+    }
+    ensure_directory(args.manifest.parent)
+    args.manifest.write_text(
+        json.dumps(manifest, ensure_ascii=False, indent=2), encoding="utf-8"
+    )
+
+    logging.info(
+        "Prepared %d batch requests across %d photos. Input saved to %s; manifest saved to %s.",
+        len(requests),
+        len(photo_ids),
+        args.batch_input,
+        args.manifest,
+    )
+
+
+def run_openai_batch_apply(args: argparse.Namespace) -> None:
+    if not args.manifest.exists():
+        raise FileNotFoundError(f"Manifest not found: {args.manifest}")
+    manifest = json.loads(args.manifest.read_text(encoding="utf-8"))
+    manifest_photos: Dict[str, Dict[str, Any]] = manifest.get("photos", {})
+    photo_ids: List[str] = manifest.get("photo_ids") or list(manifest_photos.keys())
+    if not photo_ids:
+        raise RuntimeError("Manifest contains no photo IDs to apply.")
+
+    enriched = prepare_annotation_dataframe(
+        input_csv=args.input_csv,
+        vk_token=args.vk_token,
+        skip_user_fetch=args.skip_user_fetch,
+        cache_dir=args.cache_dir,
+        limit=None,
+        shuffle=False,
+        subset_photo_ids=photo_ids,
+    )
+
+    enriched_ids = set(enriched["photo_id"].astype(str))
+    missing_ids = [pid for pid in photo_ids if pid not in enriched_ids]
+    if missing_ids:
+        logging.warning(
+            "Manifest references %d photos missing from the current dataset. They will be skipped.",
+            len(missing_ids),
+        )
+
+    response_entries = load_jsonl(args.batch_output)
+    response_map: Dict[str, Dict[str, Any]] = {
+        entry["custom_id"]: entry
+        for entry in response_entries
+        if isinstance(entry, dict) and entry.get("custom_id")
+    }
+    error_map: Dict[str, Dict[str, Any]] = {}
+    if args.batch_errors:
+        for entry in load_jsonl(args.batch_errors):
+            custom_id = entry.get("custom_id")
+            if custom_id:
+                error_map[custom_id] = entry
+
+    annotations: Dict[str, Dict[str, Any]] = {}
+    model_name = manifest.get("model_name", "unknown")
+
+    for photo_id in photo_ids:
+        meta = manifest_photos.get(photo_id, {})
+        annotation_custom_id = meta.get("annotation_custom_id")
+        annotation_data = default_annotation()
+        parsed = None
+        if annotation_custom_id and annotation_custom_id in response_map:
+            parsed = parse_batch_response_json(
+                response_map[annotation_custom_id], annotation_custom_id
+            )
+            input_tokens, output_tokens = extract_usage_tokens(
+                response_map[annotation_custom_id]
+            )
+            est_cost = estimate_usage_cost(model_name, input_tokens, output_tokens)
+            log_msg = (
+                f"Batch annotation {annotation_custom_id} photo {photo_id}: "
+                f"tokens in={input_tokens or 0}, out={output_tokens or 0}"
+            )
+            if est_cost is not None:
+                log_msg += f", est_cost=${est_cost:.4f}"
+            logging.info(log_msg)
+        elif annotation_custom_id and annotation_custom_id in error_map:
+            logging.error(
+                "Annotation request %s failed: %s",
+                annotation_custom_id,
+                error_map[annotation_custom_id].get("error"),
+            )
+        else:
+            logging.warning(
+                "No annotation result found for photo %s (custom_id=%s).",
+                photo_id,
+                annotation_custom_id,
+            )
+
+        if parsed:
+            annotation_data.update(parsed)
+        annotation_data["model_version"] = model_name
+        annotation_data["model_timestamp"] = utc_now_iso()
+
+        building_focus = meta.get("building_focus")
+        if (
+            not annotation_data.get("annotation_has_building")
+            or annotation_data.get("annotation_location_type") != "outdoor"
+        ):
+            annotation_data["annotation_has_synagogue"] = False
+            annotation_data["annotation_has_feor"] = False
+            annotation_data["annotation_has_other_building"] = False
+        elif building_focus in {"synagogue", "feor"}:
+            verification_ids: List[str] = []
+            if isinstance(meta.get("verification_custom_ids"), list):
+                verification_ids.extend(meta.get("verification_custom_ids"))
+            legacy_id = meta.get("verification_custom_id")
+            if legacy_id and legacy_id not in verification_ids:
+                verification_ids.append(legacy_id)
+
+            verification_result: Optional[bool] = None
+            for vid in verification_ids:
+                if vid in response_map:
+                    verification_payload = parse_batch_response_json(
+                        response_map[vid], vid
+                    )
+                    if verification_payload is not None:
+                        matches = bool(verification_payload.get("matches_reference"))
+                        verification_result = (
+                            matches
+                            if verification_result is None
+                            else verification_result or matches
+                        )
+                        logging.debug(
+                            "Batch verification response %s (photo=%s): %s",
+                            vid,
+                            photo_id,
+                            json.dumps(verification_payload, ensure_ascii=False),
+                        )
+                        if matches:
+                            break
+                elif vid in error_map:
+                    logging.warning(
+                        "Verification request %s failed: %s",
+                        vid,
+                        error_map[vid].get("error"),
+                    )
+                else:
+                    logging.warning(
+                        "Verification result %s missing in batch outputs.", vid
+                    )
+
+            if verification_result is not None:
+                if building_focus == "synagogue":
+                    annotation_data["annotation_has_synagogue"] = verification_result
+                    if verification_result:
+                        annotation_data["annotation_has_other_building"] = bool(
+                            annotation_data.get("annotation_has_other_building")
+                        )
+                elif building_focus == "feor":
+                    annotation_data["annotation_has_feor"] = verification_result
+                    if verification_result:
+                        annotation_data["annotation_has_other_building"] = bool(
+                            annotation_data.get("annotation_has_other_building")
+                        )
+
+        annotations[photo_id] = annotation_data
+
+    merged = merge_annotations(enriched, annotations)
+    merged.to_csv(args.output_csv, index=False)
+    logging.info("Batch output merged into %s", args.output_csv)
+
+    with args.model_responses.open("w", encoding="utf-8") as handle:
+        for photo_id, payload in annotations.items():
+            handle.write(
+                json.dumps({"photo_id": photo_id, **payload}, ensure_ascii=False)
+                + "\n"
+            )
+    logging.info("Flattened batch responses written to %s", args.model_responses)
+
+
+def run_openai_batch_upload(args: argparse.Namespace) -> None:
+    if not args.file_path.exists():
+        raise FileNotFoundError(f"Batch input file not found: {args.file_path}")
+    client = build_openai_client(args.openai_api_key, args.openai_base_url)
+    with args.file_path.open("rb") as handle:
+        file_obj = client.files.create(file=handle, purpose="batch")
+    size_bytes = args.file_path.stat().st_size
+    logging.info(
+        "Uploaded %s (%d bytes). File ID: %s",
+        args.file_path,
+        size_bytes,
+        file_obj.id,
+    )
+
+
+def run_openai_batch_create(args: argparse.Namespace) -> None:
+    client = build_openai_client(args.openai_api_key, args.openai_base_url)
+    metadata = parse_metadata_args(args.metadata)
+    batch = client.batches.create(
+        input_file_id=args.input_file_id,
+        endpoint=args.endpoint,
+        completion_window=args.completion_window,
+        metadata=metadata or None,
+    )
+    logging.info(
+        "Created batch %s (status=%s). Output file: %s, error file: %s",
+        batch.id,
+        batch.status,
+        getattr(batch, "output_file_id", None),
+        getattr(batch, "error_file_id", None),
+    )
+
+
+def run_openai_batch_status(args: argparse.Namespace) -> None:
+    client = build_openai_client(args.openai_api_key, args.openai_base_url)
+    batch = client.batches.retrieve(args.batch_id)
+    counts = getattr(batch, "request_counts", {}) or {}
+    logging.info(
+        "Batch %s status=%s total=%s completed=%s failed=%s output=%s error=%s",
+        batch.id,
+        batch.status,
+        counts.get("total"),
+        counts.get("completed"),
+        counts.get("failed"),
+        getattr(batch, "output_file_id", None),
+        getattr(batch, "error_file_id", None),
+    )
+
+
+def run_openai_batch_results(args: argparse.Namespace) -> None:
+    client = build_openai_client(args.openai_api_key, args.openai_base_url)
+    ensure_directory(args.output.parent)
+    response = client.files.content(args.file_id)
+    response.write_to_file(str(args.output))
+    logging.info("Downloaded file %s to %s", args.file_id, args.output)
+
+
+def run_openai_batch_cancel(args: argparse.Namespace) -> None:
+    client = build_openai_client(args.openai_api_key, args.openai_base_url)
+    batch = client.batches.cancel(args.batch_id)
+    logging.info(
+        "Cancellation requested for batch %s. New status=%s",
+        batch.id,
+        batch.status,
+    )
+
+
+def run_openai_batch_list(args: argparse.Namespace) -> None:
+    client = build_openai_client(args.openai_api_key, args.openai_base_url)
+    listing = client.batches.list(limit=args.limit, after=args.after)
+    data = getattr(listing, "data", listing)
+    for batch in data:
+        counts = getattr(batch, "request_counts", {}) or {}
+        logging.info(
+            "Batch %s status=%s total=%s completed=%s failed=%s output=%s error=%s",
+            batch.id,
+            batch.status,
+            counts.get("total"),
+            counts.get("completed"),
+            counts.get("failed"),
+            getattr(batch, "output_file_id", None),
+            getattr(batch, "error_file_id", None),
+        )
+
 
 def run_golden_draft(args: argparse.Namespace) -> None:
     path = create_golden_draft(
@@ -1314,6 +2130,25 @@ def main() -> None:
 
     if args.command == "annotate":
         run_annotate(args)
+    elif args.command == "openai-batch":
+        if args.batch_command == "prepare":
+            run_openai_batch_prepare(args)
+        elif args.batch_command == "apply":
+            run_openai_batch_apply(args)
+        elif args.batch_command == "upload":
+            run_openai_batch_upload(args)
+        elif args.batch_command == "create":
+            run_openai_batch_create(args)
+        elif args.batch_command == "status":
+            run_openai_batch_status(args)
+        elif args.batch_command == "results":
+            run_openai_batch_results(args)
+        elif args.batch_command == "cancel":
+            run_openai_batch_cancel(args)
+        elif args.batch_command == "list":
+            run_openai_batch_list(args)
+        else:  # pragma: no cover - defensive
+            raise ValueError(f"Unknown batch sub-command: {args.batch_command}")
     elif args.command == "golden-draft":
         run_golden_draft(args)
     elif args.command == "golden-apply":
