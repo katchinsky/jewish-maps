@@ -970,37 +970,40 @@ def build_building_verification_content(
     image_url: Optional[str],
     building_focus: str,
     poi_label: str,
-    reference: Tuple[str, Dict[str, str]],
+    references: Sequence[Tuple[str, Dict[str, str]]],
 ) -> Optional[List[Dict[str, Any]]]:
-    if not image_url:
+    if not image_url or not references:
         return None
-    label, payload = reference
     prompt = textwrap.dedent(
         f"""
-        Ты сравниваешь здание или пространство на фото с эталонным изображением {building_focus}.
-        Ответь только JSON-объектом с полями:
+        Ты сравниваешь здание или пространство на фото с несколькими эталонными изображениями объекта "{building_focus}".
+        Все эталонные фото показывают один и тот же объект, но с разных ракурсов, в разные годы, временá суток или состояния (исторический и современный вид).
+        Ответь только JSON-объектом:
         {{
           "matches_reference": boolean,
           "verification_confidence": number (0-1)
         }}
-        Установи matches_reference=true, если здание на фото совпадает со справочным ({label}).
-        Используй видимые характерные детали, высотность, архитектурные элементы, чтобы сделать вывод о совпадении.
-        Учти, что здание или пространство может быть не полностью видно. 
-        Также учти, что фото может быть сделано с разных ракурсов и масштабов, а также может быть сделано в другое время суток или в другое время года. Это не означает, что здание на фото не совпадает с эталонным. 
-        Здание может быть не главным объектом фото. 
-        Фото может показывать исторический облик здания, не соответствующий его современному эталонному виду, но вывод о совпадении все же должен быть true.
+        Установи matches_reference=true, если целевой объект совпадает хотя бы с одним эталонным изображением, даже если:
+        - объект виден частично или не является главным фокусом,
+        - ракурс, масштаб или освещение отличаются,
+        - на фото показан исторический вариант объекта, отличающийся от современного вида.
+        Используй характерные архитектурные элементы, пропорции, детали фасада, окружение.
         """
     ).strip()
 
-    content = [
+    content: List[Dict[str, Any]] = [
         {"type": "input_text", "text": prompt},
+        {"type": "input_text", "text": f"POI: {poi_label}"},
         {"type": "input_image", "image_url": image_url},
-        {
-            "type": "input_text",
-            "text": f"Справочное изображение ({building_focus}): {label}",
-        },
-        dict(payload),
     ]
+    for idx, (label, payload) in enumerate(references, start=1):
+        content.append(
+            {
+                "type": "input_text",
+                "text": f"Справочное изображение #{idx} ({building_focus}): {label}",
+            }
+        )
+        content.append(dict(payload))
     return content
 
 
@@ -1117,78 +1120,68 @@ class OpenAIMultimodalClient(MultimodalModelClient):
         if not references:
             return None
 
-        any_success = None
-        for idx, reference in enumerate(references, start=1):
-            content = build_building_verification_content(
-                image_url, building_focus, poi_label, reference
-            )
-            if content is None:
-                continue
+        content = build_building_verification_content(
+            image_url, building_focus, poi_label, references
+        )
+        if content is None:
+            return None
 
+        logging.debug(
+            "Building verification request (photo=%s, focus=%s, refs=%d): %s",
+            photo_id,
+            building_focus,
+            len(references),
+            json.dumps(content, ensure_ascii=False),
+        )
+
+        start_time = time.perf_counter()
+        try:
+            response = self.client.responses.parse(
+                model=self.model_name,
+                input=[
+                    {
+                        "role": "user",
+                        "content": content,
+                    }
+                ],
+                text_format=BuildingVerificationModel,
+            )
+            parsed = response.output_parsed
+            elapsed = time.perf_counter() - start_time
+            usage = getattr(response, "usage", None)
+            input_tokens = getattr(usage, "input_tokens", None) if usage else None
+            if input_tokens is None and usage:
+                input_tokens = getattr(usage, "prompt_tokens", None)
+            output_tokens = getattr(usage, "output_tokens", None) if usage else None
+            if output_tokens is None and usage:
+                output_tokens = getattr(usage, "completion_tokens", None)
+            est_cost = estimate_usage_cost(
+                self.model_name, input_tokens, output_tokens
+            )
+            log_msg = (
+                f"OpenAI {self.model_name} building-check ({building_focus}) photo {photo_id}: "
+                f"{elapsed:.2f}s"
+            )
+            if input_tokens is not None or output_tokens is not None:
+                log_msg += f", tokens in={input_tokens or 0}, out={output_tokens or 0}"
+            if est_cost is not None:
+                log_msg += f", est_cost=${est_cost:.4f}"
+            logging.info(log_msg)
             logging.debug(
-                "Building verification request #%d (photo=%s, focus=%s): %s",
-                idx,
+                "Building verification response (photo=%s, focus=%s): %s",
                 photo_id,
                 building_focus,
-                json.dumps(content, ensure_ascii=False),
+                json.dumps(parsed.model_dump(), ensure_ascii=False),
             )
-            start_time = time.perf_counter()
-            try:
-                response = self.client.responses.parse(
-                    model=self.model_name,
-                    input=[
-                        {
-                            "role": "user",
-                            "content": content,
-                        }
-                    ],
-                    text_format=BuildingVerificationModel,
-                )
-                parsed = response.output_parsed
-                elapsed = time.perf_counter() - start_time
-                usage = getattr(response, "usage", None)
-                input_tokens = getattr(usage, "input_tokens", None) if usage else None
-                if input_tokens is None and usage:
-                    input_tokens = getattr(usage, "prompt_tokens", None)
-                output_tokens = getattr(usage, "output_tokens", None) if usage else None
-                if output_tokens is None and usage:
-                    output_tokens = getattr(usage, "completion_tokens", None)
-                est_cost = estimate_usage_cost(
-                    self.model_name, input_tokens, output_tokens
-                )
-                log_msg = (
-                    f"OpenAI {self.model_name} building-check ({building_focus}) photo {photo_id} "
-                    f"[ref #{idx}/{len(references)}]: {elapsed:.2f}s"
-                )
-                if input_tokens is not None or output_tokens is not None:
-                    log_msg += (
-                        f", tokens in={input_tokens or 0}, out={output_tokens or 0}"
-                    )
-                if est_cost is not None:
-                    log_msg += f", est_cost=${est_cost:.4f}"
-                logging.info(log_msg)
-                logging.debug(
-                    "Building verification response #%d (photo=%s, focus=%s): %s",
-                    idx,
-                    photo_id,
-                    building_focus,
-                    json.dumps(parsed.model_dump(), ensure_ascii=False),
-                )
-                matches = bool(parsed.matches_reference)
-                any_success = matches if any_success is None else any_success or matches
-                if matches:
-                    return True
-            except Exception as exc:  # pragma: no cover - network errors
-                logging.warning(
-                    "Failed building verification for photo %s (%s) ref #%d: %s",
-                    photo_id,
-                    building_focus,
-                    idx,
-                    exc,
-                )
-                continue
-
-        return any_success
+            return bool(parsed.matches_reference)
+        except Exception as exc:  # pragma: no cover - network errors
+            logging.warning(
+                "Failed building verification for photo %s (%s): %s",
+                photo_id,
+                building_focus,
+                exc,
+            )
+            return None
 
 
 def load_reference_image(source: Optional[str]) -> Optional[Tuple[str, Dict[str, str]]]:
@@ -1285,19 +1278,14 @@ class OpenAIBatchRequestBuilder:
                 and bundle.building_focus in self.reference_map
                 and bundle.image_for_model
             ):
-                verification_ids: List[str] = []
-                for ref_idx, reference in enumerate(
-                    self.reference_map[bundle.building_focus], start=1
-                ):
-                    verification_content = build_building_verification_content(
-                        bundle.image_for_model,
-                        bundle.building_focus,
-                        bundle.poi_label,
-                        reference,
-                    )
-                    if not verification_content:
-                        continue
-                    verification_custom_id = f"verify:{photo_id}:{ref_idx}"
+                verification_content = build_building_verification_content(
+                    bundle.image_for_model,
+                    bundle.building_focus,
+                    bundle.poi_label,
+                    self.reference_map[bundle.building_focus],
+                )
+                if verification_content:
+                    verification_custom_id = f"verify:{photo_id}"
                     requests.append(
                         {
                             "custom_id": verification_custom_id,
@@ -1312,13 +1300,8 @@ class OpenAIBatchRequestBuilder:
                             },
                         }
                     )
-                    verification_ids.append(verification_custom_id)
-
-                if verification_ids:
-                    manifest_photos[photo_id]["verification_custom_ids"] = verification_ids
-                    # Backwards-compatible single entry for older manifests
-                    manifest_photos[photo_id]["verification_custom_id"] = verification_ids[
-                        0
+                    manifest_photos[photo_id]["verification_custom_ids"] = [
+                        verification_custom_id
                     ]
 
         return requests, manifest_photos, ordered_photo_ids
@@ -1944,9 +1927,6 @@ def run_openai_batch_apply(args: argparse.Namespace) -> None:
             verification_ids: List[str] = []
             if isinstance(meta.get("verification_custom_ids"), list):
                 verification_ids.extend(meta.get("verification_custom_ids"))
-            legacy_id = meta.get("verification_custom_id")
-            if legacy_id and legacy_id not in verification_ids:
-                verification_ids.append(legacy_id)
 
             verification_result: Optional[bool] = None
             for vid in verification_ids:
