@@ -25,6 +25,7 @@ from typing import Any, Dict, Iterable, List, Literal, Optional, Sequence, Set, 
 from urllib.parse import parse_qs, urlencode, urlsplit, urlunsplit
 
 import pandas as pd
+from pandas.api.types import is_bool_dtype
 import requests
 from pydantic import BaseModel, Field  # type: ignore
 
@@ -183,8 +184,8 @@ def parse_args() -> argparse.Namespace:
     annotate.add_argument(
         "--input-csv",
         type=Path,
-        default=Path("vk_photos_perm_historical.csv"),
-        help="Source dataset produced by collect_vk_photos.py",
+        default=Path("vk_photos_perm_historical_with_polygons.csv"),
+        help="Dataset with spatial flags produced by check_poi_containment.py",
     )
     annotate.add_argument(
         "--output-csv",
@@ -310,7 +311,7 @@ def parse_args() -> argparse.Namespace:
     )
     draft.add_argument(
         "--strategy",
-        choices=["random", "recent"],
+        choices=["random", "recent", "inside_poi_area", "unique_by_user"],
         default="random",
         help="Sampling strategy for draft selection.",
     )
@@ -728,16 +729,16 @@ class OpenAIMultimodalClient(MultimodalModelClient):
                 - "mixed" — и помещение, и улица явно присутствуют в кадре
                 - "unknown" — невозможно определить
                 5. Поле "is_advertising":
-                - true — если фотография выглядит как реклама товара или услуги (витрина с выкладкой, фото товара, промо-сцена, демонстрация результата услуги)
-                - false — если это бытовой/репортажный кадр.
-                6. Поле "situation" — краткое описание ситуации по визуальным признакам. Объясни, что происходит, где, кто чем занят, что пользователь хочет показать. Не описывай чувства/мотивы/биографию.
-                7. Поле "user_intent" — интерпретация интенции фотографа по композиции, фокусу, масштабу, ракурсу и типу объекта. Примеры: "показать архитектурную деталь", "задокументировать пространство", "показать товар", "показать еду", "сделать селфи". Не придумывай сложных внутренних мотивов.
-                8. Поле "urban_elements" — перечисли элементы городской среды и инфраструктуры (если нет — пустая строка). Примеры: "фасад здания", "стена", "вход", "улица", "тротуар", "дерево", "окно", "граффити".
-                9. Поле "urban_practices" — перечисли городские активности (если не видно людей/активностей — пустая строка).
+                - true — если фотография выглядит как реклама товара или услуги (витрина с выкладкой, фото товара, промо-сцена, демонстрация результата услуги), 
+                - false — если это бытовой/репортажный кадр
+                6. Поле "situation" — краткое описание ситуации по визуальным признакам. Почему пользователь пришел в это место? Что он делает? Что он видит?
+                7. Поле "user_intent" — интерпретация интенции фотографа по композиции, фокусу, масштабу, ракурсу и типу объекта. Примеры: "показать архитектурную деталь", "задокументировать пространство", "показать товар", "показать еду", "сделать селфи", "поделиться впечатлением от поездки". Не придумывай сложных внутренних мотивов.
+                8. Поле "urban_elements" — перечисли объекты, которые присутствуют на фото. Удели особенное внимание объектам, которые являются характерными для городской среды. Примеры: "фасад здания", "стена", "вход", "улица", "тротуар", "дерево", "окно", "граффити". Если на фото нет объектов городской среды или фото сделано в помещении — пустая строка.
+                9. Поле "urban_practices" — перечисли активности, характерные для городской среды, в которые вовлечен пользователь или люди на фото. Не придумывай активности, которых нет на фото. Если не можешь определить активность точно — пустая строка.
                 10. Поле "has_buildings": true, если есть хотя бы одно здание или заметная часть (фасад, стена, вход); иначе false.
-    
-                11. Используй дополнительный текстовый контекст (описание поста, дату), но не придумывай факты, не подтверждаемые изображением.
 
+                11. Используй дополнительный текстовый контекст (описание поста, дату), но не придумывай факты, не подтверждаемые изображением.
+                12. Для поля "description_text" используй только информацию из изображения и дополнительного текстового контекста.
                 Верни JSON-объект строго следующей структуры:
 
                 {{
@@ -763,9 +764,8 @@ class OpenAIMultimodalClient(MultimodalModelClient):
                 "text": (
                     "Дополнительный контекст: "
                     f"описание поста: {photo_row.get('post_text', '') or 'нет описания'}. "
-                    "Дата и время: "
-                    f"{photo_row.get('date_human', 'unknown')}. "
-                    f"POI: {poi_label}."
+                    # "Дата и время: "
+                    # f"{photo_row.get('date_human', 'unknown')}. "
                 ),
             },
         ]
@@ -1076,13 +1076,55 @@ def restructure_dataframe(
 
 
 # ---------------------------------------------------------------------------
+# Dataset filtering
+# ---------------------------------------------------------------------------
+
+
+def filter_visible_rows(df: pd.DataFrame) -> pd.DataFrame:
+    column = "inside_poi_area"
+    if column not in df.columns:
+        logging.warning(
+            "Column '%s' not found; cannot filter rows by POI visibility.", column
+        )
+        return df
+
+    series = df[column]
+    if is_bool_dtype(series):
+        mask = series.fillna(False)
+    else:
+        normalized = (
+            series.fillna("")
+            .astype(str)
+            .str.strip()
+            .str.lower()
+        )
+        mask = normalized.isin({"true", "1", "yes"})
+
+    mask = mask.astype(bool)
+    filtered = df[mask].copy()
+    dropped = len(df) - len(filtered)
+    if dropped > 0:
+        logging.info(
+            "Skipped %d rows outside POI visibility (%s column).", dropped, column
+        )
+    if filtered.empty:
+        logging.warning(
+            "After filtering by %s, no rows remain. Check the input dataset.", column
+        )
+    return filtered
+
+
+# ---------------------------------------------------------------------------
 # Golden set helpers
 
 
 def create_golden_draft(enriched_csv: Path, output_dir: Path, sample_size: int, seed: int, strategy: str) -> Path:
     df = load_csv(enriched_csv)
+    df = filter_visible_rows(df)
     if strategy == "recent" and "date_human" in df.columns:
         df = df.sort_values("date_human", ascending=False)
+    elif strategy == "unique_by_user":
+        df = df.groupby("user_id").sample(n=1, random_state=seed)
     else:
         df = df.sample(frac=1.0, random_state=seed)
 
@@ -1166,6 +1208,7 @@ def evaluate_predictions(predictions: Path, golden_csv: Path, report_json: Path)
 
 def run_annotate(args: argparse.Namespace) -> None:
     df = load_csv(args.input_csv)
+    df = filter_visible_rows(df)
 
     if args.shuffle:
         df = df.sample(frac=1.0, random_state=41).reset_index(drop=True)
