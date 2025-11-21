@@ -1,7 +1,33 @@
 import pandas as pd
+from pandas.api.types import is_bool_dtype
 import matplotlib.pyplot as plt
 import seaborn as sns
 from datetime import datetime
+
+
+def filter_inside_poi_area(df: pd.DataFrame, column: str = "inside_poi_area") -> pd.DataFrame:
+    if column not in df.columns:
+        print(f"Warning: column '{column}' not found. Skipping spatial filtering.")
+        return df
+
+    series = df[column]
+    if is_bool_dtype(series):
+        mask = series.fillna(False)
+    else:
+        normalized = (
+            series.fillna("")
+            .astype(str)
+            .str.strip()
+            .str.lower()
+        )
+        mask = normalized.isin({"true", "1", "yes"})
+
+    filtered = df[mask].copy()
+    dropped = len(df) - len(filtered)
+    print(f"Filtered out {dropped} rows outside POI visibility ({column}).")
+    if filtered.empty:
+        print("Warning: no rows remain after filtering. Check the input dataset.")
+    return filtered
 
 # Set style for better-looking plots
 sns.set_style("whitegrid")
@@ -17,6 +43,7 @@ def analyze_photo_distribution(csv_file, distance_threshold_meters=300):
     """
     # Read the CSV file
     df = pd.read_csv(csv_file)
+    df = filter_inside_poi_area(df)
     
     # Drop rows without coordinates
     df = df.dropna(subset=['lat', 'long'])
@@ -147,7 +174,7 @@ def analyze_photo_distribution(csv_file, distance_threshold_meters=300):
 
 if __name__ == "__main__":
     # Analyze with the same threshold as the heatmap visualization
-    analyze_photo_distribution("vk_photos_perm_historical.csv", distance_threshold_meters=300)
+    analyze_photo_distribution("data/vk_photos_perm_historical_with_polygons.csv", distance_threshold_meters=100)
 
 
 

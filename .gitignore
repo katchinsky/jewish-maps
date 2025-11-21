@@ -42,3 +42,4 @@ vk_photos*.csv.backup_*
 # Logs
 *.log
 
+cache/*

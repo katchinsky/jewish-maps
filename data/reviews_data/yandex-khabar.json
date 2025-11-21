@@ -1,0 +1,117 @@
+{
+    "data": {
+        "reviews": [
+            {
+                "reviewId": "iXqtgZUNbs9lYHYRbal_bR9L9rzljh",
+                "businessId": "1072388620",
+                "author": {
+                    "name": "Виктория Габдрахманова",
+                    "avatarUrl": "https://avatars.mds.yandex.net/get-yapic/57243/utoQtYzgKpo7LthG4CQ3KWGbs5A-1/{size}",
+                    "professionLevel": "Знаток города 11 уровня",
+                    "publicId": "z66u3vptte3cpne4ra5df94dmw",
+                    "achievements": [],
+                    "professions": [],
+                    "isSubscribed": false
+                },
+                "text": "Отличная школа! Квалифицированные педагоги, вкусное кошерное питание , замечательные руководители! ",
+                "textLanguage": "ru",
+                "textTranslations": {},
+                "rating": 5,
+                "updatedTime": "2023-05-02T09:44:27.846Z",
+                "reactions": {
+                    "likes": 0,
+                    "dislikes": 0,
+                    "userReaction": "NONE"
+                },
+                "photos": [],
+                "videos": []
+            },
+            {
+                "reviewId": "Wl0INLjIluHSpJkblWAZN-181riO6ou",
+                "businessId": "1072388620",
+                "author": {
+                    "name": "Венера А.",
+                    "avatarUrl": "https://avatars.mds.yandex.net/get-yapic/59871/enc-37f70fe7df649f73d7980850d23cfd38f89676f767ae6ac47fbfc4934aa2af00/{size}",
+                    "professionLevel": "Знаток города 2 уровня",
+                    "publicId": "hn4adb1rr8aawcnqt8guz155ew",
+                    "achievements": [],
+                    "professions": [],
+                    "isSubscribed": false
+                },
+                "text": "Хорошая школа. Коллектив очень дружный",
+                "textLanguage": "ru",
+                "textTranslations": {},
+                "rating": 5,
+                "updatedTime": "2024-02-22T16:58:15.533Z",
+                "reactions": {
+                    "likes": 0,
+                    "dislikes": 0,
+                    "userReaction": "NONE"
+                },
+                "photos": [],
+                "videos": []
+            },
+            {
+                "reviewId": "qeHyBTqf5-ItBC5pT9mqAafEPhuQfuPDX",
+                "businessId": "1072388620",
+                "author": {
+                    "name": "Елена Гребнева",
+                    "avatarUrl": "https://avatars.mds.yandex.net/get-yapic/23134/ohq73wsIa4WeUwWvNhYk1ozRDRo-1568579433/{size}",
+                    "professionLevel": "Знаток города 5 уровня",
+                    "publicId": "p36zpgexyf8afmumbrct5hefur",
+                    "achievements": [],
+                    "professions": [],
+                    "isSubscribed": false
+                },
+                "text": "Хорошая школа, но учиться мне не нравится🤢",
+                "textLanguage": "unknown",
+                "textTranslations": {},
+                "rating": 5,
+                "updatedTime": "2021-10-06T18:38:33.089Z",
+                "reactions": {
+                    "likes": 0,
+                    "dislikes": 0,
+                    "userReaction": "NONE"
+                },
+                "photos": [],
+                "videos": []
+            },
+            {
+                "reviewId": "EDyZ0pibr_xwGWRSz00f_2a9BGy6Rt9",
+                "businessId": "1072388620",
+                "author": {
+                    "name": "Станислав Тиунов",
+                    "avatarUrl": "",
+                    "professionLevel": "Знаток города 2 уровня",
+                    "publicId": "7kpn45dcgj7rvdceap9qrn8bnw",
+                    "achievements": [],
+                    "professions": [],
+                    "isSubscribed": false
+                },
+                "text": "Не знаю как внутри, но с наружи вид ужасный ",
+                "textLanguage": "unknown",
+                "textTranslations": {},
+                "rating": 1,
+                "updatedTime": "2021-08-04T05:24:09.166Z",
+                "reactions": {
+                    "likes": 1,
+                    "dislikes": 1,
+                    "userReaction": "NONE"
+                },
+                "photos": [],
+                "videos": []
+            }
+        ],
+        "params": {
+            "offset": 0,
+            "limit": 50,
+            "count": 4,
+            "loadedReviewsCount": 4,
+            "page": 1,
+            "totalPages": 1,
+            "reviewsRemained": 0
+        },
+        "tags": [],
+        "aspects": []
+    }
+}
