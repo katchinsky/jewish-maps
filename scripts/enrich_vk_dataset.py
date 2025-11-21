@@ -764,8 +764,6 @@ class OpenAIMultimodalClient(MultimodalModelClient):
                 "text": (
                     "Дополнительный контекст: "
                     f"описание поста: {photo_row.get('post_text', '') or 'нет описания'}. "
-                    # "Дата и время: "
-                    # f"{photo_row.get('date_human', 'unknown')}. "
                 ),
             },
         ]
