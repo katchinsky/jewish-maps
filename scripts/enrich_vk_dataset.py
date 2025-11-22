@@ -134,6 +134,8 @@ CSV_COLUMNS = [
     "user_city_id",
     "user_kind",
     "post_text",
+    "inside_poi_area",
+    "inside_poi_building",
 ] + ANNOTATION_FIELDS
 
 
@@ -477,6 +479,63 @@ def parse_args() -> argparse.Namespace:
         help="Pagination cursor to continue listing.",
     )
 
+    batch_sequential = batch_sub.add_parser(
+        "sequential",
+        help="Split the dataset into fixed-size chunks and submit batches sequentially.",
+    )
+    add_dataset_common_args(batch_sequential)
+    add_reference_image_args(batch_sequential)
+    add_openai_client_args(batch_sequential)
+    batch_sequential.add_argument(
+        "--model-name",
+        type=str,
+        default="gpt-4o-mini",
+        help="Model identifier to use inside the batch job.",
+    )
+    batch_sequential.add_argument(
+        "--chunk-size",
+        type=int,
+        default=500,
+        help="Number of rows per batch chunk.",
+    )
+    batch_sequential.add_argument(
+        "--max-chunks",
+        type=int,
+        default=None,
+        help="Optional limit on how many chunks to submit (useful for dry runs).",
+    )
+    batch_sequential.add_argument(
+        "--output-dir",
+        type=Path,
+        default=DEFAULT_CACHE_DIR / "batch_chunks",
+        help="Directory to store chunk inputs, manifests, and outputs.",
+    )
+    batch_sequential.add_argument(
+        "--endpoint",
+        type=str,
+        default="/v1/responses",
+        help="Target endpoint for the batch job.",
+    )
+    batch_sequential.add_argument(
+        "--completion-window",
+        type=str,
+        default="24h",
+        help="Completion window requested from the API (currently only 24h).",
+    )
+    batch_sequential.add_argument(
+        "--poll-interval",
+        type=int,
+        default=60,
+        help="Seconds to wait between status polls.",
+    )
+    batch_sequential.add_argument(
+        "--metadata",
+        action="append",
+        default=[],
+        metavar="KEY=VALUE",
+        help="Optional metadata entries to attach to each batch (repeatable).",
+    )
+
     # golden draft command
     draft = subparsers.add_parser(
         "golden-draft", help="Create a semi-automatic golden set draft."
@@ -618,6 +677,37 @@ def build_resized_image_url(image_url: str, target_width: int = 480) -> str:
     query["cs"] = [preferred]
     new_query = urlencode(query, doseq=True)
     return urlunsplit(parsed._replace(query=new_query))
+
+
+def _normalize_id_component(value: Any) -> Optional[str]:
+    if value is None:
+        return None
+    if isinstance(value, str):
+        value = value.strip()
+        return value or None
+    try:
+        if pd.isna(value):
+            return None
+    except Exception:
+        pass
+    if isinstance(value, float):
+        if value.is_integer():
+            value = int(value)
+    return str(value)
+
+
+def _sanitize_key_component(component: str) -> str:
+    return re.sub(r"[^0-9A-Za-z_.:-]", "_", component)
+
+
+def build_photo_key(owner_id: Any, photo_id: Any) -> str:
+    owner_component = _sanitize_key_component(
+        _normalize_id_component(owner_id) or "owner-unknown"
+    )
+    photo_component = _sanitize_key_component(
+        _normalize_id_component(photo_id) or "photo-unknown"
+    )
+    return f"{owner_component}__{photo_component}"
 
 
 def resolve_building_focus(poi_name: Optional[str]) -> Optional[str]:
@@ -777,7 +867,7 @@ class VKUserMetadataFetcher:
             str(int(uid))
             for uid in user_ids
             if not pd.isna(uid)
-        ]
+         ]
         results: Dict[str, Dict[str, Any]] = {}
         missing: List[str] = []
         for uid in normalized_ids:
@@ -889,7 +979,7 @@ def build_annotation_prompt_bundle(photo_row: Dict[str, Any]) -> AnnotationPromp
 
     prompt = textwrap.dedent(
         """
-        Ты — специалист по описанию и классификации городских фотографий из социальных сетей.
+                Ты — специалист по описанию и классификации городских фотографий из социальных сетей.
 
         Проанализируй изображение (и текстовый контекст, если он есть) и верни строго ОДИН JSON-объект указанной структуры.
         Не добавляй ничего, что не видно на изображении или не подтверждается текстовым контекстом.
@@ -932,8 +1022,6 @@ def build_annotation_prompt_bundle(photo_row: Dict[str, Any]) -> AnnotationPromp
             "annotation_has_building": true,
             "annotation_confidence": 0.83
         }
-
-
         """
     ).strip()
 
@@ -976,8 +1064,8 @@ def build_building_verification_content(
         return None
     prompt = textwrap.dedent(
         f"""
-        Ты сравниваешь здание или пространство на фото с несколькими эталонными изображениями объекта "{building_focus}".
-        Все эталонные фото показывают один и тот же объект, но с разных ракурсов, в разные годы, временá суток или состояния (исторический и современный вид).
+        Ты сравниваешь здание на фото с несколькими эталонными изображениями объекта "{building_focus}".
+        Все эталонные фото показывают один и тот же объект, но с разных ракурсов, в разные годы, времена суток или состояния (исторический и современный вид).
         Ответь только JSON-объектом:
         {{
           "matches_reference": boolean,
@@ -986,7 +1074,7 @@ def build_building_verification_content(
         Установи matches_reference=true, если целевой объект совпадает хотя бы с одним эталонным изображением, даже если:
         - объект виден частично или не является главным фокусом,
         - ракурс, масштаб или освещение отличаются,
-        - на фото показан исторический вариант объекта, отличающийся от современного вида.
+        - на фото показан исторический вариант объекта, отличающийся от современного вида
         Используй характерные архитектурные элементы, пропорции, детали фасада, окружение.
         """
     ).strip()
@@ -1011,10 +1099,9 @@ def json_schema_response_format(model_cls: Type[BaseModel]) -> Dict[str, Any]:
     schema = model_cls.model_json_schema()
     return {
         "type": "json_schema",
-        "json_schema": {
-            "name": model_cls.__name__,
-            "schema": schema,
-        },
+        "strict": True,
+        "name": model_cls.__name__,
+        "schema": schema,
     }
 
 
@@ -1167,7 +1254,7 @@ class OpenAIMultimodalClient(MultimodalModelClient):
             if est_cost is not None:
                 log_msg += f", est_cost=${est_cost:.4f}"
             logging.info(log_msg)
-            logging.debug(
+            logging.info(
                 "Building verification response (photo=%s, focus=%s): %s",
                 photo_id,
                 building_focus,
@@ -1244,14 +1331,16 @@ class OpenAIBatchRequestBuilder:
     ) -> Tuple[List[Dict[str, Any]], Dict[str, Dict[str, Any]], List[str]]:
         requests: List[Dict[str, Any]] = []
         manifest_photos: Dict[str, Dict[str, Any]] = {}
-        ordered_photo_ids: List[str] = []
+        ordered_photo_keys: List[str] = []
 
         for _, row in df.iterrows():
             record = row.to_dict()
-            photo_id = str(record.get("photo_id"))
-            ordered_photo_ids.append(photo_id)
+            photo_key = record.get("_photo_key") or build_photo_key(
+                record.get("owner_id"), record.get("photo_id")
+            )
+            ordered_photo_keys.append(photo_key)
             bundle = build_annotation_prompt_bundle(record)
-            annotation_custom_id = f"annotation:{photo_id}"
+            annotation_custom_id = f"annotation:{photo_key}"
 
             requests.append(
                 {
@@ -1261,50 +1350,25 @@ class OpenAIBatchRequestBuilder:
                     "body": {
                         "model": self.model_name,
                         "input": [{"role": "user", "content": bundle.content}],
-                        "response_format": self.annotation_format,
+                        "text": {"format": self.annotation_format},
                     },
                 }
             )
 
-            manifest_photos[photo_id] = {
+            manifest_photos[photo_key] = {
                 "annotation_custom_id": annotation_custom_id,
                 "verification_custom_ids": [],
                 "building_focus": bundle.building_focus,
                 "poi_label": bundle.poi_label,
+                "photo_key": photo_key,
+                "photo_id": record.get("photo_id"),
+                "owner_id": record.get("owner_id"),
             }
 
-            if (
-                bundle.building_focus
-                and bundle.building_focus in self.reference_map
-                and bundle.image_for_model
-            ):
-                verification_content = build_building_verification_content(
-                    bundle.image_for_model,
-                    bundle.building_focus,
-                    bundle.poi_label,
-                    self.reference_map[bundle.building_focus],
-                )
-                if verification_content:
-                    verification_custom_id = f"verify:{photo_id}"
-                    requests.append(
-                        {
-                            "custom_id": verification_custom_id,
-                            "method": "POST",
-                            "url": "/v1/responses",
-                            "body": {
-                                "model": self.model_name,
-                                "input": [
-                                    {"role": "user", "content": verification_content}
-                                ],
-                                "response_format": self.verification_format,
-                            },
-                        }
-                    )
-                    manifest_photos[photo_id]["verification_custom_ids"] = [
-                        verification_custom_id
-                    ]
+            # Verification batches are skipped during initial batch processing.
+            manifest_photos[photo_key]["verification_custom_ids"] = []
 
-        return requests, manifest_photos, ordered_photo_ids
+        return requests, manifest_photos, ordered_photo_keys
 
 
 def load_jsonl(path: Path) -> List[Dict[str, Any]]:
@@ -1430,33 +1494,39 @@ def annotate_rows(
     processed_since_save = 0
 
     for _, row in df.iterrows():
-        photo_id = str(row["photo_id"])
-        cache_path = cache_dir / f"{photo_id}.json"
+        row_dict = row.to_dict()
+        photo_id_value = row_dict.get("photo_id")
+        photo_id_display = row_dict.get("photo_id")
+        owner_id_value = row_dict.get("owner_id")
+        photo_key = row_dict.get("_photo_key") or build_photo_key(
+            owner_id_value, photo_id_value
+        )
+        cache_path = cache_dir / f"{photo_key}.json"
 
         if resume:
             cached = None
-            if checkpoint.should_skip(photo_id) or cache_path.exists():
+            if checkpoint.should_skip(photo_key) or cache_path.exists():
                 cached = _load_cached_annotation(cache_path)
             if cached is not None:
-                annotations[photo_id] = cached
-                checkpoint.mark_complete(photo_id)
+                annotations[photo_key] = cached
+                checkpoint.mark_complete(photo_key)
                 continue
-            if checkpoint.should_skip(photo_id):
+            if checkpoint.should_skip(photo_key):
                 logging.warning(
-                    "Checkpoint referenced %s but cache missing; re-running.", photo_id
+                    "Checkpoint referenced %s but cache missing; re-running.", photo_key
                 )
 
         if model_client is None:
             annotation = default_annotation()
         else:
             try:
-                annotation = model_client.annotate(row.to_dict())
+                annotation = model_client.annotate(row_dict)
             except Exception as exc:  # pragma: no cover - network errors
-                logging.error("Model failed for photo %s: %s", photo_id, exc)
+                logging.error("Model failed for photo %s: %s", photo_id_display, exc)
                 annotation = default_annotation()
 
-        annotations[photo_id] = annotation
-        checkpoint.mark_complete(photo_id)
+        annotations[photo_key] = annotation
+        checkpoint.mark_complete(photo_key)
         processed_since_save += 1
 
         cache_path.write_text(
@@ -1481,7 +1551,10 @@ def merge_annotations(
 
     for _, row in df.iterrows():
         record = row.to_dict()
-        annotation = annotations.get(str(record["photo_id"]), default_annotation())
+        photo_key = record.get("_photo_key") or build_photo_key(
+            record.get("owner_id"), record.get("photo_id")
+        )
+        annotation = annotations.get(photo_key, default_annotation())
         record.update(annotation)
         merged_records.append(record)
 
@@ -1501,16 +1574,23 @@ def prepare_annotation_dataframe(
     limit: Optional[int],
     shuffle: bool,
     subset_photo_ids: Optional[List[str]] = None,
+    subset_row_keys: Optional[List[str]] = None,
 ) -> pd.DataFrame:
     df = load_csv(input_csv)
     df = filter_visible_rows(df)
 
     subset_order: Dict[str, int] = {}
+    subset_key_order: Dict[str, int] = {}
     if subset_photo_ids:
         subset_strings = [str(pid) for pid in subset_photo_ids]
         subset_lookup = set(subset_strings)
         df = df[df["photo_id"].astype(str).isin(subset_lookup)].copy()
         subset_order = {photo_id: idx for idx, photo_id in enumerate(subset_strings)}
+    subset_key_lookup: Optional[Set[str]] = None
+    if subset_row_keys:
+        subset_key_strings = [str(key) for key in subset_row_keys]
+        subset_key_lookup = set(subset_key_strings)
+        subset_key_order = {key: idx for idx, key in enumerate(subset_key_strings)}
 
     if shuffle:
         df = df.sample(frac=1.0, random_state=41).reset_index(drop=True)
@@ -1534,6 +1614,18 @@ def prepare_annotation_dataframe(
             enriched.assign(_order=order_series)
             .sort_values("_order", na_position="last")
             .drop(columns="_order")
+        )
+    if subset_key_lookup:
+        if "_photo_key" not in enriched.columns:
+            enriched["_photo_key"] = enriched.apply(
+                lambda r: build_photo_key(r.get("owner_id"), r.get("photo_id")), axis=1
+            )
+        enriched = enriched[enriched["_photo_key"].isin(subset_key_lookup)].copy()
+        order_series_keys = enriched["_photo_key"].map(subset_key_order)
+        enriched = (
+            enriched.assign(_order_key=order_series_keys)
+            .sort_values("_order_key", na_position="last")
+            .drop(columns="_order_key")
         )
     return enriched.reset_index(drop=True)
 
@@ -1577,6 +1669,9 @@ def restructure_dataframe(
         if poi_lookup and record.get("poi_name") in poi_lookup:
             record["poi_name"] = poi_lookup[record["poi_name"]]
 
+        record["_photo_key"] = build_photo_key(
+            record.get("owner_id"), record.get("photo_id")
+        )
         records.append(record)
 
     enriched = pd.DataFrame(records)
@@ -1762,25 +1857,48 @@ def run_annotate(args: argparse.Namespace) -> None:
 
     # Also dump model responses in JSON Lines for auditing
     with args.model_responses.open("w", encoding="utf-8") as f:
-        for photo_id, payload in annotations.items():
-            f.write(
-                json.dumps(
-                    {"photo_id": photo_id, **payload},
-                    ensure_ascii=False,
-                )
-                + "\n"
+        for _, row in enriched.iterrows():
+            row_dict = row.to_dict()
+            photo_key = row_dict.get("_photo_key") or build_photo_key(
+                row_dict.get("owner_id"), row_dict.get("photo_id")
             )
+            payload = annotations.get(photo_key)
+            if payload is None:
+                continue
+            entry = {
+                "photo_key": photo_key,
+                "photo_id": row_dict.get("photo_id"),
+                "owner_id": row_dict.get("owner_id"),
+                **payload,
+            }
+            f.write(json.dumps(entry, ensure_ascii=False) + "\n")
     logging.info("Model responses exported to %s", args.model_responses)
 
     if args.only_photo_ids:
-        for pid in args.only_photo_ids:
-            payload = annotations.get(str(pid))
+        requested = {str(pid) for pid in args.only_photo_ids}
+        matches = enriched[enriched["photo_id"].astype(str).isin(requested)]
+        if matches.empty:
+            logging.warning(
+                "Requested photo_ids %s not found in the processed dataset.",
+                ", ".join(sorted(requested)),
+            )
+        for _, row in matches.iterrows():
+            row_dict = row.to_dict()
+            photo_key = row_dict.get("_photo_key") or build_photo_key(
+                row_dict.get("owner_id"), row_dict.get("photo_id")
+            )
+            payload = annotations.get(photo_key)
             if payload is None:
-                logging.warning("Requested photo_id %s not processed.", pid)
+                logging.warning(
+                    "Requested photo_id %s (owner %s) had no annotation payload.",
+                    row_dict.get("photo_id"),
+                    row_dict.get("owner_id"),
+                )
                 continue
             logging.info(
-                "Annotation for photo_id %s:\n%s",
-                pid,
+                "Annotation for photo_id %s (owner %s):\n%s",
+                row_dict.get("photo_id"),
+                row_dict.get("owner_id"),
                 json.dumps(payload, ensure_ascii=False, indent=2),
             )
 
@@ -1793,12 +1911,13 @@ def run_openai_batch_prepare(args: argparse.Namespace) -> None:
         cache_dir=args.cache_dir,
         limit=args.limit,
         shuffle=args.shuffle,
+        subset_row_keys=None,
     )
     references = gather_reference_images(
         args.reference_synagogue, args.reference_feor
     )
     builder = OpenAIBatchRequestBuilder(args.model_name, references)
-    requests, manifest_photos, photo_ids = builder.build_requests(enriched)
+    requests, manifest_photos, photo_keys = builder.build_requests(enriched)
 
     ensure_directory(args.batch_input.parent)
     with args.batch_input.open("w", encoding="utf-8") as handle:
@@ -1817,7 +1936,7 @@ def run_openai_batch_prepare(args: argparse.Namespace) -> None:
             "skip_user_fetch": args.skip_user_fetch,
             "row_count": len(enriched),
         },
-        "photo_ids": photo_ids,
+        "photo_keys": photo_keys,
         "photos": manifest_photos,
     }
     ensure_directory(args.manifest.parent)
@@ -1828,7 +1947,7 @@ def run_openai_batch_prepare(args: argparse.Namespace) -> None:
     logging.info(
         "Prepared %d batch requests across %d photos. Input saved to %s; manifest saved to %s.",
         len(requests),
-        len(photo_ids),
+        len(photo_keys),
         args.batch_input,
         args.manifest,
     )
@@ -1839,9 +1958,9 @@ def run_openai_batch_apply(args: argparse.Namespace) -> None:
         raise FileNotFoundError(f"Manifest not found: {args.manifest}")
     manifest = json.loads(args.manifest.read_text(encoding="utf-8"))
     manifest_photos: Dict[str, Dict[str, Any]] = manifest.get("photos", {})
-    photo_ids: List[str] = manifest.get("photo_ids") or list(manifest_photos.keys())
-    if not photo_ids:
-        raise RuntimeError("Manifest contains no photo IDs to apply.")
+    photo_keys: List[str] = manifest.get("photo_keys") or list(manifest_photos.keys())
+    if not photo_keys:
+        raise RuntimeError("Manifest contains no photo entries to apply.")
 
     enriched = prepare_annotation_dataframe(
         input_csv=args.input_csv,
@@ -1850,15 +1969,19 @@ def run_openai_batch_apply(args: argparse.Namespace) -> None:
         cache_dir=args.cache_dir,
         limit=None,
         shuffle=False,
-        subset_photo_ids=photo_ids,
+        subset_row_keys=photo_keys,
     )
 
-    enriched_ids = set(enriched["photo_id"].astype(str))
-    missing_ids = [pid for pid in photo_ids if pid not in enriched_ids]
-    if missing_ids:
+    if "_photo_key" not in enriched.columns:
+        enriched["_photo_key"] = enriched.apply(
+            lambda r: build_photo_key(r.get("owner_id"), r.get("photo_id")), axis=1
+        )
+    enriched_keys = set(enriched["_photo_key"].astype(str))
+    missing_keys = [key for key in photo_keys if key not in enriched_keys]
+    if missing_keys:
         logging.warning(
             "Manifest references %d photos missing from the current dataset. They will be skipped.",
-            len(missing_ids),
+            len(missing_keys),
         )
 
     response_entries = load_jsonl(args.batch_output)
@@ -1877,8 +2000,8 @@ def run_openai_batch_apply(args: argparse.Namespace) -> None:
     annotations: Dict[str, Dict[str, Any]] = {}
     model_name = manifest.get("model_name", "unknown")
 
-    for photo_id in photo_ids:
-        meta = manifest_photos.get(photo_id, {})
+    for photo_key in photo_keys:
+        meta = manifest_photos.get(photo_key, {})
         annotation_custom_id = meta.get("annotation_custom_id")
         annotation_data = default_annotation()
         parsed = None
@@ -1891,7 +2014,7 @@ def run_openai_batch_apply(args: argparse.Namespace) -> None:
             )
             est_cost = estimate_usage_cost(model_name, input_tokens, output_tokens)
             log_msg = (
-                f"Batch annotation {annotation_custom_id} photo {photo_id}: "
+                f"Batch annotation {annotation_custom_id} photo_key {photo_key}: "
                 f"tokens in={input_tokens or 0}, out={output_tokens or 0}"
             )
             if est_cost is not None:
@@ -1905,8 +2028,8 @@ def run_openai_batch_apply(args: argparse.Namespace) -> None:
             )
         else:
             logging.warning(
-                "No annotation result found for photo %s (custom_id=%s).",
-                photo_id,
+                "No annotation result found for key %s (custom_id=%s).",
+                photo_key,
                 annotation_custom_id,
             )
 
@@ -1942,9 +2065,9 @@ def run_openai_batch_apply(args: argparse.Namespace) -> None:
                             else verification_result or matches
                         )
                         logging.debug(
-                            "Batch verification response %s (photo=%s): %s",
+                            "Batch verification response %s (photo_key=%s): %s",
                             vid,
-                            photo_id,
+                            photo_key,
                             json.dumps(verification_payload, ensure_ascii=False),
                         )
                         if matches:
@@ -1974,18 +2097,28 @@ def run_openai_batch_apply(args: argparse.Namespace) -> None:
                             annotation_data.get("annotation_has_other_building")
                         )
 
-        annotations[photo_id] = annotation_data
+        annotations[photo_key] = annotation_data
 
     merged = merge_annotations(enriched, annotations)
     merged.to_csv(args.output_csv, index=False)
     logging.info("Batch output merged into %s", args.output_csv)
 
     with args.model_responses.open("w", encoding="utf-8") as handle:
-        for photo_id, payload in annotations.items():
-            handle.write(
-                json.dumps({"photo_id": photo_id, **payload}, ensure_ascii=False)
-                + "\n"
+        for _, row in enriched.iterrows():
+            row_dict = row.to_dict()
+            row_key = row_dict.get("_photo_key") or build_photo_key(
+                row_dict.get("owner_id"), row_dict.get("photo_id")
             )
+            payload = annotations.get(row_key)
+            if payload is None:
+                continue
+            entry = {
+                "photo_key": row_key,
+                "photo_id": row_dict.get("photo_id"),
+                "owner_id": row_dict.get("owner_id"),
+                **payload,
+            }
+            handle.write(json.dumps(entry, ensure_ascii=False) + "\n")
     logging.info("Flattened batch responses written to %s", args.model_responses)
 
 
@@ -2025,14 +2158,17 @@ def run_openai_batch_create(args: argparse.Namespace) -> None:
 def run_openai_batch_status(args: argparse.Namespace) -> None:
     client = build_openai_client(args.openai_api_key, args.openai_base_url)
     batch = client.batches.retrieve(args.batch_id)
-    counts = getattr(batch, "request_counts", {}) or {}
+    counts = getattr(batch, "request_counts", None)
+    total = getattr(counts, "total", None) if counts else None
+    completed = getattr(counts, "completed", None) if counts else None
+    failed = getattr(counts, "failed", None) if counts else None
     logging.info(
         "Batch %s status=%s total=%s completed=%s failed=%s output=%s error=%s",
         batch.id,
         batch.status,
-        counts.get("total"),
-        counts.get("completed"),
-        counts.get("failed"),
+        total,
+        completed,
+        failed,
         getattr(batch, "output_file_id", None),
         getattr(batch, "error_file_id", None),
     )
@@ -2061,17 +2197,166 @@ def run_openai_batch_list(args: argparse.Namespace) -> None:
     listing = client.batches.list(limit=args.limit, after=args.after)
     data = getattr(listing, "data", listing)
     for batch in data:
-        counts = getattr(batch, "request_counts", {}) or {}
+        counts = getattr(batch, "request_counts", None)
+        total = getattr(counts, "total", None) if counts else None
+        completed = getattr(counts, "completed", None) if counts else None
+        failed = getattr(counts, "failed", None) if counts else None
         logging.info(
             "Batch %s status=%s total=%s completed=%s failed=%s output=%s error=%s",
             batch.id,
             batch.status,
-            counts.get("total"),
-            counts.get("completed"),
-            counts.get("failed"),
+            total,
+            completed,
+            failed,
             getattr(batch, "output_file_id", None),
             getattr(batch, "error_file_id", None),
         )
+
+
+def run_openai_batch_sequential(args: argparse.Namespace) -> None:
+    enriched = prepare_annotation_dataframe(
+        input_csv=args.input_csv,
+        vk_token=args.vk_token,
+        skip_user_fetch=args.skip_user_fetch,
+        cache_dir=args.cache_dir,
+        limit=args.limit,
+        shuffle=args.shuffle,
+    )
+    total_rows = len(enriched)
+    if total_rows == 0:
+        logging.warning("Dataset is empty after preprocessing; nothing to submit.")
+        return
+
+    references = gather_reference_images(
+        args.reference_synagogue, args.reference_feor
+    )
+    builder = OpenAIBatchRequestBuilder(args.model_name, references)
+    client = build_openai_client(args.openai_api_key, args.openai_base_url)
+    output_dir = ensure_directory(args.output_dir)
+    chunk_size = max(1, int(args.chunk_size))
+    poll_interval = max(5, int(args.poll_interval))
+    metadata_base = parse_metadata_args(args.metadata)
+
+    chunk_starts = range(0, total_rows, chunk_size)
+    for chunk_index, chunk_start in enumerate(chunk_starts, start=1):
+        if args.max_chunks is not None and chunk_index > args.max_chunks:
+            logging.info(
+                "Reached max-chunks limit (%s); stopping sequential submission.",
+                args.max_chunks,
+            )
+            break
+
+        chunk_end = min(chunk_start + chunk_size, total_rows)
+        chunk_df = enriched.iloc[chunk_start:chunk_end].reset_index(drop=True)
+        chunk_label = f"chunk_{chunk_index:04d}"
+        logging.info(
+            "Preparing %s covering rows %d-%d (total rows=%d).",
+            chunk_label,
+            chunk_start + 1,
+            chunk_end,
+            total_rows,
+        )
+
+        requests, manifest_photos, photo_keys = builder.build_requests(chunk_df)
+        if not requests:
+            logging.info("Chunk %s produced no requests; skipping.", chunk_label)
+            continue
+
+        input_path = output_dir / f"{chunk_label}_input.jsonl"
+        manifest_path = output_dir / f"{chunk_label}_manifest.json"
+        with input_path.open("w", encoding="utf-8") as handle:
+            for record in requests:
+                handle.write(json.dumps(record, ensure_ascii=False))
+                handle.write("\n")
+
+        manifest = {
+            "version": 1,
+            "generated_at": utc_now_iso(),
+            "model_name": args.model_name,
+            "chunk": {
+                "label": chunk_label,
+                "start_row": chunk_start,
+                "end_row": chunk_end,
+                "size": chunk_end - chunk_start,
+            },
+            "dataset": {
+                "input_csv": str(args.input_csv),
+                "limit": args.limit,
+                "shuffle": args.shuffle,
+                "skip_user_fetch": args.skip_user_fetch,
+                "row_count": len(chunk_df),
+            },
+            "photo_keys": photo_keys,
+            "photos": manifest_photos,
+        }
+        manifest_path.write_text(
+            json.dumps(manifest, ensure_ascii=False, indent=2),
+            encoding="utf-8",
+        )
+
+        logging.info(
+            "Uploading %s (%d requests) to OpenAI Files API.",
+            chunk_label,
+            len(requests),
+        )
+        with input_path.open("rb") as handle:
+            file_obj = client.files.create(file=handle, purpose="batch")
+
+        metadata = dict(metadata_base)
+        metadata.setdefault("chunk_label", chunk_label)
+        metadata.setdefault("chunk_rows", str(chunk_end - chunk_start))
+        batch = client.batches.create(
+            input_file_id=file_obj.id,
+            endpoint=args.endpoint,
+            completion_window=args.completion_window,
+            metadata=metadata or None,
+        )
+        logging.info(
+            "Submitted %s as batch %s (status=%s). Waiting for completion before next chunk.",
+            chunk_label,
+            batch.id,
+            batch.status,
+        )
+
+        terminal_states = {"completed", "failed", "cancelled", "canceled", "expired"}
+        while batch.status not in terminal_states:
+            logging.info(
+                "Chunk %s batch %s still running (status=%s, total=%s, completed=%s, failed=%s).",
+                chunk_label,
+                batch.id,
+                batch.status,
+                getattr(getattr(batch, "request_counts", None), "total", None),
+                getattr(getattr(batch, "request_counts", None), "completed", None),
+                getattr(getattr(batch, "request_counts", None), "failed", None),
+            )
+            time.sleep(poll_interval)
+            batch = client.batches.retrieve(batch.id)
+
+        logging.info(
+            "Chunk %s batch %s finished with status=%s.",
+            chunk_label,
+            batch.id,
+            batch.status,
+        )
+
+        output_file_id = getattr(batch, "output_file_id", None)
+        if output_file_id:
+            dest = output_dir / f"{chunk_label}_output.jsonl"
+            client.files.content(output_file_id).write_to_file(str(dest))
+            logging.info("Downloaded output for %s to %s", chunk_label, dest)
+        error_file_id = getattr(batch, "error_file_id", None)
+        if error_file_id:
+            dest = output_dir / f"{chunk_label}_errors.jsonl"
+            client.files.content(error_file_id).write_to_file(str(dest))
+            logging.info("Downloaded errors for %s to %s", chunk_label, dest)
+
+        if batch.status != "completed":
+            logging.error(
+                "Chunk %s ended with status %s; stopping sequential submission.",
+                chunk_label,
+                batch.status,
+            )
+            break
 
 
 def run_golden_draft(args: argparse.Namespace) -> None:
@@ -2127,6 +2412,8 @@ def main() -> None:
             run_openai_batch_cancel(args)
         elif args.batch_command == "list":
             run_openai_batch_list(args)
+        elif args.batch_command == "sequential":
+            run_openai_batch_sequential(args)
         else:  # pragma: no cover - defensive
             raise ValueError(f"Unknown batch sub-command: {args.batch_command}")
     elif args.command == "golden-draft":
