@@ -339,6 +339,38 @@ def parse_args() -> argparse.Namespace:
         default=DEFAULT_BATCH_MANIFEST,
         help="Path to write the manifest that maps custom_ids to photo_ids.",
     )
+    batch_prepare.add_argument(
+        "--only-missing-annotations",
+        action="store_true",
+        help="Restrict the batch to rows where the target annotation column is empty.",
+    )
+    batch_prepare.add_argument(
+        "--missing-annotation-column",
+        type=str,
+        default="annotation_text_description",
+        help="Column used to determine whether a row already has annotations.",
+    )
+    batch_prepare.add_argument(
+        "--enable-building-verification",
+        action="store_true",
+        help="Also enqueue building-verification prompts for flagged rows.",
+    )
+    batch_prepare.add_argument(
+        "--only-building-verification",
+        action="store_true",
+        help="Submit only building-verification requests (no fresh annotations).",
+    )
+    batch_prepare.add_argument(
+        "--only-building-flagged",
+        action="store_true",
+        help="Process only rows where the building flag column is truthy.",
+    )
+    batch_prepare.add_argument(
+        "--building-flag-column",
+        type=str,
+        default="annotation_has_building",
+        help="Column whose truthy rows should receive building verification.",
+    )
 
     batch_apply = batch_sub.add_parser(
         "apply",
@@ -535,6 +567,38 @@ def parse_args() -> argparse.Namespace:
         metavar="KEY=VALUE",
         help="Optional metadata entries to attach to each batch (repeatable).",
     )
+    batch_sequential.add_argument(
+        "--only-missing-annotations",
+        action="store_true",
+        help="Restrict chunk submission to rows lacking annotations.",
+    )
+    batch_sequential.add_argument(
+        "--missing-annotation-column",
+        type=str,
+        default="annotation_text_description",
+        help="Column used to detect missing annotations.",
+    )
+    batch_sequential.add_argument(
+        "--enable-building-verification",
+        action="store_true",
+        help="Include building-verification prompts for flagged rows.",
+    )
+    batch_sequential.add_argument(
+        "--only-building-verification",
+        action="store_true",
+        help="Submit only building-verification requests (skip annotation prompts).",
+    )
+    batch_sequential.add_argument(
+        "--only-building-flagged",
+        action="store_true",
+        help="Submit chunks only for rows where the building flag column is truthy.",
+    )
+    batch_sequential.add_argument(
+        "--building-flag-column",
+        type=str,
+        default="annotation_has_building",
+        help="Column whose truthy rows should receive building verification.",
+    )
 
     # golden draft command
     draft = subparsers.add_parser(
@@ -730,6 +794,25 @@ def build_post_url(owner_id: Any, post_id: Any) -> Optional[str]:
     except (TypeError, ValueError):
         return None
     return f"https://vk.com/wall{owner_id_int}_{post_id_int}"
+
+
+def coerce_bool(value: Any) -> bool:
+    if isinstance(value, bool):
+        return value
+    if value is None:
+        return False
+    if isinstance(value, (int, float)):
+        if pd.isna(value):
+            return False
+        return bool(value)
+    if isinstance(value, str):
+        normalized = value.strip().lower()
+        if normalized in {"", "0", "false", "no", "none", "null"}:
+            return False
+        return normalized in {"true", "1", "yes", "y", "t"}
+    if pd.isna(value):
+        return False
+    return False
 
 
 def load_csv(path: Path) -> pd.DataFrame:
@@ -1316,6 +1399,9 @@ class OpenAIBatchRequestBuilder:
         self,
         model_name: str,
         reference_images: Sequence[Tuple[str, str, Dict[str, str]]] = (),
+        enable_building_verification: bool = False,
+        building_flag_column: str = "annotation_has_building",
+        only_building_verification: bool = False,
     ):
         self.model_name = model_name
         self.reference_map: Dict[str, List[Tuple[str, Dict[str, str]]]] = {}
@@ -1325,6 +1411,12 @@ class OpenAIBatchRequestBuilder:
         self.verification_format = json_schema_response_format(
             BuildingVerificationModel
         )
+        self.only_building_verification = only_building_verification
+        self.enable_building_verification = (
+            enable_building_verification or only_building_verification
+        )
+        self.building_flag_column = building_flag_column
+        self._missing_reference_focus_warned: Set[str] = set()
 
     def build_requests(
         self, df: pd.DataFrame
@@ -1340,24 +1432,33 @@ class OpenAIBatchRequestBuilder:
             )
             ordered_photo_keys.append(photo_key)
             bundle = build_annotation_prompt_bundle(record)
-            annotation_custom_id = f"annotation:{photo_key}"
+            annotation_custom_id: Optional[str] = None
+            if not self.only_building_verification:
+                annotation_custom_id = f"annotation:{photo_key}"
+                requests.append(
+                    {
+                        "custom_id": annotation_custom_id,
+                        "method": "POST",
+                        "url": "/v1/responses",
+                        "body": {
+                            "model": self.model_name,
+                            "input": [{"role": "user", "content": bundle.content}],
+                            "text": {"format": self.annotation_format},
+                        },
+                    }
+                )
 
-            requests.append(
-                {
-                    "custom_id": annotation_custom_id,
-                    "method": "POST",
-                    "url": "/v1/responses",
-                    "body": {
-                        "model": self.model_name,
-                        "input": [{"role": "user", "content": bundle.content}],
-                        "text": {"format": self.annotation_format},
-                    },
-                }
-            )
+            verification_ids: List[str] = []
+            if self.enable_building_verification:
+                verification_id = self._schedule_building_verification(
+                    record, bundle, photo_key, requests
+                )
+                if verification_id:
+                    verification_ids.append(verification_id)
 
             manifest_photos[photo_key] = {
                 "annotation_custom_id": annotation_custom_id,
-                "verification_custom_ids": [],
+                "verification_custom_ids": verification_ids,
                 "building_focus": bundle.building_focus,
                 "poi_label": bundle.poi_label,
                 "photo_key": photo_key,
@@ -1365,10 +1466,64 @@ class OpenAIBatchRequestBuilder:
                 "owner_id": record.get("owner_id"),
             }
 
-            # Verification batches are skipped during initial batch processing.
-            manifest_photos[photo_key]["verification_custom_ids"] = []
-
         return requests, manifest_photos, ordered_photo_keys
+
+    def _schedule_building_verification(
+        self,
+        record: Dict[str, Any],
+        bundle: AnnotationPromptBundle,
+        photo_key: str,
+        requests: List[Dict[str, Any]],
+    ) -> Optional[str]:
+        if not self.enable_building_verification:
+            return None
+        if not bundle.building_focus:
+            return None
+        if not self._row_has_building_flag(record):
+            return None
+        references = self.reference_map.get(bundle.building_focus)
+        if not references:
+            if bundle.building_focus not in self._missing_reference_focus_warned:
+                logging.warning(
+                    "No reference images available for '%s'; skipping verification for %s.",
+                    bundle.building_focus,
+                    photo_key,
+                )
+                self._missing_reference_focus_warned.add(bundle.building_focus)
+            return None
+        content = build_building_verification_content(
+            bundle.image_for_model,
+            bundle.building_focus,
+            bundle.poi_label,
+            references,
+        )
+        if content is None:
+            return None
+        verification_custom_id = f"verification:{bundle.building_focus}:{photo_key}"
+        requests.append(
+            {
+                "custom_id": verification_custom_id,
+                "method": "POST",
+                "url": "/v1/responses",
+                "body": {
+                    "model": self.model_name,
+                    "input": [{"role": "user", "content": content}],
+                    "text": {"format": self.verification_format},
+                },
+            }
+        )
+        return verification_custom_id
+
+    def _row_has_building_flag(self, record: Dict[str, Any]) -> bool:
+        columns = [self.building_flag_column]
+        if self.building_flag_column != "annotation_has_building":
+            columns.append("annotation_has_building")
+        for column in columns:
+            if column not in record:
+                continue
+            if coerce_bool(record.get(column)):
+                return True
+        return False
 
 
 def load_jsonl(path: Path) -> List[Dict[str, Any]]:
@@ -1717,6 +1872,58 @@ def filter_visible_rows(df: pd.DataFrame) -> pd.DataFrame:
     return filtered
 
 
+def filter_rows_missing_annotations(
+    df: pd.DataFrame, column: str = "annotation_text_description"
+) -> pd.DataFrame:
+    if column not in df.columns:
+        logging.info(
+            "Column '%s' absent in dataset; skipping missing-annotation filter.", column
+        )
+        return df
+    normalized = (
+        df[column]
+        .fillna("")
+        .astype(str)
+        .str.strip()
+    )
+    mask = normalized == ""
+    filtered = df[mask].copy()
+    dropped = len(df) - len(filtered)
+    logging.info(
+        "Selected %d/%d rows with empty '%s' values.",
+        len(filtered),
+        len(df),
+        column,
+    )
+    if filtered.empty:
+        logging.warning(
+            "No rows missing '%s' remain after filtering; nothing to process.", column
+        )
+    return filtered
+
+
+def filter_rows_by_flag(df: pd.DataFrame, column: str) -> pd.DataFrame:
+    if column not in df.columns:
+        logging.warning(
+            "Column '%s' not found; skipping flag-based filtering.", column
+        )
+        return df
+    mask = df[column].apply(coerce_bool)
+    filtered = df[mask].copy()
+    dropped = len(df) - len(filtered)
+    logging.info(
+        "Filtered to %d/%d rows where '%s' is truthy.",
+        len(filtered),
+        len(df),
+        column,
+    )
+    if filtered.empty:
+        logging.warning(
+            "No rows matched truthy '%s' after filtering; nothing to process.", column
+        )
+    return filtered
+
+
 # ---------------------------------------------------------------------------
 # Golden set helpers
 
@@ -1913,10 +2120,22 @@ def run_openai_batch_prepare(args: argparse.Namespace) -> None:
         shuffle=args.shuffle,
         subset_row_keys=None,
     )
+    if args.only_missing_annotations:
+        enriched = filter_rows_missing_annotations(
+            enriched, args.missing_annotation_column
+        )
+    if args.only_building_flagged:
+        enriched = filter_rows_by_flag(enriched, args.building_flag_column)
     references = gather_reference_images(
         args.reference_synagogue, args.reference_feor
     )
-    builder = OpenAIBatchRequestBuilder(args.model_name, references)
+    builder = OpenAIBatchRequestBuilder(
+        args.model_name,
+        references,
+        enable_building_verification=args.enable_building_verification,
+        building_flag_column=args.building_flag_column,
+        only_building_verification=args.only_building_verification,
+    )
     requests, manifest_photos, photo_keys = builder.build_requests(enriched)
 
     ensure_directory(args.batch_input.parent)
@@ -2222,6 +2441,12 @@ def run_openai_batch_sequential(args: argparse.Namespace) -> None:
         limit=args.limit,
         shuffle=args.shuffle,
     )
+    if args.only_missing_annotations:
+        enriched = filter_rows_missing_annotations(
+            enriched, args.missing_annotation_column
+        )
+    if args.only_building_flagged:
+        enriched = filter_rows_by_flag(enriched, args.building_flag_column)
     total_rows = len(enriched)
     if total_rows == 0:
         logging.warning("Dataset is empty after preprocessing; nothing to submit.")
@@ -2230,7 +2455,13 @@ def run_openai_batch_sequential(args: argparse.Namespace) -> None:
     references = gather_reference_images(
         args.reference_synagogue, args.reference_feor
     )
-    builder = OpenAIBatchRequestBuilder(args.model_name, references)
+    builder = OpenAIBatchRequestBuilder(
+        args.model_name,
+        references,
+        enable_building_verification=args.enable_building_verification,
+        building_flag_column=args.building_flag_column,
+        only_building_verification=args.only_building_verification,
+    )
     client = build_openai_client(args.openai_api_key, args.openai_base_url)
     output_dir = ensure_directory(args.output_dir)
     chunk_size = max(1, int(args.chunk_size))
