@@ -1544,6 +1544,83 @@ def load_jsonl(path: Path) -> List[Dict[str, Any]]:
     return entries
 
 
+def parse_photo_key_components(photo_key: str) -> Tuple[Optional[int], Optional[int]]:
+    if "__" not in photo_key:
+        return None, None
+    owner_raw, photo_raw = photo_key.split("__", 1)
+    try:
+        owner_id = int(owner_raw)
+    except (TypeError, ValueError):
+        owner_id = None
+    try:
+        photo_id = int(photo_raw)
+    except (TypeError, ValueError):
+        photo_id = None
+    return owner_id, photo_id
+
+
+def detect_model_from_responses(entries: Sequence[Dict[str, Any]]) -> Optional[str]:
+    for entry in entries:
+        response = entry.get("response") or {}
+        body = response.get("body") or {}
+        model = body.get("model")
+        if isinstance(model, str) and model.strip():
+            return model
+    return None
+
+
+def infer_manifest_from_responses(
+    entries: Sequence[Dict[str, Any]]
+) -> Tuple[Dict[str, Dict[str, Any]], List[str]]:
+    manifest_photos: Dict[str, Dict[str, Any]] = {}
+    ordered_keys: List[str] = []
+
+    for entry in entries:
+        custom_id = entry.get("custom_id")
+        if not isinstance(custom_id, str) or not custom_id:
+            continue
+        if custom_id.startswith("annotation:"):
+            photo_key = custom_id.split("annotation:", 1)[1]
+            meta = manifest_photos.setdefault(
+                photo_key,
+                {
+                    "annotation_custom_id": custom_id,
+                    "verification_custom_ids": [],
+                    "photo_key": photo_key,
+                },
+            )
+            meta.setdefault("annotation_custom_id", custom_id)
+            if photo_key not in ordered_keys:
+                ordered_keys.append(photo_key)
+        elif custom_id.startswith("verification:"):
+            parts = custom_id.split(":", 2)
+            focus = None
+            photo_key = None
+            if len(parts) == 3:
+                _, focus, photo_key = parts
+            elif len(parts) == 2:
+                _, photo_key = parts
+            if not photo_key:
+                continue
+            meta = manifest_photos.setdefault(
+                photo_key,
+                {
+                    "verification_custom_ids": [],
+                    "photo_key": photo_key,
+                },
+            )
+            meta.setdefault("verification_custom_ids", []).append(custom_id)
+            if focus:
+                meta.setdefault("building_focus", focus)
+
+    for photo_key, meta in manifest_photos.items():
+        owner_id, photo_id = parse_photo_key_components(photo_key)
+        meta.setdefault("owner_id", owner_id)
+        meta.setdefault("photo_id", photo_id)
+
+    return manifest_photos, ordered_keys
+
+
 def parse_metadata_args(pairs: Sequence[str]) -> Dict[str, str]:
     metadata: Dict[str, str] = {}
     for raw in pairs:
@@ -2173,13 +2250,113 @@ def run_openai_batch_prepare(args: argparse.Namespace) -> None:
 
 
 def run_openai_batch_apply(args: argparse.Namespace) -> None:
-    if not args.manifest.exists():
-        raise FileNotFoundError(f"Manifest not found: {args.manifest}")
-    manifest = json.loads(args.manifest.read_text(encoding="utf-8"))
-    manifest_photos: Dict[str, Dict[str, Any]] = manifest.get("photos", {})
-    photo_keys: List[str] = manifest.get("photo_keys") or list(manifest_photos.keys())
+    response_entries = load_jsonl(args.batch_output)
+    if not response_entries:
+        raise RuntimeError(
+            f"Batch output {args.batch_output} is empty; nothing to merge."
+        )
+    response_map: Dict[str, Dict[str, Any]] = {
+        entry["custom_id"]: entry
+        for entry in response_entries
+        if isinstance(entry, dict) and entry.get("custom_id")
+    }
+
+    inferred_photos, inferred_keys = infer_manifest_from_responses(response_entries)
+    if not inferred_keys:
+        raise RuntimeError(
+            "Batch output did not contain any recognizable annotation entries."
+        )
+
+    manifest_photos: Dict[str, Dict[str, Any]] = {}
+    photo_keys: List[str] = []
+    model_name: Optional[str] = None
+
+    if args.manifest.exists():
+        manifest = json.loads(args.manifest.read_text(encoding="utf-8"))
+        manifest_photos = manifest.get("photos", {}) or {}
+        photo_keys = manifest.get("photo_keys") or list(manifest_photos.keys())
+        model_name = manifest.get("model_name")
+    else:
+        logging.warning(
+            "Manifest not found at %s; attempting to infer metadata from batch output.",
+            args.manifest,
+        )
+
+    annotation_entries = sum(
+        1 for cid in response_map.keys() if isinstance(cid, str) and cid.startswith("annotation:")
+    )
+    manifest_matches = sum(
+        1
+        for meta in manifest_photos.values()
+        if meta.get("annotation_custom_id") in response_map
+    )
+    if manifest_photos and annotation_entries:
+        missing = annotation_entries - manifest_matches
+        if missing > 0:
+            logging.warning(
+                "Manifest %s covers %d/%d annotation responses; %d responses will be inferred from output instead.",
+                args.manifest,
+                manifest_matches,
+                annotation_entries,
+                missing,
+            )
+
+    # Ensure every response-backed photo exists in our metadata and ordering
+    for key in inferred_keys:
+        inferred_meta = inferred_photos.get(key, {})
+        target_meta = manifest_photos.setdefault(key, {})
+        if not target_meta.get("annotation_custom_id"):
+            candidate = inferred_meta.get("annotation_custom_id") or f"annotation:{key}"
+            if candidate in response_map:
+                target_meta["annotation_custom_id"] = candidate
+        if inferred_meta.get("verification_custom_ids"):
+            existing = target_meta.setdefault("verification_custom_ids", [])
+            for vid in inferred_meta["verification_custom_ids"]:
+                if vid not in existing:
+                    existing.append(vid)
+        if inferred_meta.get("building_focus") and not target_meta.get("building_focus"):
+            target_meta["building_focus"] = inferred_meta.get("building_focus")
+        if inferred_meta.get("poi_label") and not target_meta.get("poi_label"):
+            target_meta["poi_label"] = inferred_meta.get("poi_label")
+        if not target_meta.get("photo_key"):
+            target_meta["photo_key"] = key
+        owner_id, photo_id = parse_photo_key_components(key)
+        target_meta.setdefault("owner_id", owner_id)
+        target_meta.setdefault("photo_id", photo_id)
+        if key not in photo_keys:
+            photo_keys.append(key)
+
+    error_map: Dict[str, Dict[str, Any]] = {}
+    if args.batch_errors:
+        for entry in load_jsonl(args.batch_errors):
+            custom_id = entry.get("custom_id")
+            if custom_id:
+                error_map[custom_id] = entry
+
+    response_backed_keys = set(inferred_keys)
+    error_backed_keys: Set[str] = set()
+    for key in photo_keys:
+        meta = manifest_photos.get(key, {})
+        annotation_id = meta.get("annotation_custom_id")
+        if annotation_id and annotation_id in error_map:
+            error_backed_keys.add(key)
+
+    filtered_photo_keys = [
+        key for key in photo_keys if key in response_backed_keys or key in error_backed_keys
+    ]
+    dropped_without_results = len(photo_keys) - len(filtered_photo_keys)
+    if dropped_without_results:
+        logging.warning(
+            "Skipping %d manifest rows that had neither responses nor recorded errors.",
+            dropped_without_results,
+        )
+    photo_keys = filtered_photo_keys
+
     if not photo_keys:
-        raise RuntimeError("Manifest contains no photo entries to apply.")
+        raise RuntimeError("No photo entries available for annotation merge.")
+
+    if not model_name:
+        model_name = detect_model_from_responses(response_entries)
 
     enriched = prepare_annotation_dataframe(
         input_csv=args.input_csv,
@@ -2203,25 +2380,17 @@ def run_openai_batch_apply(args: argparse.Namespace) -> None:
             len(missing_keys),
         )
 
-    response_entries = load_jsonl(args.batch_output)
-    response_map: Dict[str, Dict[str, Any]] = {
-        entry["custom_id"]: entry
-        for entry in response_entries
-        if isinstance(entry, dict) and entry.get("custom_id")
-    }
-    error_map: Dict[str, Dict[str, Any]] = {}
-    if args.batch_errors:
-        for entry in load_jsonl(args.batch_errors):
-            custom_id = entry.get("custom_id")
-            if custom_id:
-                error_map[custom_id] = entry
-
     annotations: Dict[str, Dict[str, Any]] = {}
-    model_name = manifest.get("model_name", "unknown")
+    if not model_name:
+        model_name = "unknown"
 
     for photo_key in photo_keys:
         meta = manifest_photos.get(photo_key, {})
         annotation_custom_id = meta.get("annotation_custom_id")
+        if not annotation_custom_id:
+            candidate_id = f"annotation:{photo_key}"
+            if candidate_id in response_map:
+                annotation_custom_id = candidate_id
         annotation_data = default_annotation()
         parsed = None
         if annotation_custom_id and annotation_custom_id in response_map:
