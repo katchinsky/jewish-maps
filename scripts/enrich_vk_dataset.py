@@ -1612,6 +1612,8 @@ def infer_manifest_from_responses(
             meta.setdefault("verification_custom_ids", []).append(custom_id)
             if focus:
                 meta.setdefault("building_focus", focus)
+            if photo_key not in ordered_keys:
+                ordered_keys.append(photo_key)
 
     for photo_key, meta in manifest_photos.items():
         owner_id, photo_id = parse_photo_key_components(photo_key)
@@ -2285,6 +2287,15 @@ def run_openai_batch_apply(args: argparse.Namespace) -> None:
     annotation_entries = sum(
         1 for cid in response_map.keys() if isinstance(cid, str) and cid.startswith("annotation:")
     )
+    verification_entries = sum(
+        1 for cid in response_map.keys() if isinstance(cid, str) and cid.startswith("verification:")
+    )
+    if annotation_entries == 0 and verification_entries > 0:
+        logging.info(
+            "Batch output %s contains %d verification-only responses.",
+            args.batch_output,
+            verification_entries,
+        )
     manifest_matches = sum(
         1
         for meta in manifest_photos.values()
@@ -2391,7 +2402,8 @@ def run_openai_batch_apply(args: argparse.Namespace) -> None:
             candidate_id = f"annotation:{photo_key}"
             if candidate_id in response_map:
                 annotation_custom_id = candidate_id
-        annotation_data = default_annotation()
+
+        annotation_data: Dict[str, Any] = {}
         parsed = None
         if annotation_custom_id and annotation_custom_id in response_map:
             parsed = parse_batch_response_json(
@@ -2414,7 +2426,7 @@ def run_openai_batch_apply(args: argparse.Namespace) -> None:
                 annotation_custom_id,
                 error_map[annotation_custom_id].get("error"),
             )
-        else:
+        elif annotation_custom_id and annotation_entries:
             logging.warning(
                 "No annotation result found for key %s (custom_id=%s).",
                 photo_key,
@@ -2422,70 +2434,63 @@ def run_openai_batch_apply(args: argparse.Namespace) -> None:
             )
 
         if parsed:
+            annotation_data = default_annotation()
             annotation_data.update(parsed)
-        annotation_data["model_version"] = model_name
-        annotation_data["model_timestamp"] = utc_now_iso()
+            annotation_data["model_version"] = model_name
+            annotation_data["model_timestamp"] = utc_now_iso()
 
         building_focus = meta.get("building_focus")
-        if (
-            not annotation_data.get("annotation_has_building")
-            or annotation_data.get("annotation_location_type") != "outdoor"
-        ):
-            annotation_data["annotation_has_synagogue"] = False
-            annotation_data["annotation_has_feor"] = False
-            annotation_data["annotation_has_other_building"] = False
-        elif building_focus in {"synagogue", "feor"}:
-            verification_ids: List[str] = []
-            if isinstance(meta.get("verification_custom_ids"), list):
-                verification_ids.extend(meta.get("verification_custom_ids"))
+        verification_ids: List[str] = []
+        if isinstance(meta.get("verification_custom_ids"), list):
+            verification_ids.extend(meta.get("verification_custom_ids"))
 
-            verification_result: Optional[bool] = None
-            for vid in verification_ids:
-                if vid in response_map:
-                    verification_payload = parse_batch_response_json(
-                        response_map[vid], vid
+        verification_result: Optional[bool] = None
+        for vid in verification_ids:
+            if vid in response_map:
+                verification_payload = parse_batch_response_json(
+                    response_map[vid], vid
+                )
+                if verification_payload is not None:
+                    matches = bool(verification_payload.get("matches_reference"))
+                    verification_result = (
+                        matches
+                        if verification_result is None
+                        else verification_result or matches
                     )
-                    if verification_payload is not None:
-                        matches = bool(verification_payload.get("matches_reference"))
-                        verification_result = (
-                            matches
-                            if verification_result is None
-                            else verification_result or matches
-                        )
-                        logging.debug(
-                            "Batch verification response %s (photo_key=%s): %s",
-                            vid,
-                            photo_key,
-                            json.dumps(verification_payload, ensure_ascii=False),
-                        )
-                        if matches:
-                            break
-                elif vid in error_map:
-                    logging.warning(
-                        "Verification request %s failed: %s",
+                    logging.debug(
+                        "Batch verification response %s (photo_key=%s): %s",
                         vid,
-                        error_map[vid].get("error"),
+                        photo_key,
+                        json.dumps(verification_payload, ensure_ascii=False),
                     )
-                else:
-                    logging.warning(
-                        "Verification result %s missing in batch outputs.", vid
-                    )
+                    if matches:
+                        break
+            elif vid in error_map:
+                logging.warning(
+                    "Verification request %s failed: %s",
+                    vid,
+                    error_map[vid].get("error"),
+                )
+            else:
+                logging.warning(
+                    "Verification result %s missing in batch outputs.", vid
+                )
 
-            if verification_result is not None:
-                if building_focus == "synagogue":
-                    annotation_data["annotation_has_synagogue"] = verification_result
-                    if verification_result:
-                        annotation_data["annotation_has_other_building"] = bool(
-                            annotation_data.get("annotation_has_other_building")
-                        )
-                elif building_focus == "feor":
-                    annotation_data["annotation_has_feor"] = verification_result
-                    if verification_result:
-                        annotation_data["annotation_has_other_building"] = bool(
-                            annotation_data.get("annotation_has_other_building")
-                        )
+        if verification_result is not None and building_focus:
+            annotation_data.setdefault("annotation_has_building", True)
+            if building_focus == "synagogue":
+                annotation_data["annotation_has_synagogue"] = verification_result
+                if verification_result:
+                    annotation_data.setdefault("annotation_has_other_building", False)
+            elif building_focus == "feor":
+                annotation_data["annotation_has_feor"] = verification_result
+                if verification_result:
+                    annotation_data.setdefault("annotation_has_other_building", False)
+            else:
+                annotation_data["annotation_has_other_building"] = verification_result
 
-        annotations[photo_key] = annotation_data
+        if annotation_data:
+            annotations[photo_key] = annotation_data
 
     merged = merge_annotations(enriched, annotations)
     merged.to_csv(args.output_csv, index=False)
