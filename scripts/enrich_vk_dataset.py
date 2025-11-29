@@ -134,6 +134,8 @@ CSV_COLUMNS = [
     "user_city_id",
     "user_kind",
     "post_text",
+    "inside_poi_area",
+    "inside_poi_building",
 ] + ANNOTATION_FIELDS
 
 
@@ -337,6 +339,38 @@ def parse_args() -> argparse.Namespace:
         default=DEFAULT_BATCH_MANIFEST,
         help="Path to write the manifest that maps custom_ids to photo_ids.",
     )
+    batch_prepare.add_argument(
+        "--only-missing-annotations",
+        action="store_true",
+        help="Restrict the batch to rows where the target annotation column is empty.",
+    )
+    batch_prepare.add_argument(
+        "--missing-annotation-column",
+        type=str,
+        default="annotation_text_description",
+        help="Column used to determine whether a row already has annotations.",
+    )
+    batch_prepare.add_argument(
+        "--enable-building-verification",
+        action="store_true",
+        help="Also enqueue building-verification prompts for flagged rows.",
+    )
+    batch_prepare.add_argument(
+        "--only-building-verification",
+        action="store_true",
+        help="Submit only building-verification requests (no fresh annotations).",
+    )
+    batch_prepare.add_argument(
+        "--only-building-flagged",
+        action="store_true",
+        help="Process only rows where the building flag column is truthy.",
+    )
+    batch_prepare.add_argument(
+        "--building-flag-column",
+        type=str,
+        default="annotation_has_building",
+        help="Column whose truthy rows should receive building verification.",
+    )
 
     batch_apply = batch_sub.add_parser(
         "apply",
@@ -475,6 +509,95 @@ def parse_args() -> argparse.Namespace:
         type=str,
         default=None,
         help="Pagination cursor to continue listing.",
+    )
+
+    batch_sequential = batch_sub.add_parser(
+        "sequential",
+        help="Split the dataset into fixed-size chunks and submit batches sequentially.",
+    )
+    add_dataset_common_args(batch_sequential)
+    add_reference_image_args(batch_sequential)
+    add_openai_client_args(batch_sequential)
+    batch_sequential.add_argument(
+        "--model-name",
+        type=str,
+        default="gpt-4o-mini",
+        help="Model identifier to use inside the batch job.",
+    )
+    batch_sequential.add_argument(
+        "--chunk-size",
+        type=int,
+        default=500,
+        help="Number of rows per batch chunk.",
+    )
+    batch_sequential.add_argument(
+        "--max-chunks",
+        type=int,
+        default=None,
+        help="Optional limit on how many chunks to submit (useful for dry runs).",
+    )
+    batch_sequential.add_argument(
+        "--output-dir",
+        type=Path,
+        default=DEFAULT_CACHE_DIR / "batch_chunks",
+        help="Directory to store chunk inputs, manifests, and outputs.",
+    )
+    batch_sequential.add_argument(
+        "--endpoint",
+        type=str,
+        default="/v1/responses",
+        help="Target endpoint for the batch job.",
+    )
+    batch_sequential.add_argument(
+        "--completion-window",
+        type=str,
+        default="24h",
+        help="Completion window requested from the API (currently only 24h).",
+    )
+    batch_sequential.add_argument(
+        "--poll-interval",
+        type=int,
+        default=60,
+        help="Seconds to wait between status polls.",
+    )
+    batch_sequential.add_argument(
+        "--metadata",
+        action="append",
+        default=[],
+        metavar="KEY=VALUE",
+        help="Optional metadata entries to attach to each batch (repeatable).",
+    )
+    batch_sequential.add_argument(
+        "--only-missing-annotations",
+        action="store_true",
+        help="Restrict chunk submission to rows lacking annotations.",
+    )
+    batch_sequential.add_argument(
+        "--missing-annotation-column",
+        type=str,
+        default="annotation_text_description",
+        help="Column used to detect missing annotations.",
+    )
+    batch_sequential.add_argument(
+        "--enable-building-verification",
+        action="store_true",
+        help="Include building-verification prompts for flagged rows.",
+    )
+    batch_sequential.add_argument(
+        "--only-building-verification",
+        action="store_true",
+        help="Submit only building-verification requests (skip annotation prompts).",
+    )
+    batch_sequential.add_argument(
+        "--only-building-flagged",
+        action="store_true",
+        help="Submit chunks only for rows where the building flag column is truthy.",
+    )
+    batch_sequential.add_argument(
+        "--building-flag-column",
+        type=str,
+        default="annotation_has_building",
+        help="Column whose truthy rows should receive building verification.",
     )
 
     # golden draft command
@@ -620,6 +743,37 @@ def build_resized_image_url(image_url: str, target_width: int = 480) -> str:
     return urlunsplit(parsed._replace(query=new_query))
 
 
+def _normalize_id_component(value: Any) -> Optional[str]:
+    if value is None:
+        return None
+    if isinstance(value, str):
+        value = value.strip()
+        return value or None
+    try:
+        if pd.isna(value):
+            return None
+    except Exception:
+        pass
+    if isinstance(value, float):
+        if value.is_integer():
+            value = int(value)
+    return str(value)
+
+
+def _sanitize_key_component(component: str) -> str:
+    return re.sub(r"[^0-9A-Za-z_.:-]", "_", component)
+
+
+def build_photo_key(owner_id: Any, photo_id: Any) -> str:
+    owner_component = _sanitize_key_component(
+        _normalize_id_component(owner_id) or "owner-unknown"
+    )
+    photo_component = _sanitize_key_component(
+        _normalize_id_component(photo_id) or "photo-unknown"
+    )
+    return f"{owner_component}__{photo_component}"
+
+
 def resolve_building_focus(poi_name: Optional[str]) -> Optional[str]:
     if not poi_name or not isinstance(poi_name, str):
         return None
@@ -640,6 +794,25 @@ def build_post_url(owner_id: Any, post_id: Any) -> Optional[str]:
     except (TypeError, ValueError):
         return None
     return f"https://vk.com/wall{owner_id_int}_{post_id_int}"
+
+
+def coerce_bool(value: Any) -> bool:
+    if isinstance(value, bool):
+        return value
+    if value is None:
+        return False
+    if isinstance(value, (int, float)):
+        if pd.isna(value):
+            return False
+        return bool(value)
+    if isinstance(value, str):
+        normalized = value.strip().lower()
+        if normalized in {"", "0", "false", "no", "none", "null"}:
+            return False
+        return normalized in {"true", "1", "yes", "y", "t"}
+    if pd.isna(value):
+        return False
+    return False
 
 
 def load_csv(path: Path) -> pd.DataFrame:
@@ -777,7 +950,7 @@ class VKUserMetadataFetcher:
             str(int(uid))
             for uid in user_ids
             if not pd.isna(uid)
-        ]
+         ]
         results: Dict[str, Dict[str, Any]] = {}
         missing: List[str] = []
         for uid in normalized_ids:
@@ -889,7 +1062,7 @@ def build_annotation_prompt_bundle(photo_row: Dict[str, Any]) -> AnnotationPromp
 
     prompt = textwrap.dedent(
         """
-        Ты — специалист по описанию и классификации городских фотографий из социальных сетей.
+                Ты — специалист по описанию и классификации городских фотографий из социальных сетей.
 
         Проанализируй изображение (и текстовый контекст, если он есть) и верни строго ОДИН JSON-объект указанной структуры.
         Не добавляй ничего, что не видно на изображении или не подтверждается текстовым контекстом.
@@ -932,8 +1105,6 @@ def build_annotation_prompt_bundle(photo_row: Dict[str, Any]) -> AnnotationPromp
             "annotation_has_building": true,
             "annotation_confidence": 0.83
         }
-
-
         """
     ).strip()
 
@@ -976,8 +1147,8 @@ def build_building_verification_content(
         return None
     prompt = textwrap.dedent(
         f"""
-        Ты сравниваешь здание или пространство на фото с несколькими эталонными изображениями объекта "{building_focus}".
-        Все эталонные фото показывают один и тот же объект, но с разных ракурсов, в разные годы, временá суток или состояния (исторический и современный вид).
+        Ты сравниваешь здание на фото с несколькими эталонными изображениями объекта "{building_focus}".
+        Все эталонные фото показывают один и тот же объект, но с разных ракурсов, в разные годы, времена суток или состояния (исторический и современный вид).
         Ответь только JSON-объектом:
         {{
           "matches_reference": boolean,
@@ -986,7 +1157,7 @@ def build_building_verification_content(
         Установи matches_reference=true, если целевой объект совпадает хотя бы с одним эталонным изображением, даже если:
         - объект виден частично или не является главным фокусом,
         - ракурс, масштаб или освещение отличаются,
-        - на фото показан исторический вариант объекта, отличающийся от современного вида.
+        - на фото показан исторический вариант объекта, отличающийся от современного вида
         Используй характерные архитектурные элементы, пропорции, детали фасада, окружение.
         """
     ).strip()
@@ -1011,10 +1182,9 @@ def json_schema_response_format(model_cls: Type[BaseModel]) -> Dict[str, Any]:
     schema = model_cls.model_json_schema()
     return {
         "type": "json_schema",
-        "json_schema": {
-            "name": model_cls.__name__,
-            "schema": schema,
-        },
+        "strict": True,
+        "name": model_cls.__name__,
+        "schema": schema,
     }
 
 
@@ -1167,7 +1337,7 @@ class OpenAIMultimodalClient(MultimodalModelClient):
             if est_cost is not None:
                 log_msg += f", est_cost=${est_cost:.4f}"
             logging.info(log_msg)
-            logging.debug(
+            logging.info(
                 "Building verification response (photo=%s, focus=%s): %s",
                 photo_id,
                 building_focus,
@@ -1229,6 +1399,9 @@ class OpenAIBatchRequestBuilder:
         self,
         model_name: str,
         reference_images: Sequence[Tuple[str, str, Dict[str, str]]] = (),
+        enable_building_verification: bool = False,
+        building_flag_column: str = "annotation_has_building",
+        only_building_verification: bool = False,
     ):
         self.model_name = model_name
         self.reference_map: Dict[str, List[Tuple[str, Dict[str, str]]]] = {}
@@ -1238,73 +1411,119 @@ class OpenAIBatchRequestBuilder:
         self.verification_format = json_schema_response_format(
             BuildingVerificationModel
         )
+        self.only_building_verification = only_building_verification
+        self.enable_building_verification = (
+            enable_building_verification or only_building_verification
+        )
+        self.building_flag_column = building_flag_column
+        self._missing_reference_focus_warned: Set[str] = set()
 
     def build_requests(
         self, df: pd.DataFrame
     ) -> Tuple[List[Dict[str, Any]], Dict[str, Dict[str, Any]], List[str]]:
         requests: List[Dict[str, Any]] = []
         manifest_photos: Dict[str, Dict[str, Any]] = {}
-        ordered_photo_ids: List[str] = []
+        ordered_photo_keys: List[str] = []
 
         for _, row in df.iterrows():
             record = row.to_dict()
-            photo_id = str(record.get("photo_id"))
-            ordered_photo_ids.append(photo_id)
-            bundle = build_annotation_prompt_bundle(record)
-            annotation_custom_id = f"annotation:{photo_id}"
-
-            requests.append(
-                {
-                    "custom_id": annotation_custom_id,
-                    "method": "POST",
-                    "url": "/v1/responses",
-                    "body": {
-                        "model": self.model_name,
-                        "input": [{"role": "user", "content": bundle.content}],
-                        "response_format": self.annotation_format,
-                    },
-                }
+            photo_key = record.get("_photo_key") or build_photo_key(
+                record.get("owner_id"), record.get("photo_id")
             )
+            ordered_photo_keys.append(photo_key)
+            bundle = build_annotation_prompt_bundle(record)
+            annotation_custom_id: Optional[str] = None
+            if not self.only_building_verification:
+                annotation_custom_id = f"annotation:{photo_key}"
+                requests.append(
+                    {
+                        "custom_id": annotation_custom_id,
+                        "method": "POST",
+                        "url": "/v1/responses",
+                        "body": {
+                            "model": self.model_name,
+                            "input": [{"role": "user", "content": bundle.content}],
+                            "text": {"format": self.annotation_format},
+                        },
+                    }
+                )
 
-            manifest_photos[photo_id] = {
+            verification_ids: List[str] = []
+            if self.enable_building_verification:
+                verification_id = self._schedule_building_verification(
+                    record, bundle, photo_key, requests
+                )
+                if verification_id:
+                    verification_ids.append(verification_id)
+
+            manifest_photos[photo_key] = {
                 "annotation_custom_id": annotation_custom_id,
-                "verification_custom_ids": [],
+                "verification_custom_ids": verification_ids,
                 "building_focus": bundle.building_focus,
                 "poi_label": bundle.poi_label,
+                "photo_key": photo_key,
+                "photo_id": record.get("photo_id"),
+                "owner_id": record.get("owner_id"),
             }
 
-            if (
-                bundle.building_focus
-                and bundle.building_focus in self.reference_map
-                and bundle.image_for_model
-            ):
-                verification_content = build_building_verification_content(
-                    bundle.image_for_model,
-                    bundle.building_focus,
-                    bundle.poi_label,
-                    self.reference_map[bundle.building_focus],
-                )
-                if verification_content:
-                    verification_custom_id = f"verify:{photo_id}"
-                    requests.append(
-                        {
-                            "custom_id": verification_custom_id,
-                            "method": "POST",
-                            "url": "/v1/responses",
-                            "body": {
-                                "model": self.model_name,
-                                "input": [
-                                    {"role": "user", "content": verification_content}
-                                ],
-                                "response_format": self.verification_format,
-                            },
-                        }
-                    )
-                    manifest_photos[photo_id]["verification_custom_ids"] = [
-                        verification_custom_id
-                    ]
+        return requests, manifest_photos, ordered_photo_keys
 
-        return requests, manifest_photos, ordered_photo_ids
+    def _schedule_building_verification(
+        self,
+        record: Dict[str, Any],
+        bundle: AnnotationPromptBundle,
+        photo_key: str,
+        requests: List[Dict[str, Any]],
+    ) -> Optional[str]:
+        if not self.enable_building_verification:
+            return None
+        if not bundle.building_focus:
+            return None
+        if not self._row_has_building_flag(record):
+            return None
+        references = self.reference_map.get(bundle.building_focus)
+        if not references:
+            if bundle.building_focus not in self._missing_reference_focus_warned:
+                logging.warning(
+                    "No reference images available for '%s'; skipping verification for %s.",
+                    bundle.building_focus,
+                    photo_key,
+                )
+                self._missing_reference_focus_warned.add(bundle.building_focus)
+            return None
+        content = build_building_verification_content(
+            bundle.image_for_model,
+            bundle.building_focus,
+            bundle.poi_label,
+            references,
+        )
+        if content is None:
+            return None
+        verification_custom_id = f"verification:{bundle.building_focus}:{photo_key}"
+        requests.append(
+            {
+                "custom_id": verification_custom_id,
+                "method": "POST",
+                "url": "/v1/responses",
+                "body": {
+                    "model": self.model_name,
+                    "input": [{"role": "user", "content": content}],
+                    "text": {"format": self.verification_format},
+                },
+            }
+        )
+        return verification_custom_id
+
+    def _row_has_building_flag(self, record: Dict[str, Any]) -> bool:
+        columns = [self.building_flag_column]
+        if self.building_flag_column != "annotation_has_building":
+            columns.append("annotation_has_building")
+        for column in columns:
+            if column not in record:
+                continue
+            if coerce_bool(record.get(column)):
+                return True
+        return False
 
 
 def load_jsonl(path: Path) -> List[Dict[str, Any]]:
@@ -1323,6 +1542,85 @@ def load_jsonl(path: Path) -> List[Dict[str, Any]]:
                     "Skipping malformed JSON at %s line %d: %s", path, idx, exc
                 )
     return entries
+
+
+def parse_photo_key_components(photo_key: str) -> Tuple[Optional[int], Optional[int]]:
+    if "__" not in photo_key:
+        return None, None
+    owner_raw, photo_raw = photo_key.split("__", 1)
+    try:
+        owner_id = int(owner_raw)
+    except (TypeError, ValueError):
+        owner_id = None
+    try:
+        photo_id = int(photo_raw)
+    except (TypeError, ValueError):
+        photo_id = None
+    return owner_id, photo_id
+
+
+def detect_model_from_responses(entries: Sequence[Dict[str, Any]]) -> Optional[str]:
+    for entry in entries:
+        response = entry.get("response") or {}
+        body = response.get("body") or {}
+        model = body.get("model")
+        if isinstance(model, str) and model.strip():
+            return model
+    return None
+
+
+def infer_manifest_from_responses(
+    entries: Sequence[Dict[str, Any]]
+) -> Tuple[Dict[str, Dict[str, Any]], List[str]]:
+    manifest_photos: Dict[str, Dict[str, Any]] = {}
+    ordered_keys: List[str] = []
+
+    for entry in entries:
+        custom_id = entry.get("custom_id")
+        if not isinstance(custom_id, str) or not custom_id:
+            continue
+        if custom_id.startswith("annotation:"):
+            photo_key = custom_id.split("annotation:", 1)[1]
+            meta = manifest_photos.setdefault(
+                photo_key,
+                {
+                    "annotation_custom_id": custom_id,
+                    "verification_custom_ids": [],
+                    "photo_key": photo_key,
+                },
+            )
+            meta.setdefault("annotation_custom_id", custom_id)
+            if photo_key not in ordered_keys:
+                ordered_keys.append(photo_key)
+        elif custom_id.startswith("verification:"):
+            parts = custom_id.split(":", 2)
+            focus = None
+            photo_key = None
+            if len(parts) == 3:
+                _, focus, photo_key = parts
+            elif len(parts) == 2:
+                _, photo_key = parts
+            if not photo_key:
+                continue
+            meta = manifest_photos.setdefault(
+                photo_key,
+                {
+                    "verification_custom_ids": [],
+                    "photo_key": photo_key,
+                },
+            )
+            meta.setdefault("verification_custom_ids", []).append(custom_id)
+            if focus:
+                meta.setdefault("building_focus", focus)
+            if photo_key not in ordered_keys:
+                ordered_keys.append(photo_key)
+
+    for photo_key, meta in manifest_photos.items():
+        owner_id, photo_id = parse_photo_key_components(photo_key)
+        meta.setdefault("owner_id", owner_id)
+        meta.setdefault("photo_id", photo_id)
+
+    return manifest_photos, ordered_keys
 
 
 def parse_metadata_args(pairs: Sequence[str]) -> Dict[str, str]:
@@ -1430,33 +1728,39 @@ def annotate_rows(
     processed_since_save = 0
 
     for _, row in df.iterrows():
-        photo_id = str(row["photo_id"])
-        cache_path = cache_dir / f"{photo_id}.json"
+        row_dict = row.to_dict()
+        photo_id_value = row_dict.get("photo_id")
+        photo_id_display = row_dict.get("photo_id")
+        owner_id_value = row_dict.get("owner_id")
+        photo_key = row_dict.get("_photo_key") or build_photo_key(
+            owner_id_value, photo_id_value
+        )
+        cache_path = cache_dir / f"{photo_key}.json"
 
         if resume:
             cached = None
-            if checkpoint.should_skip(photo_id) or cache_path.exists():
+            if checkpoint.should_skip(photo_key) or cache_path.exists():
                 cached = _load_cached_annotation(cache_path)
             if cached is not None:
-                annotations[photo_id] = cached
-                checkpoint.mark_complete(photo_id)
+                annotations[photo_key] = cached
+                checkpoint.mark_complete(photo_key)
                 continue
-            if checkpoint.should_skip(photo_id):
+            if checkpoint.should_skip(photo_key):
                 logging.warning(
-                    "Checkpoint referenced %s but cache missing; re-running.", photo_id
+                    "Checkpoint referenced %s but cache missing; re-running.", photo_key
                 )
 
         if model_client is None:
             annotation = default_annotation()
         else:
             try:
-                annotation = model_client.annotate(row.to_dict())
+                annotation = model_client.annotate(row_dict)
             except Exception as exc:  # pragma: no cover - network errors
-                logging.error("Model failed for photo %s: %s", photo_id, exc)
+                logging.error("Model failed for photo %s: %s", photo_id_display, exc)
                 annotation = default_annotation()
 
-        annotations[photo_id] = annotation
-        checkpoint.mark_complete(photo_id)
+        annotations[photo_key] = annotation
+        checkpoint.mark_complete(photo_key)
         processed_since_save += 1
 
         cache_path.write_text(
@@ -1481,7 +1785,10 @@ def merge_annotations(
 
     for _, row in df.iterrows():
         record = row.to_dict()
-        annotation = annotations.get(str(record["photo_id"]), default_annotation())
+        photo_key = record.get("_photo_key") or build_photo_key(
+            record.get("owner_id"), record.get("photo_id")
+        )
+        annotation = annotations.get(photo_key, default_annotation())
         record.update(annotation)
         merged_records.append(record)
 
@@ -1501,16 +1808,23 @@ def prepare_annotation_dataframe(
     limit: Optional[int],
     shuffle: bool,
     subset_photo_ids: Optional[List[str]] = None,
+    subset_row_keys: Optional[List[str]] = None,
 ) -> pd.DataFrame:
     df = load_csv(input_csv)
     df = filter_visible_rows(df)
 
     subset_order: Dict[str, int] = {}
+    subset_key_order: Dict[str, int] = {}
     if subset_photo_ids:
         subset_strings = [str(pid) for pid in subset_photo_ids]
         subset_lookup = set(subset_strings)
         df = df[df["photo_id"].astype(str).isin(subset_lookup)].copy()
         subset_order = {photo_id: idx for idx, photo_id in enumerate(subset_strings)}
+    subset_key_lookup: Optional[Set[str]] = None
+    if subset_row_keys:
+        subset_key_strings = [str(key) for key in subset_row_keys]
+        subset_key_lookup = set(subset_key_strings)
+        subset_key_order = {key: idx for idx, key in enumerate(subset_key_strings)}
 
     if shuffle:
         df = df.sample(frac=1.0, random_state=41).reset_index(drop=True)
@@ -1534,6 +1848,18 @@ def prepare_annotation_dataframe(
             enriched.assign(_order=order_series)
             .sort_values("_order", na_position="last")
             .drop(columns="_order")
+        )
+    if subset_key_lookup:
+        if "_photo_key" not in enriched.columns:
+            enriched["_photo_key"] = enriched.apply(
+                lambda r: build_photo_key(r.get("owner_id"), r.get("photo_id")), axis=1
+            )
+        enriched = enriched[enriched["_photo_key"].isin(subset_key_lookup)].copy()
+        order_series_keys = enriched["_photo_key"].map(subset_key_order)
+        enriched = (
+            enriched.assign(_order_key=order_series_keys)
+            .sort_values("_order_key", na_position="last")
+            .drop(columns="_order_key")
         )
     return enriched.reset_index(drop=True)
 
@@ -1577,6 +1903,9 @@ def restructure_dataframe(
         if poi_lookup and record.get("poi_name") in poi_lookup:
             record["poi_name"] = poi_lookup[record["poi_name"]]
 
+        record["_photo_key"] = build_photo_key(
+            record.get("owner_id"), record.get("photo_id")
+        )
         records.append(record)
 
     enriched = pd.DataFrame(records)
@@ -1618,6 +1947,58 @@ def filter_visible_rows(df: pd.DataFrame) -> pd.DataFrame:
     if filtered.empty:
         logging.warning(
             "After filtering by %s, no rows remain. Check the input dataset.", column
+        )
+    return filtered
+
+
+def filter_rows_missing_annotations(
+    df: pd.DataFrame, column: str = "annotation_text_description"
+) -> pd.DataFrame:
+    if column not in df.columns:
+        logging.info(
+            "Column '%s' absent in dataset; skipping missing-annotation filter.", column
+        )
+        return df
+    normalized = (
+        df[column]
+        .fillna("")
+        .astype(str)
+        .str.strip()
+    )
+    mask = normalized == ""
+    filtered = df[mask].copy()
+    dropped = len(df) - len(filtered)
+    logging.info(
+        "Selected %d/%d rows with empty '%s' values.",
+        len(filtered),
+        len(df),
+        column,
+    )
+    if filtered.empty:
+        logging.warning(
+            "No rows missing '%s' remain after filtering; nothing to process.", column
+        )
+    return filtered
+
+
+def filter_rows_by_flag(df: pd.DataFrame, column: str) -> pd.DataFrame:
+    if column not in df.columns:
+        logging.warning(
+            "Column '%s' not found; skipping flag-based filtering.", column
+        )
+        return df
+    mask = df[column].apply(coerce_bool)
+    filtered = df[mask].copy()
+    dropped = len(df) - len(filtered)
+    logging.info(
+        "Filtered to %d/%d rows where '%s' is truthy.",
+        len(filtered),
+        len(df),
+        column,
+    )
+    if filtered.empty:
+        logging.warning(
+            "No rows matched truthy '%s' after filtering; nothing to process.", column
         )
     return filtered
 
@@ -1762,25 +2143,48 @@ def run_annotate(args: argparse.Namespace) -> None:
 
     # Also dump model responses in JSON Lines for auditing
     with args.model_responses.open("w", encoding="utf-8") as f:
-        for photo_id, payload in annotations.items():
-            f.write(
-                json.dumps(
-                    {"photo_id": photo_id, **payload},
-                    ensure_ascii=False,
-                )
-                + "\n"
+        for _, row in enriched.iterrows():
+            row_dict = row.to_dict()
+            photo_key = row_dict.get("_photo_key") or build_photo_key(
+                row_dict.get("owner_id"), row_dict.get("photo_id")
             )
+            payload = annotations.get(photo_key)
+            if payload is None:
+                continue
+            entry = {
+                "photo_key": photo_key,
+                "photo_id": row_dict.get("photo_id"),
+                "owner_id": row_dict.get("owner_id"),
+                **payload,
+            }
+            f.write(json.dumps(entry, ensure_ascii=False) + "\n")
     logging.info("Model responses exported to %s", args.model_responses)
 
     if args.only_photo_ids:
-        for pid in args.only_photo_ids:
-            payload = annotations.get(str(pid))
+        requested = {str(pid) for pid in args.only_photo_ids}
+        matches = enriched[enriched["photo_id"].astype(str).isin(requested)]
+        if matches.empty:
+            logging.warning(
+                "Requested photo_ids %s not found in the processed dataset.",
+                ", ".join(sorted(requested)),
+            )
+        for _, row in matches.iterrows():
+            row_dict = row.to_dict()
+            photo_key = row_dict.get("_photo_key") or build_photo_key(
+                row_dict.get("owner_id"), row_dict.get("photo_id")
+            )
+            payload = annotations.get(photo_key)
             if payload is None:
-                logging.warning("Requested photo_id %s not processed.", pid)
+                logging.warning(
+                    "Requested photo_id %s (owner %s) had no annotation payload.",
+                    row_dict.get("photo_id"),
+                    row_dict.get("owner_id"),
+                )
                 continue
             logging.info(
-                "Annotation for photo_id %s:\n%s",
-                pid,
+                "Annotation for photo_id %s (owner %s):\n%s",
+                row_dict.get("photo_id"),
+                row_dict.get("owner_id"),
                 json.dumps(payload, ensure_ascii=False, indent=2),
             )
 
@@ -1793,12 +2197,25 @@ def run_openai_batch_prepare(args: argparse.Namespace) -> None:
         cache_dir=args.cache_dir,
         limit=args.limit,
         shuffle=args.shuffle,
+        subset_row_keys=None,
     )
+    if args.only_missing_annotations:
+        enriched = filter_rows_missing_annotations(
+            enriched, args.missing_annotation_column
+        )
+    if args.only_building_flagged:
+        enriched = filter_rows_by_flag(enriched, args.building_flag_column)
     references = gather_reference_images(
         args.reference_synagogue, args.reference_feor
     )
-    builder = OpenAIBatchRequestBuilder(args.model_name, references)
-    requests, manifest_photos, photo_ids = builder.build_requests(enriched)
+    builder = OpenAIBatchRequestBuilder(
+        args.model_name,
+        references,
+        enable_building_verification=args.enable_building_verification,
+        building_flag_column=args.building_flag_column,
+        only_building_verification=args.only_building_verification,
+    )
+    requests, manifest_photos, photo_keys = builder.build_requests(enriched)
 
     ensure_directory(args.batch_input.parent)
     with args.batch_input.open("w", encoding="utf-8") as handle:
@@ -1817,7 +2234,7 @@ def run_openai_batch_prepare(args: argparse.Namespace) -> None:
             "skip_user_fetch": args.skip_user_fetch,
             "row_count": len(enriched),
         },
-        "photo_ids": photo_ids,
+        "photo_keys": photo_keys,
         "photos": manifest_photos,
     }
     ensure_directory(args.manifest.parent)
@@ -1828,20 +2245,129 @@ def run_openai_batch_prepare(args: argparse.Namespace) -> None:
     logging.info(
         "Prepared %d batch requests across %d photos. Input saved to %s; manifest saved to %s.",
         len(requests),
-        len(photo_ids),
+        len(photo_keys),
         args.batch_input,
         args.manifest,
     )
 
 
 def run_openai_batch_apply(args: argparse.Namespace) -> None:
-    if not args.manifest.exists():
-        raise FileNotFoundError(f"Manifest not found: {args.manifest}")
-    manifest = json.loads(args.manifest.read_text(encoding="utf-8"))
-    manifest_photos: Dict[str, Dict[str, Any]] = manifest.get("photos", {})
-    photo_ids: List[str] = manifest.get("photo_ids") or list(manifest_photos.keys())
-    if not photo_ids:
-        raise RuntimeError("Manifest contains no photo IDs to apply.")
+    response_entries = load_jsonl(args.batch_output)
+    if not response_entries:
+        raise RuntimeError(
+            f"Batch output {args.batch_output} is empty; nothing to merge."
+        )
+    response_map: Dict[str, Dict[str, Any]] = {
+        entry["custom_id"]: entry
+        for entry in response_entries
+        if isinstance(entry, dict) and entry.get("custom_id")
+    }
+
+    inferred_photos, inferred_keys = infer_manifest_from_responses(response_entries)
+    if not inferred_keys:
+        raise RuntimeError(
+            "Batch output did not contain any recognizable annotation entries."
+        )
+
+    manifest_photos: Dict[str, Dict[str, Any]] = {}
+    photo_keys: List[str] = []
+    model_name: Optional[str] = None
+
+    if args.manifest.exists():
+        manifest = json.loads(args.manifest.read_text(encoding="utf-8"))
+        manifest_photos = manifest.get("photos", {}) or {}
+        photo_keys = manifest.get("photo_keys") or list(manifest_photos.keys())
+        model_name = manifest.get("model_name")
+    else:
+        logging.warning(
+            "Manifest not found at %s; attempting to infer metadata from batch output.",
+            args.manifest,
+        )
+
+    annotation_entries = sum(
+        1 for cid in response_map.keys() if isinstance(cid, str) and cid.startswith("annotation:")
+    )
+    verification_entries = sum(
+        1 for cid in response_map.keys() if isinstance(cid, str) and cid.startswith("verification:")
+    )
+    if annotation_entries == 0 and verification_entries > 0:
+        logging.info(
+            "Batch output %s contains %d verification-only responses.",
+            args.batch_output,
+            verification_entries,
+        )
+    manifest_matches = sum(
+        1
+        for meta in manifest_photos.values()
+        if meta.get("annotation_custom_id") in response_map
+    )
+    if manifest_photos and annotation_entries:
+        missing = annotation_entries - manifest_matches
+        if missing > 0:
+            logging.warning(
+                "Manifest %s covers %d/%d annotation responses; %d responses will be inferred from output instead.",
+                args.manifest,
+                manifest_matches,
+                annotation_entries,
+                missing,
+            )
+
+    # Ensure every response-backed photo exists in our metadata and ordering
+    for key in inferred_keys:
+        inferred_meta = inferred_photos.get(key, {})
+        target_meta = manifest_photos.setdefault(key, {})
+        if not target_meta.get("annotation_custom_id"):
+            candidate = inferred_meta.get("annotation_custom_id") or f"annotation:{key}"
+            if candidate in response_map:
+                target_meta["annotation_custom_id"] = candidate
+        if inferred_meta.get("verification_custom_ids"):
+            existing = target_meta.setdefault("verification_custom_ids", [])
+            for vid in inferred_meta["verification_custom_ids"]:
+                if vid not in existing:
+                    existing.append(vid)
+        if inferred_meta.get("building_focus") and not target_meta.get("building_focus"):
+            target_meta["building_focus"] = inferred_meta.get("building_focus")
+        if inferred_meta.get("poi_label") and not target_meta.get("poi_label"):
+            target_meta["poi_label"] = inferred_meta.get("poi_label")
+        if not target_meta.get("photo_key"):
+            target_meta["photo_key"] = key
+        owner_id, photo_id = parse_photo_key_components(key)
+        target_meta.setdefault("owner_id", owner_id)
+        target_meta.setdefault("photo_id", photo_id)
+        if key not in photo_keys:
+            photo_keys.append(key)
+
+    error_map: Dict[str, Dict[str, Any]] = {}
+    if args.batch_errors:
+        for entry in load_jsonl(args.batch_errors):
+            custom_id = entry.get("custom_id")
+            if custom_id:
+                error_map[custom_id] = entry
+
+    response_backed_keys = set(inferred_keys)
+    error_backed_keys: Set[str] = set()
+    for key in photo_keys:
+        meta = manifest_photos.get(key, {})
+        annotation_id = meta.get("annotation_custom_id")
+        if annotation_id and annotation_id in error_map:
+            error_backed_keys.add(key)
+
+    filtered_photo_keys = [
+        key for key in photo_keys if key in response_backed_keys or key in error_backed_keys
+    ]
+    dropped_without_results = len(photo_keys) - len(filtered_photo_keys)
+    if dropped_without_results:
+        logging.warning(
+            "Skipping %d manifest rows that had neither responses nor recorded errors.",
+            dropped_without_results,
+        )
+    photo_keys = filtered_photo_keys
+
+    if not photo_keys:
+        raise RuntimeError("No photo entries available for annotation merge.")
+
+    if not model_name:
+        model_name = detect_model_from_responses(response_entries)
 
     enriched = prepare_annotation_dataframe(
         input_csv=args.input_csv,
@@ -1850,37 +2376,34 @@ def run_openai_batch_apply(args: argparse.Namespace) -> None:
         cache_dir=args.cache_dir,
         limit=None,
         shuffle=False,
-        subset_photo_ids=photo_ids,
+        subset_row_keys=photo_keys,
     )
 
-    enriched_ids = set(enriched["photo_id"].astype(str))
-    missing_ids = [pid for pid in photo_ids if pid not in enriched_ids]
-    if missing_ids:
+    if "_photo_key" not in enriched.columns:
+        enriched["_photo_key"] = enriched.apply(
+            lambda r: build_photo_key(r.get("owner_id"), r.get("photo_id")), axis=1
+        )
+    enriched_keys = set(enriched["_photo_key"].astype(str))
+    missing_keys = [key for key in photo_keys if key not in enriched_keys]
+    if missing_keys:
         logging.warning(
             "Manifest references %d photos missing from the current dataset. They will be skipped.",
-            len(missing_ids),
+            len(missing_keys),
         )
 
-    response_entries = load_jsonl(args.batch_output)
-    response_map: Dict[str, Dict[str, Any]] = {
-        entry["custom_id"]: entry
-        for entry in response_entries
-        if isinstance(entry, dict) and entry.get("custom_id")
-    }
-    error_map: Dict[str, Dict[str, Any]] = {}
-    if args.batch_errors:
-        for entry in load_jsonl(args.batch_errors):
-            custom_id = entry.get("custom_id")
-            if custom_id:
-                error_map[custom_id] = entry
-
     annotations: Dict[str, Dict[str, Any]] = {}
-    model_name = manifest.get("model_name", "unknown")
+    if not model_name:
+        model_name = "unknown"
 
-    for photo_id in photo_ids:
-        meta = manifest_photos.get(photo_id, {})
+    for photo_key in photo_keys:
+        meta = manifest_photos.get(photo_key, {})
         annotation_custom_id = meta.get("annotation_custom_id")
-        annotation_data = default_annotation()
+        if not annotation_custom_id:
+            candidate_id = f"annotation:{photo_key}"
+            if candidate_id in response_map:
+                annotation_custom_id = candidate_id
+
+        annotation_data: Dict[str, Any] = {}
         parsed = None
         if annotation_custom_id and annotation_custom_id in response_map:
             parsed = parse_batch_response_json(
@@ -1891,7 +2414,7 @@ def run_openai_batch_apply(args: argparse.Namespace) -> None:
             )
             est_cost = estimate_usage_cost(model_name, input_tokens, output_tokens)
             log_msg = (
-                f"Batch annotation {annotation_custom_id} photo {photo_id}: "
+                f"Batch annotation {annotation_custom_id} photo_key {photo_key}: "
                 f"tokens in={input_tokens or 0}, out={output_tokens or 0}"
             )
             if est_cost is not None:
@@ -1903,89 +2426,92 @@ def run_openai_batch_apply(args: argparse.Namespace) -> None:
                 annotation_custom_id,
                 error_map[annotation_custom_id].get("error"),
             )
-        else:
+        elif annotation_custom_id and annotation_entries:
             logging.warning(
-                "No annotation result found for photo %s (custom_id=%s).",
-                photo_id,
+                "No annotation result found for key %s (custom_id=%s).",
+                photo_key,
                 annotation_custom_id,
             )
 
         if parsed:
+            annotation_data = default_annotation()
             annotation_data.update(parsed)
-        annotation_data["model_version"] = model_name
-        annotation_data["model_timestamp"] = utc_now_iso()
+            annotation_data["model_version"] = model_name
+            annotation_data["model_timestamp"] = utc_now_iso()
 
         building_focus = meta.get("building_focus")
-        if (
-            not annotation_data.get("annotation_has_building")
-            or annotation_data.get("annotation_location_type") != "outdoor"
-        ):
-            annotation_data["annotation_has_synagogue"] = False
-            annotation_data["annotation_has_feor"] = False
-            annotation_data["annotation_has_other_building"] = False
-        elif building_focus in {"synagogue", "feor"}:
-            verification_ids: List[str] = []
-            if isinstance(meta.get("verification_custom_ids"), list):
-                verification_ids.extend(meta.get("verification_custom_ids"))
+        verification_ids: List[str] = []
+        if isinstance(meta.get("verification_custom_ids"), list):
+            verification_ids.extend(meta.get("verification_custom_ids"))
 
-            verification_result: Optional[bool] = None
-            for vid in verification_ids:
-                if vid in response_map:
-                    verification_payload = parse_batch_response_json(
-                        response_map[vid], vid
+        verification_result: Optional[bool] = None
+        for vid in verification_ids:
+            if vid in response_map:
+                verification_payload = parse_batch_response_json(
+                    response_map[vid], vid
+                )
+                if verification_payload is not None:
+                    matches = bool(verification_payload.get("matches_reference"))
+                    verification_result = (
+                        matches
+                        if verification_result is None
+                        else verification_result or matches
                     )
-                    if verification_payload is not None:
-                        matches = bool(verification_payload.get("matches_reference"))
-                        verification_result = (
-                            matches
-                            if verification_result is None
-                            else verification_result or matches
-                        )
-                        logging.debug(
-                            "Batch verification response %s (photo=%s): %s",
-                            vid,
-                            photo_id,
-                            json.dumps(verification_payload, ensure_ascii=False),
-                        )
-                        if matches:
-                            break
-                elif vid in error_map:
-                    logging.warning(
-                        "Verification request %s failed: %s",
+                    logging.debug(
+                        "Batch verification response %s (photo_key=%s): %s",
                         vid,
-                        error_map[vid].get("error"),
+                        photo_key,
+                        json.dumps(verification_payload, ensure_ascii=False),
                     )
-                else:
-                    logging.warning(
-                        "Verification result %s missing in batch outputs.", vid
-                    )
+                    if matches:
+                        break
+            elif vid in error_map:
+                logging.warning(
+                    "Verification request %s failed: %s",
+                    vid,
+                    error_map[vid].get("error"),
+                )
+            else:
+                logging.warning(
+                    "Verification result %s missing in batch outputs.", vid
+                )
 
-            if verification_result is not None:
-                if building_focus == "synagogue":
-                    annotation_data["annotation_has_synagogue"] = verification_result
-                    if verification_result:
-                        annotation_data["annotation_has_other_building"] = bool(
-                            annotation_data.get("annotation_has_other_building")
-                        )
-                elif building_focus == "feor":
-                    annotation_data["annotation_has_feor"] = verification_result
-                    if verification_result:
-                        annotation_data["annotation_has_other_building"] = bool(
-                            annotation_data.get("annotation_has_other_building")
-                        )
+        if verification_result is not None and building_focus:
+            annotation_data.setdefault("annotation_has_building", True)
+            if building_focus == "synagogue":
+                annotation_data["annotation_has_synagogue"] = verification_result
+                if verification_result:
+                    annotation_data.setdefault("annotation_has_other_building", False)
+            elif building_focus == "feor":
+                annotation_data["annotation_has_feor"] = verification_result
+                if verification_result:
+                    annotation_data.setdefault("annotation_has_other_building", False)
+            else:
+                annotation_data["annotation_has_other_building"] = verification_result
 
-        annotations[photo_id] = annotation_data
+        if annotation_data:
+            annotations[photo_key] = annotation_data
 
     merged = merge_annotations(enriched, annotations)
     merged.to_csv(args.output_csv, index=False)
     logging.info("Batch output merged into %s", args.output_csv)
 
     with args.model_responses.open("w", encoding="utf-8") as handle:
-        for photo_id, payload in annotations.items():
-            handle.write(
-                json.dumps({"photo_id": photo_id, **payload}, ensure_ascii=False)
-                + "\n"
+        for _, row in enriched.iterrows():
+            row_dict = row.to_dict()
+            row_key = row_dict.get("_photo_key") or build_photo_key(
+                row_dict.get("owner_id"), row_dict.get("photo_id")
             )
+            payload = annotations.get(row_key)
+            if payload is None:
+                continue
+            entry = {
+                "photo_key": row_key,
+                "photo_id": row_dict.get("photo_id"),
+                "owner_id": row_dict.get("owner_id"),
+                **payload,
+            }
+            handle.write(json.dumps(entry, ensure_ascii=False) + "\n")
     logging.info("Flattened batch responses written to %s", args.model_responses)
 
 
@@ -2025,14 +2551,17 @@ def run_openai_batch_create(args: argparse.Namespace) -> None:
 def run_openai_batch_status(args: argparse.Namespace) -> None:
     client = build_openai_client(args.openai_api_key, args.openai_base_url)
     batch = client.batches.retrieve(args.batch_id)
-    counts = getattr(batch, "request_counts", {}) or {}
+    counts = getattr(batch, "request_counts", None)
+    total = getattr(counts, "total", None) if counts else None
+    completed = getattr(counts, "completed", None) if counts else None
+    failed = getattr(counts, "failed", None) if counts else None
     logging.info(
         "Batch %s status=%s total=%s completed=%s failed=%s output=%s error=%s",
         batch.id,
         batch.status,
-        counts.get("total"),
-        counts.get("completed"),
-        counts.get("failed"),
+        total,
+        completed,
+        failed,
         getattr(batch, "output_file_id", None),
         getattr(batch, "error_file_id", None),
     )
@@ -2061,17 +2590,178 @@ def run_openai_batch_list(args: argparse.Namespace) -> None:
     listing = client.batches.list(limit=args.limit, after=args.after)
     data = getattr(listing, "data", listing)
     for batch in data:
-        counts = getattr(batch, "request_counts", {}) or {}
+        counts = getattr(batch, "request_counts", None)
+        total = getattr(counts, "total", None) if counts else None
+        completed = getattr(counts, "completed", None) if counts else None
+        failed = getattr(counts, "failed", None) if counts else None
         logging.info(
             "Batch %s status=%s total=%s completed=%s failed=%s output=%s error=%s",
             batch.id,
             batch.status,
-            counts.get("total"),
-            counts.get("completed"),
-            counts.get("failed"),
+            total,
+            completed,
+            failed,
             getattr(batch, "output_file_id", None),
             getattr(batch, "error_file_id", None),
         )
+
+
+def run_openai_batch_sequential(args: argparse.Namespace) -> None:
+    enriched = prepare_annotation_dataframe(
+        input_csv=args.input_csv,
+        vk_token=args.vk_token,
+        skip_user_fetch=args.skip_user_fetch,
+        cache_dir=args.cache_dir,
+        limit=args.limit,
+        shuffle=args.shuffle,
+    )
+    if args.only_missing_annotations:
+        enriched = filter_rows_missing_annotations(
+            enriched, args.missing_annotation_column
+        )
+    if args.only_building_flagged:
+        enriched = filter_rows_by_flag(enriched, args.building_flag_column)
+    total_rows = len(enriched)
+    if total_rows == 0:
+        logging.warning("Dataset is empty after preprocessing; nothing to submit.")
+        return
+
+    references = gather_reference_images(
+        args.reference_synagogue, args.reference_feor
+    )
+    builder = OpenAIBatchRequestBuilder(
+        args.model_name,
+        references,
+        enable_building_verification=args.enable_building_verification,
+        building_flag_column=args.building_flag_column,
+        only_building_verification=args.only_building_verification,
+    )
+    client = build_openai_client(args.openai_api_key, args.openai_base_url)
+    output_dir = ensure_directory(args.output_dir)
+    chunk_size = max(1, int(args.chunk_size))
+    poll_interval = max(5, int(args.poll_interval))
+    metadata_base = parse_metadata_args(args.metadata)
+
+    chunk_starts = range(0, total_rows, chunk_size)
+    for chunk_index, chunk_start in enumerate(chunk_starts, start=1):
+        if args.max_chunks is not None and chunk_index > args.max_chunks:
+            logging.info(
+                "Reached max-chunks limit (%s); stopping sequential submission.",
+                args.max_chunks,
+            )
+            break
+
+        chunk_end = min(chunk_start + chunk_size, total_rows)
+        chunk_df = enriched.iloc[chunk_start:chunk_end].reset_index(drop=True)
+        chunk_label = f"chunk_{chunk_index:04d}"
+        logging.info(
+            "Preparing %s covering rows %d-%d (total rows=%d).",
+            chunk_label,
+            chunk_start + 1,
+            chunk_end,
+            total_rows,
+        )
+
+        requests, manifest_photos, photo_keys = builder.build_requests(chunk_df)
+        if not requests:
+            logging.info("Chunk %s produced no requests; skipping.", chunk_label)
+            continue
+
+        input_path = output_dir / f"{chunk_label}_input.jsonl"
+        manifest_path = output_dir / f"{chunk_label}_manifest.json"
+        with input_path.open("w", encoding="utf-8") as handle:
+            for record in requests:
+                handle.write(json.dumps(record, ensure_ascii=False))
+                handle.write("\n")
+
+        manifest = {
+            "version": 1,
+            "generated_at": utc_now_iso(),
+            "model_name": args.model_name,
+            "chunk": {
+                "label": chunk_label,
+                "start_row": chunk_start,
+                "end_row": chunk_end,
+                "size": chunk_end - chunk_start,
+            },
+            "dataset": {
+                "input_csv": str(args.input_csv),
+                "limit": args.limit,
+                "shuffle": args.shuffle,
+                "skip_user_fetch": args.skip_user_fetch,
+                "row_count": len(chunk_df),
+            },
+            "photo_keys": photo_keys,
+            "photos": manifest_photos,
+        }
+        manifest_path.write_text(
+            json.dumps(manifest, ensure_ascii=False, indent=2),
+            encoding="utf-8",
+        )
+
+        logging.info(
+            "Uploading %s (%d requests) to OpenAI Files API.",
+            chunk_label,
+            len(requests),
+        )
+        with input_path.open("rb") as handle:
+            file_obj = client.files.create(file=handle, purpose="batch")
+
+        metadata = dict(metadata_base)
+        metadata.setdefault("chunk_label", chunk_label)
+        metadata.setdefault("chunk_rows", str(chunk_end - chunk_start))
+        batch = client.batches.create(
+            input_file_id=file_obj.id,
+            endpoint=args.endpoint,
+            completion_window=args.completion_window,
+            metadata=metadata or None,
+        )
+        logging.info(
+            "Submitted %s as batch %s (status=%s). Waiting for completion before next chunk.",
+            chunk_label,
+            batch.id,
+            batch.status,
+        )
+
+        terminal_states = {"completed", "failed", "cancelled", "canceled", "expired"}
+        while batch.status not in terminal_states:
+            logging.info(
+                "Chunk %s batch %s still running (status=%s, total=%s, completed=%s, failed=%s).",
+                chunk_label,
+                batch.id,
+                batch.status,
+                getattr(getattr(batch, "request_counts", None), "total", None),
+                getattr(getattr(batch, "request_counts", None), "completed", None),
+                getattr(getattr(batch, "request_counts", None), "failed", None),
+            )
+            time.sleep(poll_interval)
+            batch = client.batches.retrieve(batch.id)
+
+        logging.info(
+            "Chunk %s batch %s finished with status=%s.",
+            chunk_label,
+            batch.id,
+            batch.status,
+        )
+
+        output_file_id = getattr(batch, "output_file_id", None)
+        if output_file_id:
+            dest = output_dir / f"{chunk_label}_output.jsonl"
+            client.files.content(output_file_id).write_to_file(str(dest))
+            logging.info("Downloaded output for %s to %s", chunk_label, dest)
+        error_file_id = getattr(batch, "error_file_id", None)
+        if error_file_id:
+            dest = output_dir / f"{chunk_label}_errors.jsonl"
+            client.files.content(error_file_id).write_to_file(str(dest))
+            logging.info("Downloaded errors for %s to %s", chunk_label, dest)
+
+        if batch.status != "completed":
+            logging.error(
+                "Chunk %s ended with status %s; stopping sequential submission.",
+                chunk_label,
+                batch.status,
+            )
+            break
 
 
 def run_golden_draft(args: argparse.Namespace) -> None:
@@ -2127,6 +2817,8 @@ def main() -> None:
             run_openai_batch_cancel(args)
         elif args.batch_command == "list":
             run_openai_batch_list(args)
+        elif args.batch_command == "sequential":
+            run_openai_batch_sequential(args)
         else:  # pragma: no cover - defensive
             raise ValueError(f"Unknown batch sub-command: {args.batch_command}")
     elif args.command == "golden-draft":

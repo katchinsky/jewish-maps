@@ -13,7 +13,10 @@ import rasterio
 from pyproj import CRS, Transformer
 from rasterio.features import rasterize, shapes
 from rasterio.mask import mask
+from rasterio.transform import array_bounds
+from rasterio.warp import Resampling, calculate_default_transform, reproject
 from shapely.geometry import Point, mapping, shape
+from shapely.prepared import prep
 
 LOGGER = logging.getLogger("reverse_viewshed")
 DEFAULT_BUFFER_METERS = 1000
@@ -88,6 +91,30 @@ def parse_args() -> argparse.Namespace:
         help="Name or absolute path of the GDAL viewshed executable.",
     )
     parser.add_argument(
+        "--target-resolution",
+        type=float,
+        default=None,
+        help="Optional target pixel size in meters for DSM resampling (e.g., 5).",
+    )
+    parser.add_argument(
+        "--observer-grid-spacing",
+        type=float,
+        default=None,
+        help="If set (meters), automatically sample rooftop points on each POI building with this spacing.",
+    )
+    parser.add_argument(
+        "--observer-perimeter-spacing",
+        type=float,
+        default=None,
+        help="If set (meters), trace building walls with observers at this spacing.",
+    )
+    parser.add_argument(
+        "--max-observer-points",
+        type=int,
+        default=250,
+        help="Maximum rooftop observer points per POI when --observer-grid-spacing is used.",
+    )
+    parser.add_argument(
         "--log-level",
         type=str,
         default="INFO",
@@ -128,10 +155,14 @@ def create_buffer_polygon(points: Sequence[Tuple[float, float]], buffer_m: float
     )
     utm_crs = gdf.estimate_utm_crs()
     gdf_utm = gdf.to_crs(utm_crs)
-    buffered = gdf_utm.buffer(buffer_m).unary_union
+    buffered_series = gdf_utm.buffer(buffer_m)
+    if hasattr(buffered_series, "union_all"):
+        buffered = buffered_series.union_all()
+    else:
+        buffered = buffered_series.unary_union
     buffered_ll = gpd.GeoSeries([buffered], crs=utm_crs).to_crs("EPSG:4326").iloc[0]
     LOGGER.info("AOI buffer generated using %s", utm_crs)
-    return buffered_ll
+    return buffered_ll, utm_crs
 
 
 def fetch_buildings(buffer_geom) -> gpd.GeoDataFrame:
@@ -176,6 +207,196 @@ def clip_dem_to_aoi(dem_path: Path, buffer_geom):
         dem = dem.astype("float32")
         LOGGER.info("DEM clipped: %dx%d pixels", profile["width"], profile["height"])
         return dem[0], profile
+
+
+def densify_observers(
+    targets: Sequence[Tuple[float, float]],
+    buildings: gpd.GeoDataFrame,
+    rooftop_spacing: float | None,
+    perimeter_spacing: float | None,
+    max_points: int,
+    utm_crs,
+) -> List[Tuple[float, float]]:
+    if not rooftop_spacing and not perimeter_spacing:
+        return list(targets)
+    if buildings.empty:
+        LOGGER.warning("Building layer empty; cannot densify observers.")
+        return list(targets)
+    buildings_ll = buildings.to_crs("EPSG:4326")
+    transformer_to_ll = Transformer.from_crs(utm_crs, "EPSG:4326", always_xy=True)
+    densified: List[Tuple[float, float]] = []
+    sindex = buildings_ll.sindex if hasattr(buildings_ll, "sindex") else None
+
+    for lat, lon in targets:
+        point = Point(lon, lat)
+        candidate_idx = list(sindex.query(point)) if sindex else buildings_ll.index
+        candidate_buildings = buildings_ll.iloc[candidate_idx]
+        match = candidate_buildings[candidate_buildings.contains(point)]
+        if match.empty:
+            LOGGER.warning("No building found at target %.6f, %.6f; using original point.", lat, lon)
+            densified.append((lat, lon))
+            continue
+        building_geom = match.iloc[0].geometry
+        collected: List[Tuple[float, float]] = []
+        if rooftop_spacing and rooftop_spacing > 0:
+            rooftop_points = sample_rooftop_points(
+                building_geom,
+                rooftop_spacing,
+                max_points,
+                utm_crs,
+                transformer_to_ll,
+            )
+            collected.extend(rooftop_points)
+            LOGGER.info(
+                "Generated %d rooftop observer(s) for target %.6f, %.6f.",
+                len(rooftop_points),
+                lat,
+                lon,
+            )
+
+        remaining = max(0, max_points - len(collected))
+        if perimeter_spacing and perimeter_spacing > 0 and remaining > 0:
+            perimeter_points = sample_perimeter_points(
+                building_geom,
+                perimeter_spacing,
+                remaining,
+                utm_crs,
+                transformer_to_ll,
+            )
+            collected.extend(perimeter_points)
+            LOGGER.info(
+                "Generated %d perimeter observer(s) for target %.6f, %.6f.",
+                len(perimeter_points),
+                lat,
+                lon,
+            )
+
+        if not collected:
+            LOGGER.warning("Failed to sample rooftop/perimeter for target %.6f, %.6f; using centroid.", lat, lon)
+            densified.append((lat, lon))
+        else:
+            densified.extend(collected)
+
+    # Deduplicate while preserving order
+    seen = set()
+    unique_points = []
+    for lat, lon in densified:
+        key = (round(lat, 8), round(lon, 8))
+        if key in seen:
+            continue
+        seen.add(key)
+        unique_points.append((lat, lon))
+    LOGGER.info("Total observer points after densification: %d", len(unique_points))
+    return unique_points
+
+
+def sample_rooftop_points(
+    building_geom,
+    spacing: float,
+    max_points: int,
+    utm_crs,
+    transformer_to_ll: Transformer,
+) -> List[Tuple[float, float]]:
+    rooftop = gpd.GeoSeries([building_geom], crs="EPSG:4326").to_crs(utm_crs).iloc[0]
+    rooftop = rooftop.buffer(0)
+    if rooftop.is_empty:
+        return []
+    minx, miny, maxx, maxy = rooftop.bounds
+    xs = np.arange(minx, maxx + spacing, spacing)
+    ys = np.arange(miny, maxy + spacing, spacing)
+    prepared = prep(rooftop)
+    points_xy = []
+    for x in xs:
+        for y in ys:
+            pt = Point(x, y)
+            if prepared.contains(pt) or rooftop.boundary.distance(pt) < spacing * 0.1:
+                points_xy.append(pt)
+                if len(points_xy) >= max_points:
+                    break
+        if len(points_xy) >= max_points:
+            break
+    if not points_xy:
+        centroid = rooftop.centroid
+        points_xy = [centroid]
+    latlon = []
+    for pt in points_xy:
+        lon, lat = transformer_to_ll.transform(pt.x, pt.y)
+        latlon.append((lat, lon))
+    return latlon
+
+
+def sample_perimeter_points(
+    building_geom,
+    spacing: float,
+    max_points: int,
+    utm_crs,
+    transformer_to_ll: Transformer,
+) -> List[Tuple[float, float]]:
+    polygon = gpd.GeoSeries([building_geom], crs="EPSG:4326").to_crs(utm_crs).iloc[0]
+    polygon = polygon.buffer(0)
+    if polygon.is_empty:
+        return []
+    boundary = polygon.boundary
+    length = boundary.length
+    if length == 0:
+        return []
+    distances = np.arange(0, length, spacing)
+    points_xy = [boundary.interpolate(d) for d in distances]
+    points_xy.append(boundary.interpolate(length))
+    points_xy = points_xy[:max_points]
+    latlon = []
+    for pt in points_xy:
+        lon, lat = transformer_to_ll.transform(pt.x, pt.y)
+        latlon.append((lat, lon))
+    return latlon
+
+
+def resample_dem(
+    dem_array: np.ndarray,
+    profile: dict,
+    target_resolution: float | None,
+    target_crs,
+) -> Tuple[np.ndarray, dict]:
+    if not target_resolution:
+        return dem_array, profile
+    if target_crs is None:
+        raise ValueError("Target CRS is required when specifying --target-resolution.")
+    bounds = array_bounds(profile["height"], profile["width"], profile["transform"])
+    dst_transform, dst_width, dst_height = calculate_default_transform(
+        profile["crs"],
+        target_crs,
+        profile["width"],
+        profile["height"],
+        *bounds,
+        resolution=target_resolution,
+    )
+    dst_array = np.full((dst_height, dst_width), profile["nodata"], dtype="float32")
+    reproject(
+        source=dem_array,
+        destination=dst_array,
+        src_transform=profile["transform"],
+        src_crs=profile["crs"],
+        dst_transform=dst_transform,
+        dst_crs=target_crs,
+        src_nodata=profile["nodata"],
+        dst_nodata=profile["nodata"],
+        resampling=Resampling.bilinear,
+    )
+    new_profile = profile.copy()
+    new_profile.update(
+        crs=target_crs,
+        transform=dst_transform,
+        width=dst_width,
+        height=dst_height,
+    )
+    LOGGER.info(
+        "DEM resampled to %.2fm resolution (%dx%d pixels) in %s",
+        target_resolution,
+        dst_width,
+        dst_height,
+        target_crs,
+    )
+    return dst_array, new_profile
 
 
 def build_dsm(dem_array: np.ndarray, profile: dict, buildings: gpd.GeoDataFrame) -> np.ndarray:
@@ -298,13 +519,36 @@ def _call_gdal_viewshed(
 def merge_viewsheds(temp_paths: Iterable[Path], output_path: Path) -> None:
     temp_paths = list(temp_paths)
     LOGGER.info("Merging %d partial viewsheds…", len(temp_paths))
-    data_arrays = []
     profile = None
-    for path in temp_paths:
+    merged = None
+    for idx, path in enumerate(temp_paths):
         with rasterio.open(path) as src:
-            data_arrays.append(src.read(1))
-            profile = src.profile if profile is None else profile
-    merged = np.max(np.stack(data_arrays, axis=0), axis=0)
+            data = src.read(1)
+            if profile is None:
+                profile = src.profile
+                merged = data
+                continue
+            if (
+                src.width != profile["width"]
+                or src.height != profile["height"]
+                or src.transform != profile["transform"]
+                or src.crs != profile["crs"]
+            ):
+                dst = np.zeros((profile["height"], profile["width"]), dtype=data.dtype)
+                reproject(
+                    source=data,
+                    destination=dst,
+                    src_transform=src.transform,
+                    src_crs=src.crs,
+                    dst_transform=profile["transform"],
+                    dst_crs=profile["crs"],
+                    resampling=Resampling.nearest,
+                    src_nodata=src.nodata,
+                    dst_nodata=profile.get("nodata"),
+                )
+                data = dst
+            merged = np.maximum(merged, data)
+            LOGGER.debug("Merged viewshed chunk %d/%d", idx + 1, len(temp_paths))
     with rasterio.open(output_path, "w", **profile) as dst:
         dst.write(merged.astype(profile["dtype"]), 1)
     LOGGER.info("Merged viewshed saved to %s", output_path)
@@ -361,9 +605,23 @@ def main() -> None:
     configure_logging(args.log_level)
     try:
         targets = parse_target_points(args)
-        buffer_geom = create_buffer_polygon(targets, args.buffer_m)
+        buffer_geom, utm_crs = create_buffer_polygon(targets, args.buffer_m)
         buildings = fetch_buildings(buffer_geom)
+        targets = densify_observers(
+            targets,
+            buildings,
+            args.observer_grid_spacing,
+            args.observer_perimeter_spacing,
+            args.max_observer_points,
+            utm_crs,
+        )
         dem_array, dem_profile = clip_dem_to_aoi(args.dem, buffer_geom)
+        dem_array, dem_profile = resample_dem(
+            dem_array,
+            dem_profile,
+            args.target_resolution,
+            utm_crs,
+        )
         dsm_array = build_dsm(dem_array, dem_profile, buildings)
 
         observer_points_xy = project_targets(targets, dem_profile["crs"])
